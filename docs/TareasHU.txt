@@ -1,1 +1,50 @@
 Texto de prueba para la issue #6
+---ACLARACIÓN: EJEMPLO DE RESOLUCIÓN
+Este issue fue resuelto en el sprint anterior, este documento es para una demostración de los commit y push con Git
+
+
+## Trabajo Planeado por Historia de Usuario
+
+---
+
+### HU1 – Añadir asignaturas
+
+1. Diseño del modelo de datos de asignatura  
+   Se definirá la estructura que representará una asignatura, incluyendo los campos: ID, nombre, créditos, salón y horario. Esta estructura será la base para almacenar y manipular la información académica.
+
+2. Implementación del almacenamiento de datos  
+   Se desarrollará el mecanismo para guardar las asignaturas registradas, asegurando persistencia básica de la información.
+
+3. Desarrollo del formulario de registro  
+   Se construirá la interfaz que permita al estudiante ingresar manualmente los datos de una asignatura.
+
+4. Validación de campos obligatorios  
+   Se implementarán verificaciones para evitar el envío de formularios con información incompleta.
+
+5. Validación de duplicados  
+   Se desarrollará la lógica que impida registrar asignaturas repetidas por ID o nombre.
+
+6. Visualización de asignaturas registradas  
+   Se implementará una sección donde el usuario pueda visualizar la lista de materias registradas correctamente.
+
+7. Pruebas funcionales del registro  
+   Se realizarán pruebas para verificar que el registro, almacenamiento y validaciones funcionen de forma adecuada.
+
+---
+
+### HU2 – Horario Semanal
+
+1. Diseño de la estructura lógica del horario  
+   Se definirá una estructura que permita organizar las asignaturas por días y bloques horarios.
+
+2. Asociación de asignaturas a bloques de tiempo  
+   Se desarrollará la lógica que relacione cada asignatura registrada con su respectivo día y horario.
+
+3. Implementación de la vista semanal  
+   Se construirá una tabla o estructura visual que represente los días de la semana y los espacios horarios.
+
+4. Renderizado dinámico del horario  
+   Se programará la visualización automática de las asignaturas dentro del horario según la información registrada.
+
+5. Pruebas de visualización e integración  
+   Se validará que las asignaturas aparezcan correctamente en el horario y que exista coherencia entre el registro y la vista semanal.
