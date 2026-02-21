@@ -62,7 +62,7 @@ Representa una materia registrada con su información académica y su horario se
 
 3\. `HoraInicio < HoraFin` (en tiempo real, no alfabético).
 
-4\. El rango horario es válido en 24h (00:00–23:59).
+4\. El rango horario es válido en 12h (00:00–12:59).
 
 
 
