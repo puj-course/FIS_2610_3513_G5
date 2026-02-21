@@ -18,85 +18,30 @@ StudyHub es una aplicación universitaria diseñada para la gestión integral de
 ---
 
 ## Tecnologías Utilizadas
-- **Frontend:** JavaFX / HTML / CSS
+- **Frontend:** HTML / CSS / JS
 - **Backend:** Java – Spring Boot
 - **Base de Datos:** PostgreSQL
-- **IA / Data Science:** Python, Pandas (Futuro)
-- **DevOps:** GitHub Actions, Docker
 - **Control de versiones:** Git
 
 ---
 
-## Estructura del Proyecto
-```text
-project-name/
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   ├── feature_request.md
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   └── workflows/
-│       ├── ci.yml
-│       └── cd.yml
-├── conf/
-│   ├── config.yaml
-│   └── settings.json
-├── docs/
-│   ├── api/
-│   ├── architecture/
-│   └── user_guide/
-├── jupyter/
-│   ├── notebooks/
-│   │   ├── exploration.ipynb
-│   │   └── analysis.ipynb
-│   └── datasets/
-│       ├── data1.csv
-│       └── data2.csv
-├── scripts/
-│   ├── setup.sh
-│   ├── deploy.sh
-│   └── test.sh
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   └── resources/
-│   ├── test/
-│   │   ├── java/
-│   │   └── resources/
-├── temp/
-│   ├── temp_file.txt
-│   └── temp_data/
-│       ├── temp1.tmp
-│       └── temp2.tmp
-├── .gitignore
-├── README.md
-├── LICENSE
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── Dockerfile
-├── docker-compose.yml
-└── Makefile
-```
+## Requisitos del Sistema
+
+### Requisitos Funcionales
+- RF1: Registro y gestión de materias académicas.  
+- RF2: Visualización de calendario académico centralizado.  
+- RF3: Cálculo automático de promedios y progreso académico.  
+- RF4: Sistema de notificaciones de eventos y tareas.  
+
+### Requisitos No Funcionales
+- Usabilidad: Interfaz clara, intuitiva y accesible.  
+- Rendimiento: Respuesta eficiente ante consultas frecuentes.  
+- Seguridad: Protección de datos personales del usuario.  
 
 ---
 
-## Instalación y Ejecución
-**Requisitos**
-- Docker y Docker Compose
-- Git
-- Java 17+
-- Maven
-
-## Clonar el repositorio
-```text
-git clone https://github.com/puj-course/FIS_2610_3513_G5.git
-cd FIS_2610_3513_G5
-```
-
-## Ejecución con Docker
-```text
-docker-compose up --build
-```
+## Arquitectura y Diseño
+El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), donde una aplicación cliente consume servicios a través de una API central.
 
 ---
 
