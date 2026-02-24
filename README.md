@@ -19,8 +19,8 @@ StudyHub es una aplicación universitaria diseñada para la gestión integral de
 
 ## Tecnologías Utilizadas
 - **Frontend:** JavaFX / HTML / CSS
-- **Backend:** Java – Spring Boot
-- **Base de Datos:** MySQL
+- **Backend:** Java – Spring Boot -> Actualizado a Firebase
+- **Base de Datos:** MySQL -> Actualizado a Firebase
 - **IA / Data Science:** Python, Pandas (Futuro)
 - **DevOps:** GitHub Actions, Docker
 - **Control de versiones:** Git
