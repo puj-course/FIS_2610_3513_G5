@@ -109,12 +109,18 @@ No se ha llegado a la implementación con Docker
 **Valeria Gómez**  
 Estudiante de Ingeniería de Sistemas, Pontificia Universidad Javeriana  
 📧 [valeria.gomezb@javeriana.edu.co](mailto:valeria.gomezb@javeriana.edu.co)
+
 **Federico Mejía**  
 Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
 📧 [federico_mejia@javeriana.edu.co](mailto:federico_mejia@javeriana.edu.co)
+
 **Matias Mendoza** 
 Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
 📧 [Danielmmendoza@javeriana.edu.co](mailto:Danielmmendoza@javeriana.edu.co)
+
+**Sarah Barrero**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
 ---
 ## Licencia
 Proyecto desarrollado con fines académicos.
