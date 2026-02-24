@@ -121,6 +121,7 @@ Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana
 **Sarah Barrero**
 Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
 📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
+
 ---
 ## Licencia
 Proyecto desarrollado con fines académicos.
