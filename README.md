@@ -45,6 +45,102 @@ El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), don
 
 ---
 
+
+---
+
+## Equipo del Proyecto
+| Nombre        | Rol                   | GitHub / Perfil         |
+|--------------|-----------------------|--------------------------|
+| Sarah        | Scrum Master          | github.com/barrerosarah9 |
+| Valeria      | Product Owner         | github.com/valgomezzz    |
+| Manuel       | Sprint Planner        | github.com/Manuel-jmMo   |
+| Matias       | Configuration Manager | github.com/matiasssss10  |
+| Valeria      | QA Lead               | github.com/valgomezzz    |
+| Federico     | DevOps Engineer       | github.com/Fede-17       |
+
+---
+
+## Tecnologías Utilizadas
+- **Frontend:** JavaFX / HTML / CSS
+- **Backend:** Java – Spring Boot -> Actualizado a Firebase
+- **Base de Datos:** MySQL -> Actualizado a Firebase
+- **IA / Data Science:** Python, Pandas (Futuro)
+- **DevOps:** GitHub Actions, Docker
+- **Control de versiones:** Git
+
+---
+
+## Estructura del Proyecto
+```text
+project-name/
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   ├── feature_request.md
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/
+│       ├── ci.yml
+│       └── cd.yml
+├── conf/
+│   ├── config.yaml
+│   └── settings.json
+├── docs/
+│   ├── api/
+│   ├── architecture/
+│   └── user_guide/
+├── jupyter/
+│   ├── notebooks/
+│   │   ├── exploration.ipynb
+│   │   └── analysis.ipynb
+│   └── datasets/
+│       ├── data1.csv
+│       └── data2.csv
+├── scripts/
+│   ├── setup.sh
+│   ├── deploy.sh
+│   └── test.sh
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   ├── test/
+│   │   ├── java/
+│   │   └── resources/
+├── temp/
+│   ├── temp_file.txt
+│   └── temp_data/
+│       ├── temp1.tmp
+│       └── temp2.tmp
+├── .gitignore
+├── README.md
+├── LICENSE
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── Dockerfile
+├── docker-compose.yml
+└── Makefile
+```
+
+---
+
+## Instalación y Ejecución
+**Requisitos**
+- Docker y Docker Compose
+- Git
+- Java 17+
+- Maven
+
+## Clonar el repositorio
+```text
+git clone https://github.com/puj-course/FIS_2610_3513_G5.git
+cd FIS_2610_3513_G5
+```
+
+## Ejecución con Docker
+No se ha llegado a la implementación con Docker
+
+---
+
 ## Contexto Académico
 - **Asignatura:** Fundamentos de Ingeniería de Software
 - **Docente:** Luis Gabriel Moreno Sandoval, PhD
@@ -52,5 +148,24 @@ El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), don
 
 ---
 
+
+## Equipo de desarrollo y Contacto
+**Valeria Gómez**  
+Estudiante de Ingeniería de Sistemas, Pontificia Universidad Javeriana  
+📧[valeria.gomezb@javeriana.edu.co](mailto:valeria.gomezb@javeriana.edu.co)
+
+**Federico Mejía**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧[federico_mejia@javeriana.edu.co](mailto:federico_mejia@javeriana.edu.co)
+
+**Matias Mendoza**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧[Danielmmendoza@javeriana.edu.co](mailto:Danielmmendoza@javeriana.edu.co)
+
+**Sarah Barrero**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
+
+---
 ## Licencia
 Proyecto desarrollado con fines académicos.
