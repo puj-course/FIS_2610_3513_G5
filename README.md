@@ -6,6 +6,49 @@ StudyHub es una aplicación universitaria diseñada para la gestión integral de
 ---
 
 ## Equipo del Proyecto
+| Nombre        | Rol                   | GitHub / Perfil |
+|--------------|-----------------------|-----------------|
+| Federico     | Scrum Master          | github.com/feder |
+| Valeria      | Product Owner         | github.com/Valeria |
+| Estudiante 3 | Sprint Planner        | github.com/usuario3 |
+| Estudiante 4 | Configuration Manager | github.com/usuario4 |
+| Estudiante 5 | QA Lead               | github.com/usuario5 |
+| Estudiante 6 | DevOps Engineer       | github.com/usuario6 |
+
+---
+
+## Tecnologías Utilizadas
+- **Frontend:** HTML / CSS / JS
+- **Backend:** Java – Spring Boot
+- **Base de Datos:** PostgreSQL
+- **Control de versiones:** Git
+
+---
+
+## Requisitos del Sistema
+
+### Requisitos Funcionales
+- RF1: Registro y gestión de materias académicas.  
+- RF2: Visualización de calendario académico centralizado.  
+- RF3: Cálculo automático de promedios y progreso académico.  
+- RF4: Sistema de notificaciones de eventos y tareas.  
+
+### Requisitos No Funcionales
+- Usabilidad: Interfaz clara, intuitiva y accesible.  
+- Rendimiento: Respuesta eficiente ante consultas frecuentes.  
+- Seguridad: Protección de datos personales del usuario.  
+
+---
+
+## Arquitectura y Diseño
+El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), donde una aplicación cliente consume servicios a través de una API central.
+
+---
+
+
+---
+
+## Equipo del Proyecto
 | Nombre        | Rol                   | GitHub / Perfil         |
 |--------------|-----------------------|--------------------------|
 | Sarah        | Scrum Master          | github.com/barrerosarah9 |
@@ -104,6 +147,7 @@ No se ha llegado a la implementación con Docker
 - **Contacto:** morenoluis@javeriana.edu.co
 
 ---
+
 
 ## Equipo de desarrollo y Contacto
 **Valeria Gómez**  
