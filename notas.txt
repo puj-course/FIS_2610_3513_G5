@@ -1,2 +1,2 @@
-"Validacion de notas" 
-"correccion error" 
+validacion de notas 
+"correcion error" 

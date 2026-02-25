@@ -167,6 +167,7 @@ Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana
 📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
 
 ---
+"- Matias"
 "- Federico" 
 "- Valeria" 
 ## Licencia
