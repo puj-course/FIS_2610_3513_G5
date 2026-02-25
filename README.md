@@ -1,153 +1,173 @@
-# StudyHub  
-## Sistema Integral de Gestión Académica Universitaria
+# StudyHub
+
+## Descripción
+StudyHub es una aplicación universitaria diseñada para la gestión integral de materias, notas y horarios. El objetivo es proporcionar a los estudiantes una herramienta centralizada para el seguimiento académico, facilitando la organización de sus responsabilidades y el monitoreo de su progreso en tiempo real.
 
 ---
 
-## Descripción General
-
-StudyHub es una iniciativa académica orientada al desarrollo de una plataforma digital que busca centralizar la gestión académica universitaria en un único entorno. El proyecto surge ante la necesidad de reducir la dispersión de información académica en múltiples sistemas institucionales, correos electrónicos y herramientas externas.
-
-Actualmente, los estudiantes deben consultar diversas plataformas para gestionar materias, evaluaciones, calendarios y comunicaciones. StudyHub propone una solución unificada que facilite la organización académica, el seguimiento del progreso estudiantil y la optimización del tiempo.
-
-El proyecto se encuentra en fase de análisis y diseño, por lo que aún no existe una implementación funcional definitiva.
-
----
-
-## Identidad del Proyecto
-
-**Startup propuesta:** StudyHub  
-**Nombre del proyecto académico:** Sistema Integral de Gestión Académica Universitaria  
-
-Este proyecto se desarrolla en un contexto académico, pero se plantea bajo un enfoque de producto digital escalable con potencial de evolución hacia una solución real en el ámbito EdTech.
+## Equipo del Proyecto
+| Nombre        | Rol                   | GitHub / Perfil |
+|--------------|-----------------------|-----------------|
+| Federico     | Scrum Master          | github.com/feder |
+| Valeria      | Product Owner         | github.com/Valeria |
+| Estudiante 3 | Sprint Planner        | github.com/usuario3 |
+| Estudiante 4 | Configuration Manager | github.com/usuario4 |
+| Estudiante 5 | QA Lead               | github.com/usuario5 |
+| Estudiante 6 | DevOps Engineer       | github.com/usuario6 |
 
 ---
 
-## Equipo de Trabajo
-
-| Nombre | Rol |
-|--------|-----|
-| Federico Mejía | DevOps Engineer |
-| Valeria Gómez | Quality Assurer Lead & Product Owner |
-| Matias Mendoza | Configuration Manager |
-| Sarah Barrero | SCRUM Master |
-| Manuel Movilla | Sprint Planner |
-
----
-
-## Objetivo del Proyecto
-
-### Objetivo General
-
-Desarrollar una plataforma que centralice la información académica del estudiante universitario, facilitando la gestión de materias, evaluaciones, comunicaciones y planificación del tiempo académico.
-
-### Objetivos Específicos
-
-- Integrar información proveniente de plataformas académicas, correos electrónicos y aplicaciones externas.  
-- Optimizar el uso del calendario académico mediante eventos automatizados y recordatorios inteligentes.  
-- Permitir el seguimiento de materias cursadas y su estado académico.  
-- Calcular y visualizar el progreso de calificaciones por asignatura.  
-- Incorporar un sistema de reseñas de materias y docentes.  
-- Notificar al usuario sobre tareas, evaluaciones o eventos relevantes.
-
----
-
-## Alcance del Proyecto
-
-### Incluye
-
-- Gestión y seguimiento de materias académicas.  
-- Visualización de calendario académico unificado.  
-- Sistema de cálculo y monitoreo de notas.  
-- Notificaciones académicas automatizadas.  
-- Reseñas y valoraciones de materias o profesores.  
-- Integraciones simuladas o parciales con plataformas académicas.
-
-### No Incluye
-
-- Sustitución de sistemas oficiales universitarios.  
-- Modificación directa de datos institucionales.  
-- Integraciones reales con sistemas privados sin APIs públicas.  
-- Funcionalidades administrativas institucionales o docentes.
+## Tecnologías Utilizadas
+- **Frontend:** HTML / CSS / JS
+- **Backend:** Java – Spring Boot
+- **Base de Datos:** PostgreSQL
+- **Control de versiones:** Git
 
 ---
 
 ## Requisitos del Sistema
 
 ### Requisitos Funcionales
-
 - RF1: Registro y gestión de materias académicas.  
 - RF2: Visualización de calendario académico centralizado.  
 - RF3: Cálculo automático de promedios y progreso académico.  
 - RF4: Sistema de notificaciones de eventos y tareas.  
-- RF5: Registro y consulta de reseñas académicas.
 
 ### Requisitos No Funcionales
-
 - Usabilidad: Interfaz clara, intuitiva y accesible.  
 - Rendimiento: Respuesta eficiente ante consultas frecuentes.  
 - Seguridad: Protección de datos personales del usuario.  
-- Escalabilidad: Posibilidad de integrar nuevos servicios futuros.
 
 ---
 
-## Arquitectura y Diseño Propuesto
-
-El sistema se concibe bajo una arquitectura cliente-servidor, donde una aplicación cliente (web o móvil) consume servicios a través de una API central.
-
-### Tecnologías Tentativas
-
-- Frontend: Aplicación web o móvil (por definir).  
-- Backend: API REST.  
-- Base de datos: Sistema relacional o híbrido.  
-- Integraciones externas: Correos electrónicos, calendarios y plataformas académicas (simulados inicialmente).
-
-Este diseño es preliminar y podrá ajustarse conforme avance el desarrollo.
+## Arquitectura y Diseño
+El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), donde una aplicación cliente consume servicios a través de una API central.
 
 ---
 
-## Plan de Trabajo Propuesto
-
-1. Levantamiento y análisis de requerimientos.  
-2. Diseño arquitectónico y modelado del sistema.  
-3. Prototipado de interfaz de usuario.  
-4. Implementación inicial del sistema.  
-5. Pruebas funcionales básicas.  
-6. Documentación técnica y académica final.
 
 ---
 
-## Riesgos y Supuestos
-
-### Riesgos
-
-- Limitaciones en la disponibilidad de APIs públicas para integraciones reales.  
-- Complejidad en la estandarización de información proveniente de múltiples plataformas.  
-- Restricciones de tiempo propias del contexto académico.
-
-### Supuestos
-
-- Uso de datos simulados en fases tempranas.  
-- Acceso continuo a internet por parte de los usuarios.  
-- Conocimientos básicos digitales de los usuarios finales.
+## Equipo del Proyecto
+| Nombre        | Rol                   | GitHub / Perfil         |
+|--------------|-----------------------|--------------------------|
+| Sarah        | Scrum Master          | github.com/barrerosarah9 |
+| Valeria      | Product Owner         | github.com/valgomezzz    |
+| Manuel       | Sprint Planner        | github.com/Manuel-jmMo   |
+| Matias       | Configuration Manager | github.com/matiasssss10  |
+| Valeria      | QA Lead               | github.com/valgomezzz    |
+| Federico     | DevOps Engineer       | github.com/Fede-17       |
 
 ---
 
-## Criterios de Evaluación del Proyecto
-
-El proyecto se considerará satisfactorio si:
-
-- Permite la gestión académica desde un único entorno digital.  
-- Presenta información clara, organizada y accesible.  
-- Cumple los requisitos funcionales establecidos.  
-- Dispone de documentación técnica adecuada y actualizada.
+## Tecnologías Utilizadas
+- **Frontend:** JavaFX / HTML / CSS
+- **Backend:** Java – Spring Boot -> Actualizado a Firebase
+- **Base de Datos:** MySQL -> Actualizado a Firebase
+- **IA / Data Science:** Python, Pandas (Futuro)
+- **DevOps:** GitHub Actions, Docker
+- **Control de versiones:** Git
 
 ---
 
-## Estado Actual
+## Estructura del Proyecto
+```text
+project-name/
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   ├── feature_request.md
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/
+│       ├── ci.yml
+│       └── cd.yml
+├── conf/
+│   ├── config.yaml
+│   └── settings.json
+├── docs/
+│   ├── api/
+│   ├── architecture/
+│   └── user_guide/
+├── jupyter/
+│   ├── notebooks/
+│   │   ├── exploration.ipynb
+│   │   └── analysis.ipynb
+│   └── datasets/
+│       ├── data1.csv
+│       └── data2.csv
+├── scripts/
+│   ├── setup.sh
+│   ├── deploy.sh
+│   └── test.sh
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   ├── test/
+│   │   ├── java/
+│   │   └── resources/
+├── temp/
+│   ├── temp_file.txt
+│   └── temp_data/
+│       ├── temp1.tmp
+│       └── temp2.tmp
+├── .gitignore
+├── README.md
+├── LICENSE
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── Dockerfile
+├── docker-compose.yml
+└── Makefile
+```
 
-Fase de análisis y diseño.  
-Sin implementación funcional definitiva hasta el momento.
+---
+
+## Instalación y Ejecución
+**Requisitos**
+- Docker y Docker Compose
+- Git
+- Java 17+
+- Maven
+
+## Clonar el repositorio
+```text
+git clone https://github.com/puj-course/FIS_2610_3513_G5.git
+cd FIS_2610_3513_G5
+```
+
+## Ejecución con Docker
+No se ha llegado a la implementación con Docker
+
+---
+
+## Contexto Académico
+- **Asignatura:** Fundamentos de Ingeniería de Software
+- **Docente:** Luis Gabriel Moreno Sandoval, PhD
+- **Contacto:** morenoluis@javeriana.edu.co
+
+---
+
+
+## Equipo de desarrollo y Contacto
+**Valeria Gómez**  
+Estudiante de Ingeniería de Sistemas, Pontificia Universidad Javeriana  
+📧[valeria.gomezb@javeriana.edu.co](mailto:valeria.gomezb@javeriana.edu.co)
+
+**Federico Mejía**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧[federico_mejia@javeriana.edu.co](mailto:federico_mejia@javeriana.edu.co)
+
+**Matias Mendoza**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧[Danielmmendoza@javeriana.edu.co](mailto:Danielmmendoza@javeriana.edu.co)
+
+**Sarah Barrero**
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
 
 ---
 "- Federico" 
 "- Valeria" 
+## Licencia
+Proyecto desarrollado con fines académicos.
