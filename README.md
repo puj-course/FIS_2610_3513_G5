@@ -153,7 +153,6 @@ Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana
 📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
 
 ---
-"- Federico" 
-"- Valeria" 
+
 ## Licencia
 Proyecto desarrollado con fines académicos.
