@@ -3,20 +3,6 @@
 ## Descripción
 StudyHub es una aplicación universitaria diseñada para la gestión integral de materias, notas y horarios. El objetivo es proporcionar a los estudiantes una herramienta centralizada para el seguimiento académico, facilitando la organización de sus responsabilidades y el monitoreo de su progreso en tiempo real.
 
----
-
-## Equipo del Proyecto
-| Nombre        | Rol                   | GitHub / Perfil |
-|--------------|-----------------------|-----------------|
-| Federico     | Scrum Master          | github.com/feder |
-| Valeria      | Product Owner         | github.com/Valeria |
-| Estudiante 3 | Sprint Planner        | github.com/usuario3 |
-| Estudiante 4 | Configuration Manager | github.com/usuario4 |
-| Estudiante 5 | QA Lead               | github.com/usuario5 |
-| Estudiante 6 | DevOps Engineer       | github.com/usuario6 |
-
----
-
 ## Tecnologías Utilizadas
 - **Frontend:** HTML / CSS / JS
 - **Backend:** Java – Spring Boot
