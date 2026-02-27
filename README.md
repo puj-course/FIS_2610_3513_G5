@@ -3,11 +3,17 @@
 ## Descripción
 StudyHub es una aplicación universitaria diseñada para la gestión integral de materias, notas y horarios. El objetivo es proporcionar a los estudiantes una herramienta centralizada para el seguimiento académico, facilitando la organización de sus responsabilidades y el monitoreo de su progreso en tiempo real.
 
-## Tecnologías Utilizadas
-- **Frontend:** HTML / CSS / JS
-- **Backend:** Java – Spring Boot
-- **Base de Datos:** PostgreSQL
-- **Control de versiones:** Git
+---
+
+## Equipo del Proyecto
+| Nombre        | Rol                   | GitHub / Perfil         |
+|--------------|-----------------------|--------------------------|
+| Sarah        | Scrum Master          | github.com/barrerosarah9 |
+| Valeria      | Product Owner         | github.com/valgomezzz    |
+| Manuel       | Sprint Planner        | github.com/Manuel-jmMo   |
+| Matias       | Configuration Manager | github.com/matiasssss10  |
+| Valeria      | QA Lead               | github.com/valgomezzz    |
+| Federico     | DevOps Engineer       | github.com/Fede-17       |
 
 ---
 
@@ -28,21 +34,6 @@ StudyHub es una aplicación universitaria diseñada para la gestión integral de
 
 ## Arquitectura y Diseño
 El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), donde una aplicación cliente consume servicios a través de una API central.
-
----
-
-
----
-
-## Equipo del Proyecto
-| Nombre        | Rol                   | GitHub / Perfil         |
-|--------------|-----------------------|--------------------------|
-| Sarah        | Scrum Master          | github.com/barrerosarah9 |
-| Valeria      | Product Owner         | github.com/valgomezzz    |
-| Manuel       | Sprint Planner        | github.com/Manuel-jmMo   |
-| Matias       | Configuration Manager | github.com/matiasssss10  |
-| Valeria      | QA Lead               | github.com/valgomezzz    |
-| Federico     | DevOps Engineer       | github.com/Fede-17       |
 
 ---
 
