@@ -45,6 +45,7 @@ El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), don
 
 ---
 
+<<<<<<< Updated upstream
 
 ---
 
@@ -138,13 +139,24 @@ cd FIS_2610_3513_G5
 
 ## Ejecución con Docker
 No se ha llegado a la implementación con Docker
+=======
+## Equipo de desarrollo y Contacto
+
+**Estudiante 1**  
+Estudiante de Ciencia de Datos, Pontificia Universidad Javeriana  
+📧 [est1.u@javeriana.edu.co](mailto:est1.u@javeriana.edu.co)
+
+**Estudiante 2**  
+Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana  
+📧 [est2@javeriana.edu.co](mailto:est2@javeriana.edu.co)
+>>>>>>> Stashed changes
 
 ---
 
 ## Contexto Académico
 - **Asignatura:** Fundamentos de Ingeniería de Software
 - **Docente:** Luis Gabriel Moreno Sandoval, PhD
-- **Contacto:** morenoluis@javeriana.edu.co
+- **Institución:** Pontificia Universidad Javeriana
 
 ---
 
