@@ -217,7 +217,7 @@
             font-size: 20px;
         }
 
-        /* FAB - Floating Action Button */
+        /*  Acción Boton Flotante */
         .fab-container {
             padding: 8px;
         }
@@ -303,7 +303,7 @@
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
-        /* Card Options Menu */
+        /* Opción de Cartas*/
         .card-menu {
             position: absolute;
             top: 16px;
@@ -389,7 +389,7 @@
             font-size: 18px;
         }
 
-        /* Card removal animation */
+        /*Animación de eliminacion de carta  */
         @keyframes cardFadeOut {
             to {
                 opacity: 0;
@@ -574,7 +574,7 @@
             font-weight: 500;
         }
 
-        /* Notifications */
+        /* Notificaciones */
         .notification-item {
             display: flex;
             gap: 12px;
@@ -621,7 +621,7 @@
             margin-top: 4px;
         }
 
-        /* Schedule Table */
+        /* Horario*/
         .schedule-container {
             position: relative;
         }
@@ -689,7 +689,7 @@
             white-space: nowrap;
         }
 
-        /* Calendar */
+        /* Calendario */
         .calendar-widget {
             background: var(--gray-50);
             border-radius: var(--radius-md);
@@ -781,7 +781,7 @@
             background: var(--blue-400);
         }
 
-        /* ========== ANIMATIONS ========== */
+        /* ========== Animaciones ========== */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -1038,7 +1038,7 @@
             font-size: 18px;
         }
 
-        /* Toast notification */
+        /* notificaciones Toast  */
         .toast {
             position: fixed;
             bottom: 32px;
@@ -1070,7 +1070,7 @@
             color: #4CAF50;
         }
 
-        /* ========== SCROLLBAR ========== */
+        /* ========== Barra Scroll ========== */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -1093,7 +1093,6 @@
 <body>
     <div class="app-container">
 
-        <!-- ===== HEADER ===== -->
         <header class="header">
             <div class="header-logo">
                 <span class="material-icons-round">school</span>
@@ -1101,7 +1100,7 @@
             </div>
         </header>
 
-        <!-- ===== LEFT SIDEBAR ===== -->
+
         <aside class="sidebar-left">
             <div>
                 <!-- Profile -->
@@ -1124,7 +1123,7 @@
                     </div>
                 </div>
 
-                <!-- Navigation -->
+                <!-- Navegacion -->
                 <nav class="sidebar-nav">
                     <div class="nav-item active">
                         <span class="material-icons-round">dashboard</span>
@@ -1149,7 +1148,7 @@
                 </nav>
             </div>
 
-            <!-- FAB Button -->
+            <!-- FAB Boton -->
             <div class="fab-container">
                 <button class="fab-button" id="fab-add">
                     <span class="material-icons-round">add</span>
@@ -1167,7 +1166,7 @@
                 </div>
             </div>
 
-            <!-- Subject Cards -->
+            <!-- Carta Materias -->
             <div class="subjects-grid">
                 <div class="subject-card">
                     <div class="card-menu">
@@ -1224,7 +1223,7 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
+            <!-- Acciones Rapidas -->
             <div class="quick-actions">
                 <div class="section-header">
                     <h2 class="section-title">Acciones Rápidas</h2>
@@ -1250,9 +1249,9 @@
             </div>
         </main>
 
-        <!-- ===== RIGHT SIDEBAR ===== -->
+    
         <aside class="sidebar-right">
-            <!-- Notifications Widget -->
+           
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1287,7 +1286,7 @@
                 </div>
             </div>
 
-            <!-- Schedule Widget -->
+   
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1381,7 +1380,7 @@
                 </div>
             </div>
 
-            <!-- Calendar Widget -->
+   
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1400,7 +1399,7 @@
                         </button>
                     </div>
                     <div class="calendar-grid">
-                        <!-- Day names -->
+                    
                         <div class="calendar-day-name">Lu</div>
                         <div class="calendar-day-name">Ma</div>
                         <div class="calendar-day-name">Mi</div>
@@ -1408,7 +1407,7 @@
                         <div class="calendar-day-name">Vi</div>
                         <div class="calendar-day-name">Sa</div>
                         <div class="calendar-day-name">Do</div>
-                        <!-- Week 1 -->
+                 
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
@@ -1416,7 +1415,7 @@
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day">1</div>
-                        <!-- Week 2 -->
+                     
                         <div class="calendar-day">2</div>
                         <div class="calendar-day">3</div>
                         <div class="calendar-day">4</div>
@@ -1424,7 +1423,7 @@
                         <div class="calendar-day has-event">6</div>
                         <div class="calendar-day">7</div>
                         <div class="calendar-day">8</div>
-                        <!-- Week 3 -->
+                     
                         <div class="calendar-day">9</div>
                         <div class="calendar-day">10</div>
                         <div class="calendar-day">11</div>
@@ -1432,7 +1431,7 @@
                         <div class="calendar-day today">13</div>
                         <div class="calendar-day">14</div>
                         <div class="calendar-day">15</div>
-                        <!-- Week 4 -->
+                        
                         <div class="calendar-day">16</div>
                         <div class="calendar-day">17</div>
                         <div class="calendar-day">18</div>
@@ -1440,7 +1439,7 @@
                         <div class="calendar-day">20</div>
                         <div class="calendar-day">21</div>
                         <div class="calendar-day">22</div>
-                        <!-- Week 5 -->
+                 
                         <div class="calendar-day">23</div>
                         <div class="calendar-day">24</div>
                         <div class="calendar-day">25</div>
@@ -1534,14 +1533,13 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
         <span id="toast-text">Materia agregada exitosamente</span>
     </div>
 
     <script>
-        // ===== DOM ELEMENTS =====
+   
         const modalOverlay = document.getElementById('modal-overlay');
         const modalClose = document.getElementById('modal-close');
         const btnCancel = document.getElementById('btn-cancel');
@@ -1550,7 +1548,7 @@
         const subjectsGrid = document.querySelector('.subjects-grid');
         const toast = document.getElementById('toast');
 
-        // Also bind the "Agregar Materia" quick action chip
+     
         const quickActionChips = document.querySelectorAll('.action-chip');
         quickActionChips.forEach(chip => {
             if (chip.textContent.trim().includes('Agregar Materia')) {
@@ -1558,7 +1556,7 @@
             }
         });
 
-        // ===== COLOR PALETTE FOR NEW CARDS =====
+
         const cardColors = [
             { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
             { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
@@ -1573,11 +1571,11 @@
 
         let colorIndex = 0;
 
-        // ===== MODAL OPEN / CLOSE =====
+   
         function openModal() {
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Focus first input after animation
+            
             setTimeout(() => document.getElementById('subject-name').focus(), 350);
         }
 
@@ -1592,23 +1590,23 @@
         modalClose.addEventListener('click', closeModal);
         btnCancel.addEventListener('click', closeModal);
 
-        // Close on backdrop click
+  
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) closeModal();
         });
 
-        // Close on Escape key
+     
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
         });
 
-        // ===== FORM VALIDATION =====
+    
         function clearErrors() {
             document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
             document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
         }
 
-        // Remove error styling on input
+       
         document.querySelectorAll('.form-input, .form-select').forEach(input => {
             input.addEventListener('input', () => {
                 input.classList.remove('error');
@@ -1640,7 +1638,6 @@
                 }
             });
 
-            // Validate credits is a positive number
             const credits = document.getElementById('subject-credits');
             if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
                 credits.classList.add('error');
@@ -1651,7 +1648,7 @@
             return isValid;
         }
 
-        // ===== CREATE SUBJECT CARD =====
+
         function createSubjectCard(data) {
             const color = cardColors[colorIndex % cardColors.length];
             const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
@@ -1695,13 +1692,13 @@
 
             subjectsGrid.appendChild(card);
 
-            // Trigger animation
+     
             requestAnimationFrame(() => {
                 card.style.animation = 'fadeInUp 0.5s ease forwards';
             });
         }
 
-        // ===== SHOW TOAST =====
+
         function showToast(message) {
             const toastText = document.getElementById('toast-text');
             toastText.textContent = message;
@@ -1709,7 +1706,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ===== FORM SUBMIT =====
+    
         subjectForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -1733,14 +1730,14 @@
             const currentCount = subjectsGrid.children.length;
             subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
 
-            // Update stat in sidebar
+          
             const statValues = document.querySelectorAll('.stat-value');
             if (statValues.length > 0) statValues[0].textContent = currentCount;
         });
 
-        // ===== CARD OPTIONS MENU =====
+      
         function toggleCardMenu(btn) {
-            // Close all other open dropdowns first
+    
             document.querySelectorAll('.card-dropdown.open').forEach(d => {
                 if (d !== btn.nextElementSibling) d.classList.remove('open');
             });
@@ -1748,19 +1745,19 @@
             dropdown.classList.toggle('open');
         }
 
-        // Close dropdowns when clicking outside
+       
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.card-menu')) {
                 document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
             }
         });
 
-        // ===== DELETE CARD =====
+     
         function deleteCard(btn) {
             const card = btn.closest('.subject-card');
             const name = card.querySelector('.subject-name')?.textContent || 'Materia';
 
-            // Animate out
+          
             card.classList.add('removing');
 
             card.addEventListener('animationend', () => {
@@ -1770,7 +1767,6 @@
             });
         }
 
-        // ===== UPDATE COUNTS =====
         function updateSubjectCount() {
             const currentCount = subjectsGrid.children.length;
             const subtitle = document.querySelector('.section-subtitle');
