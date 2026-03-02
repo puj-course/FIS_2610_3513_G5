@@ -116,15 +116,12 @@ cd FIS_2610_3513_G5
 ## Ejecución con Docker
 No se ha llegado a la implementación con Docker
 
----
-
 ## Contexto Académico
 - **Asignatura:** Fundamentos de Ingeniería de Software
 - **Docente:** Luis Gabriel Moreno Sandoval, PhD
-- **Contacto:** morenoluis@javeriana.edu.co
+- **Institución:** Pontificia Universidad Javeriana
 
 ---
-
 
 ## Equipo de desarrollo y Contacto
 **Valeria Gómez**  
