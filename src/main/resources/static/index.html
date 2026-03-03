@@ -39,6 +39,7 @@
             --gray-500: #868E96;
             --gray-600: #495057;
             --gray-700: #343A40;
+            --error-color: #1565C0;
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -966,8 +967,8 @@
 
         .form-input.error,
         .form-select.error {
-            border-color: #E53935;
-            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
         }
 
         .form-row {
@@ -978,7 +979,7 @@
 
         .form-error {
             font-size: 12px;
-            color: #E53935;
+            color: var(--error-color);
             margin-top: 4px;
             display: none;
         }
