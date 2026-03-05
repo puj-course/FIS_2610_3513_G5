@@ -1,0 +1,31 @@
+# ===== Java / Maven =====
+target/
+*.jar
+*.war
+*.class
+
+# ===== IDE =====
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+
+# ===== Maven =====
+mvnw
+mvnw.cmd
+.mvn/
+
+# ===== H2 Database files =====
+data/
+*.mv.db
+*.trace.db
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Logs =====
+*.log

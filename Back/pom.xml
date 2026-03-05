@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    =====================================================================
+    POM.XML — Project Object Model (Modelo de Objeto del Proyecto)
+    =====================================================================
+    
+    Este archivo es el "corazón" de un proyecto Maven. Aquí se define:
+    1. La información del proyecto (nombre, versión, descripción)
+    2. Las DEPENDENCIAS (librerías externas que necesita tu proyecto)
+    3. Los PLUGINS de compilación (herramientas para construir el proyecto)
+    
+    Maven lee este archivo y automáticamente:
+    - Descarga las librerías que necesitas desde Internet
+    - Compila tu código Java
+    - Empaqueta todo en un archivo .jar ejecutable
+    
+    Para correr el proyecto: mvn spring-boot:run
+    =====================================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <!--
+        PARENT: Hereda la configuración base de Spring Boot.
+        Esto nos da todas las versiones compatibles de las librerías
+        para que no tengamos que buscarlas manualmente.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.2</version>
+        <relativePath/> <!-- Buscar el parent en el repositorio de Maven -->
+    </parent>
+    
+    <!--
+        INFORMACIÓN DEL PROYECTO
+        - groupId: Identificador de la organización (como un "paquete" de Java)
+        - artifactId: Nombre del proyecto
+        - version: Versión actual (SNAPSHOT = en desarrollo)
+    -->
+    <groupId>com.studyhub</groupId>
+    <artifactId>studyhub</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>studyhub</name>
+    <description>StudyHub Backend API</description>
+    
+    <properties>
+        <!-- Versión de Java que usamos para compilar -->
+        <java.version>17</java.version>
+    </properties>
+    
+    <!--
+        =====================================================================
+        DEPENDENCIAS — Las librerías que usa nuestro proyecto
+        =====================================================================
+        Cada <dependency> es una librería externa que Maven descarga
+        automáticamente desde Internet la primera vez que corres el proyecto.
+    -->
+    <dependencies>
+        <!--
+            SPRING BOOT STARTER DATA JPA
+            ¿Qué hace? Nos permite conectarnos a bases de datos y hacer
+            operaciones CRUD (Crear, Leer, Actualizar, Eliminar) de forma
+            sencilla usando anotaciones como @Entity, @Repository, etc.
+            Sin esto, tendríamos que escribir SQL manualmente.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <!--
+            SPRING BOOT STARTER WEB
+            ¿Qué hace? Nos permite crear APIs REST (endpoints HTTP).
+            Incluye un servidor Tomcat embebido que corre en el puerto 8080.
+            Gracias a esto podemos usar @RestController, @GetMapping, @PostMapping, etc.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            H2 DATABASE
+            ¿Qué hace? Es una base de datos ligera que se "embebe" dentro
+            de nuestra aplicación Java. No necesitas instalar MySQL ni nada.
+            Los datos se guardan en un archivo local (./data/studyhub_db).
+            
+            scope=runtime: Solo se necesita cuando el programa corre,
+            no cuando se compila.
+        -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            DRIVERS DE BASE DE DATOS PARA PRODUCCIÓN
+            Cuando el proyecto esté listo para producción, se descomenta
+            el driver de la BD que se vaya a usar (MySQL o PostgreSQL)
+            y se comenta H2.
+        -->
+        <!--
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        -->
+        <!--
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        -->
+
+        <!--
+            LOMBOK
+            ¿Qué hace? Reduce el código repetitivo (boilerplate).
+            Con anotaciones como @Getter, @Setter, @Data genera
+            automáticamente getters, setters, constructores, etc.
+            Por ahora no lo usamos, pero está disponible.
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <!--
+            SPRING BOOT STARTER TEST
+            ¿Qué hace? Incluye herramientas para hacer pruebas unitarias
+            (JUnit, Mockito, etc.). scope=test significa que solo se usa
+            cuando corres los tests, no en producción.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!--
+        BUILD — Configuración de compilación
+        Aquí se definen los plugins que Maven usa para construir el proyecto.
+    -->
+    <build>
+        <plugins>
+            <!--
+                SPRING BOOT MAVEN PLUGIN
+                Permite empaquetar la app como un .jar ejecutable
+                y correrla con "mvn spring-boot:run".
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <!-- Excluir Lombok del .jar final (solo se usa en compilación) -->
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
