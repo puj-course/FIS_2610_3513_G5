@@ -149,5 +149,4 @@ Fase de análisis y diseño.
 Sin implementación funcional definitiva hasta el momento.
 
 ---
-
-- Federico: https://github.com/federico
+"- Federico" 
