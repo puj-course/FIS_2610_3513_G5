@@ -1,0 +1,39 @@
+# Gitignore para Proyecto Java/Spring Boot
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.restore
+release.properties
+dependency-reduced-pom.xml
+build_number.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.settings/
+.classpath
+.project
+.factorypath
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# Binaries
+*.class
+*.jar
+*.war
+*.ear
+
+# Temp
+temp/
+*.tmp
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
