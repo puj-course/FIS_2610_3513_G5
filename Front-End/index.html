@@ -8,8 +8,8 @@
     <meta name="description"
         content="StudyHub - Tu plataforma universitaria todo en uno. Gestiona materias, horarios, calificaciones y más.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+        rel="stylesheet" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" crossorigin="anonymous">
     <style>
         /* ========== RESET & BASE ========== */
         *,
@@ -1671,7 +1671,7 @@
         // data.id contiene el ID de la base de datos (para poder eliminarla).
         function createSubjectCard(data) {
             const color = cardColors[colorIndex % cardColors.length];
-            const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
+            const icon = cardIcons[colorIndex % cardIcons.length];
             colorIndex++;
 
             const card = document.createElement('div');
