@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyHub - Plataforma Universitaria</title>
-    <meta name="description" content="StudyHub - Tu plataforma universitaria todo en uno. Gestiona materias, horarios, calificaciones y más.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="StudyHub - Tu plataforma universitaria todo en uno. Gestiona materias, horarios, calificaciones y más.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
         /* ========== RESET & BASE ========== */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -34,9 +39,9 @@
             --gray-500: #868E96;
             --gray-600: #495057;
             --gray-700: #343A40;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -285,7 +290,7 @@
             border: 1px solid var(--gray-200);
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .subject-card::before {
@@ -295,6 +300,106 @@
             left: 0;
             right: 0;
             height: 4px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        /* Card Options Menu */
+        .card-menu {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+
+        .card-menu-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--gray-400);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .card-menu-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .card-menu-btn .material-icons-round {
+            font-size: 20px;
+        }
+
+        .card-dropdown {
+            position: absolute;
+            top: 36px;
+            right: 0;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--gray-200);
+            min-width: 160px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.95);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .card-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .card-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-600);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.15s ease;
+        }
+
+        .card-dropdown-item:hover {
+            background: var(--gray-50);
+        }
+
+        .card-dropdown-item.delete {
+            color: #E53935;
+        }
+
+        .card-dropdown-item.delete:hover {
+            background: #FFF5F5;
+        }
+
+        .card-dropdown-item .material-icons-round {
+            font-size: 18px;
+        }
+
+        /* Card removal animation */
+        @keyframes cardFadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.9) translateY(-10px);
+            }
+        }
+
+        .subject-card.removing {
+            animation: cardFadeOut 0.35s ease forwards;
+            pointer-events: none;
         }
 
         .subject-card:nth-child(1)::before {
@@ -682,6 +787,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -708,6 +814,262 @@
             animation-delay: 0.2s;
         }
 
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 71, 161, 0.25);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            width: 560px;
+            max-width: 92vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+            transform: translateY(30px) scale(0.95);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            padding: 28px 32px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--blue-50), var(--blue-100));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue-600);
+        }
+
+        .modal-header-icon .material-icons-round {
+            font-size: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--gray-100);
+            color: var(--gray-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .modal-close .material-icons-round {
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 24px 32px 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+            letter-spacing: 0.01em;
+        }
+
+        .form-label .required {
+            color: #E53935;
+            margin-left: 2px;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-700);
+            background: var(--gray-50);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            border-color: var(--blue-400);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+        }
+
+        .form-input.error,
+        .form-select.error {
+            border-color: #E53935;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: #E53935;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        .modal-footer {
+            padding: 0 32px 28px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            padding: 12px 24px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            color: var(--gray-600);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+        }
+
+        .btn-save {
+            padding: 12px 28px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+        }
+
+        .btn-save .material-icons-round {
+            font-size: 18px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gray-700);
+            color: var(--white);
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast .material-icons-round {
+            font-size: 20px;
+            color: #4CAF50;
+        }
+
         /* ========== SCROLLBAR ========== */
         ::-webkit-scrollbar {
             width: 6px;
@@ -727,6 +1089,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-container">
 
@@ -807,6 +1170,21 @@
             <!-- Subject Cards -->
             <div class="subjects-grid">
                 <div class="subject-card">
+                    <div class="card-menu">
+                        <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                            <span class="material-icons-round">more_vert</span>
+                        </button>
+                        <div class="card-dropdown">
+                            <button class="card-dropdown-item" onclick="editCard(this)">
+                                <span class="material-icons-round">edit</span>
+                                Editar
+                            </button>
+                            <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                                <span class="material-icons-round">delete_outline</span>
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
                     <div class="subject-icon">
                         <span class="material-icons-round">code</span>
                     </div>
@@ -823,6 +1201,21 @@
                 </div>
 
                 <div class="subject-card">
+                    <div class="card-menu">
+                        <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                            <span class="material-icons-round">more_vert</span>
+                        </button>
+                        <div class="card-dropdown">
+                            <button class="card-dropdown-item" onclick="editCard(this)">
+                                <span class="material-icons-round">edit</span>
+                                Editar
+                            </button>
+                            <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                                <span class="material-icons-round">delete_outline</span>
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
                     <div class="subject-icon">
                         <span class="material-icons-round">functions</span>
                     </div>
@@ -879,21 +1272,24 @@
                 <div class="notification-item">
                     <div class="notification-dot blue"></div>
                     <div>
-                        <div class="notification-text">Nueva tarea publicada en <strong>Fundamentos de Ing. de Software</strong></div>
+                        <div class="notification-text">Nueva tarea publicada en <strong>Fundamentos de Ing. de
+                                Software</strong></div>
                         <div class="notification-time">Hace 2 horas</div>
                     </div>
                 </div>
                 <div class="notification-item">
                     <div class="notification-dot blue"></div>
                     <div>
-                        <div class="notification-text">Recordatorio: Parcial de <strong>Cálculo Diferencial</strong> el viernes</div>
+                        <div class="notification-text">Recordatorio: Parcial de <strong>Cálculo Diferencial</strong> el
+                            viernes</div>
                         <div class="notification-time">Hace 5 horas</div>
                     </div>
                 </div>
                 <div class="notification-item">
                     <div class="notification-dot light"></div>
                     <div>
-                        <div class="notification-text">Tu reseña de <strong>Prof. Carlos Ramírez</strong> fue publicada</div>
+                        <div class="notification-text">Tu reseña de <strong>Prof. Carlos Ramírez</strong> fue publicada
+                        </div>
                         <div class="notification-time">Ayer</div>
                     </div>
                 </div>
@@ -1066,5 +1462,418 @@
         </aside>
 
     </div>
+
+    <!-- ===== MODAL: AGREGAR MATERIA ===== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <span class="material-icons-round">library_add</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Agregar Nueva Materia</div>
+                        <div class="modal-subtitle">Completa todos los campos para registrar la asignatura</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="subject-form" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="subject-name">Nombre de la Asignatura <span
+                                class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-name" placeholder="Ej: Cálculo Diferencial"
+                            required>
+                        <div class="form-error" id="error-name">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="subject-code">Código de la Asignatura <span
+                                    class="required">*</span></label>
+                            <input class="form-input" type="text" id="subject-code" placeholder="Ej: MATE-1203"
+                                required>
+                            <div class="form-error" id="error-code">Este campo es obligatorio</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="subject-credits">Créditos <span
+                                    class="required">*</span></label>
+                            <input class="form-input" type="number" id="subject-credits" placeholder="Ej: 3" min="1"
+                                max="10" required>
+                            <div class="form-error" id="error-credits">Ingresa un número válido</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject-professor">Profesor <span
+                                class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-professor" placeholder="Ej: Prof. María López"
+                            required>
+                        <div class="form-error" id="error-professor">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject-schedule">Horario <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-schedule"
+                            placeholder="Ej: Lun y Mié 10:00 - 12:00" required>
+                        <div class="form-error" id="error-schedule">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject-semester">Periodo / Semestre <span
+                                class="required">*</span></label>
+                        <select class="form-select" id="subject-semester" required>
+                            <option value="" disabled selected>Selecciona un periodo</option>
+                            <option value="2025-1">2025-1</option>
+                            <option value="2025-2">2025-2</option>
+                            <option value="2026-1">2026-1</option>
+                            <option value="2026-2">2026-2</option>
+                        </select>
+                        <div class="form-error" id="error-semester">Selecciona un periodo</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">
+                        <span class="material-icons-round">save</span>
+                        Guardar Materia
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="material-icons-round">check_circle</span>
+        <span id="toast-text">Materia agregada exitosamente</span>
+    </div>
+
+    <script>
+        // ===== DOM ELEMENTS =====
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalClose = document.getElementById('modal-close');
+        const btnCancel = document.getElementById('btn-cancel');
+        const fabAdd = document.getElementById('fab-add');
+        const subjectForm = document.getElementById('subject-form');
+        const subjectsGrid = document.querySelector('.subjects-grid');
+        const toast = document.getElementById('toast');
+
+        // Also bind the "Agregar Materia" quick action chip
+        const quickActionChips = document.querySelectorAll('.action-chip');
+        quickActionChips.forEach(chip => {
+            if (chip.textContent.trim().includes('Agregar Materia')) {
+                chip.addEventListener('click', openModal);
+            }
+        });
+
+        // ===== COLOR PALETTE FOR NEW CARDS =====
+        const cardColors = [
+            { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
+            { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
+            { gradient: 'linear-gradient(90deg, #FF7043, #F4511E)', bg: '#FBE9E7', text: '#D84315', icon: '#FF7043' },
+            { gradient: 'linear-gradient(90deg, #EC407A, #D81B60)', bg: '#FCE4EC', text: '#AD1457', icon: '#EC407A' },
+            { gradient: 'linear-gradient(90deg, #FFA726, #FB8C00)', bg: '#FFF3E0', text: '#E65100', icon: '#FFA726' },
+            { gradient: 'linear-gradient(90deg, #42A5F5, #1E88E5)', bg: '#E3F2FD', text: '#1565C0', icon: '#42A5F5' },
+            { gradient: 'linear-gradient(90deg, #66BB6A, #43A047)', bg: '#E8F5E9', text: '#2E7D32', icon: '#66BB6A' },
+        ];
+
+        const cardIcons = ['science', 'psychology', 'engineering', 'architecture', 'biotech', 'hub', 'auto_stories', 'analytics', 'memory', 'data_object', 'terminal', 'dns'];
+
+        let colorIndex = 0;
+        let editingCard = null; // Track which card is being edited
+
+        // ===== MODAL OPEN / CLOSE =====
+        function openModal(isEdit = false) {
+            const modalTitle = document.querySelector('.modal-title');
+            const modalSubtitle = document.querySelector('.modal-subtitle');
+            const saveBtn = subjectForm.querySelector('.btn-save');
+
+            if (isEdit) {
+                modalTitle.textContent = 'Editar Materia';
+                modalSubtitle.textContent = 'Modifica los campos que desees actualizar';
+                saveBtn.innerHTML = '<span class="material-icons-round">save</span> Guardar Cambios';
+            } else {
+                modalTitle.textContent = 'Agregar Nueva Materia';
+                modalSubtitle.textContent = 'Completa todos los campos para registrar la asignatura';
+                saveBtn.innerHTML = '<span class="material-icons-round">save</span> Guardar Materia';
+            }
+
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Focus first input after animation
+            setTimeout(() => document.getElementById('subject-name').focus(), 350);
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            subjectForm.reset();
+            clearErrors();
+            editingCard = null; // Reset edit mode
+        }
+
+        fabAdd.addEventListener('click', openModal);
+        modalClose.addEventListener('click', closeModal);
+        btnCancel.addEventListener('click', closeModal);
+
+        // Close on backdrop click
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+        });
+
+        // ===== FORM VALIDATION =====
+        function clearErrors() {
+            document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
+        }
+
+        // Remove error styling on input
+        document.querySelectorAll('.form-input, .form-select').forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('error');
+                const errorEl = input.parentElement.querySelector('.form-error');
+                if (errorEl) errorEl.classList.remove('visible');
+            });
+        });
+
+        function validateForm() {
+            clearErrors();
+            let isValid = true;
+
+            const fields = [
+                { id: 'subject-name', errorId: 'error-name' },
+                { id: 'subject-code', errorId: 'error-code' },
+                { id: 'subject-credits', errorId: 'error-credits' },
+                { id: 'subject-professor', errorId: 'error-professor' },
+                { id: 'subject-schedule', errorId: 'error-schedule' },
+                { id: 'subject-semester', errorId: 'error-semester' },
+            ];
+
+            fields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const error = document.getElementById(field.errorId);
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    error.classList.add('visible');
+                    isValid = false;
+                }
+            });
+
+            // Validate credits is a positive number
+            const credits = document.getElementById('subject-credits');
+            if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
+                credits.classList.add('error');
+                document.getElementById('error-credits').classList.add('visible');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // ===== CREATE SUBJECT CARD =====
+        function createSubjectCard(data) {
+            const color = cardColors[colorIndex % cardColors.length];
+            const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
+            colorIndex++;
+
+            const card = document.createElement('div');
+            card.className = 'subject-card';
+            card.style.animationDelay = '0s';
+
+            card.innerHTML = `
+                <div class="card-menu">
+                    <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                        <span class="material-icons-round">more_vert</span>
+                    </button>
+                    <div class="card-dropdown">
+                        <button class="card-dropdown-item" onclick="editCard(this)">
+                            <span class="material-icons-round">edit</span>
+                            Editar
+                        </button>
+                        <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                            <span class="material-icons-round">delete_outline</span>
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:${getComputedStyle(document.documentElement).getPropertyValue('--radius-lg')} ${getComputedStyle(document.documentElement).getPropertyValue('--radius-lg')} 0 0;"></div>
+                <div class="subject-icon" style="background:${color.bg};color:${color.text}">
+                    <span class="material-icons-round">${icon}</span>
+                </div>
+                <div class="subject-name">${data.name}</div>
+                <div class="subject-id">ID: ${data.code} · ${data.credits} créditos · ${data.semester}</div>
+                <div class="subject-professor">
+                    <span class="material-icons-round">person</span>
+                    ${data.professor}
+                </div>
+                <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
+                    <span class="material-icons-round" style="font-size:16px">schedule</span>
+                    ${data.schedule}
+                </div>
+                <div class="subject-progress">
+                    <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
+                </div>
+                <div class="subject-progress-label">0% del curso completado</div>
+            `;
+
+            subjectsGrid.appendChild(card);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                card.style.animation = 'fadeInUp 0.5s ease forwards';
+            });
+        }
+
+        // ===== SHOW TOAST =====
+        function showToast(message) {
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ===== EDIT CARD =====
+        function editCard(btn) {
+            const card = btn.closest('.subject-card');
+            editingCard = card;
+
+            // Close dropdown
+            const dropdown = btn.closest('.card-dropdown');
+            if (dropdown) dropdown.classList.remove('open');
+
+            // Extract data from the card
+            const name = card.querySelector('.subject-name')?.textContent || '';
+            const idText = card.querySelector('.subject-id')?.textContent || '';
+            const professor = card.querySelector('.subject-professor')?.textContent?.trim() || '';
+
+            // Parse ID text: "ID: ISIS-2603 · Sección 01" or "ID: MATE-1203 · 3 créditos · 2026-1"
+            const idParts = idText.replace('ID:', '').split('·').map(s => s.trim());
+            const code = idParts[0] || '';
+
+            // Try to extract credits and semester from the ID parts
+            let credits = '';
+            let semester = '';
+            idParts.forEach(part => {
+                if (part.includes('créditos')) credits = part.replace('créditos', '').trim();
+                if (part.match(/\d{4}-\d/)) semester = part.trim();
+            });
+
+            // Try to extract schedule from the schedule line
+            const scheduleEl = card.querySelector('[style*="schedule"]') ||
+                Array.from(card.querySelectorAll('div')).find(d => {
+                    const icon = d.querySelector('.material-icons-round');
+                    return icon && icon.textContent === 'schedule';
+                });
+            const schedule = scheduleEl ? scheduleEl.textContent.replace('schedule', '').trim() : '';
+
+            // Pre-fill the form
+            document.getElementById('subject-name').value = name;
+            document.getElementById('subject-code').value = code;
+            document.getElementById('subject-credits').value = credits;
+            document.getElementById('subject-professor').value = professor;
+            document.getElementById('subject-schedule').value = schedule;
+            if (semester) document.getElementById('subject-semester').value = semester;
+
+            openModal(true);
+        }
+
+        // ===== FORM SUBMIT =====
+        subjectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            const data = {
+                name: document.getElementById('subject-name').value.trim(),
+                code: document.getElementById('subject-code').value.trim().toUpperCase(),
+                credits: document.getElementById('subject-credits').value.trim(),
+                professor: document.getElementById('subject-professor').value.trim(),
+                schedule: document.getElementById('subject-schedule').value.trim(),
+                semester: document.getElementById('subject-semester').value,
+            };
+
+            if (editingCard) {
+                // === EDIT MODE: Update existing card ===
+                editingCard.querySelector('.subject-name').textContent = data.name;
+                editingCard.querySelector('.subject-id').textContent = `ID: ${data.code} · ${data.credits} créditos · ${data.semester}`;
+
+                const profEl = editingCard.querySelector('.subject-professor');
+                profEl.innerHTML = `<span class="material-icons-round">person</span> ${data.professor}`;
+
+                // Update schedule if it exists
+                const scheduleEl = Array.from(editingCard.querySelectorAll('div')).find(d => {
+                    const icon = d.querySelector('.material-icons-round');
+                    return icon && icon.textContent === 'schedule';
+                });
+                if (scheduleEl) {
+                    scheduleEl.innerHTML = `<span class="material-icons-round" style="font-size:16px">schedule</span> ${data.schedule}`;
+                }
+
+                closeModal();
+                showToast(`"${data.name}" actualizada exitosamente`);
+            } else {
+                // === ADD MODE: Create new card ===
+                createSubjectCard(data);
+                closeModal();
+                showToast(`"${data.name}" agregada exitosamente`);
+
+                // Update subject count in subtitle
+                const subtitle = document.querySelector('.section-subtitle');
+                const currentCount = subjectsGrid.children.length;
+                subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
+
+                // Update stat in sidebar
+                const statValues = document.querySelectorAll('.stat-value');
+                if (statValues.length > 0) statValues[0].textContent = currentCount;
+            }
+        });
+
+        // ===== CARD OPTIONS MENU =====
+        function toggleCardMenu(btn) {
+            // Close all other open dropdowns first
+            document.querySelectorAll('.card-dropdown.open').forEach(d => {
+                if (d !== btn.nextElementSibling) d.classList.remove('open');
+            });
+            const dropdown = btn.nextElementSibling;
+            dropdown.classList.toggle('open');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.card-menu')) {
+                document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+        // ===== DELETE CARD =====
+        function deleteCard(btn) {
+            const card = btn.closest('.subject-card');
+            const name = card.querySelector('.subject-name')?.textContent || 'Materia';
+
+            // Animate out
+            card.classList.add('removing');
+
+            card.addEventListener('animationend', () => {
+                card.remove();
+                updateSubjectCount();
+                showToast(`"${name}" eliminada`);
+            });
+        }
+
+        // ===== UPDATE COUNTS =====
+        function updateSubjectCount() {
+            const currentCount = subjectsGrid.children.length;
+            const subtitle = document.querySelector('.section-subtitle');
+            subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
+            const statValues = document.querySelectorAll('.stat-value');
+            if (statValues.length > 0) statValues[0].textContent = currentCount;
+        }
+    </script>
 </body>
+
 </html>
