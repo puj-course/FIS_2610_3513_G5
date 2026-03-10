@@ -1,12 +1,8 @@
 package com.studyhub.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "tareas")
@@ -16,21 +12,35 @@ public class Tarea {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String titulo;
+
+    @ManyToOne
+    @JoinColumn(name = "asignatura_id", nullable = false)
+    private Asignatura asignatura;
+
+    @Column(nullable = false)
+    private LocalDate fechaEntrega;
+
+    @Column(nullable = false)
+    private LocalTime horaEntrega;
+
+    @Column(nullable = true)
     private String descripcion;
-    private LocalDateTime recordatorio;
-    private LocalDate fechaVencimiento;
+
+    @Column(nullable = false)
     private boolean estado;
 
     public Tarea() {
     }
 
-    public Tarea(String titulo, String descripcion, LocalDateTime recordatorio,
-                 LocalDate fechaVencimiento, boolean estado) {
+    public Tarea(String titulo, Asignatura asignatura, LocalDate fechaEntrega,
+                 LocalTime horaEntrega, String descripcion, boolean estado) {
         this.titulo = titulo;
+        this.asignatura = asignatura;
+        this.fechaEntrega = fechaEntrega;
+        this.horaEntrega = horaEntrega;
         this.descripcion = descripcion;
-        this.recordatorio = recordatorio;
-        this.fechaVencimiento = fechaVencimiento;
         this.estado = estado;
     }
 
@@ -40,14 +50,17 @@ public class Tarea {
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
 
+    public Asignatura getAsignatura() { return asignatura; }
+    public void setAsignatura(Asignatura asignatura) { this.asignatura = asignatura; }
+
+    public LocalDate getFechaEntrega() { return fechaEntrega; }
+    public void setFechaEntrega(LocalDate fechaEntrega) { this.fechaEntrega = fechaEntrega; }
+
+    public LocalTime getHoraEntrega() { return horaEntrega; }
+    public void setHoraEntrega(LocalTime horaEntrega) { this.horaEntrega = horaEntrega; }
+
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-
-    public LocalDateTime getRecordatorio() { return recordatorio; }
-    public void setRecordatorio(LocalDateTime recordatorio) { this.recordatorio = recordatorio; }
-
-    public LocalDate getFechaVencimiento() { return fechaVencimiento; }
-    public void setFechaVencimiento(LocalDate fechaVencimiento) { this.fechaVencimiento = fechaVencimiento; }
 
     public boolean isEstado() { return estado; }
     public void setEstado(boolean estado) { this.estado = estado; }
@@ -57,9 +70,10 @@ public class Tarea {
         return "Tarea{" +
                 "id=" + id +
                 ", titulo='" + titulo + '\'' +
+                ", asignatura=" + (asignatura != null ? asignatura.getNombre() : "null") +
+                ", fechaEntrega=" + fechaEntrega +
+                ", horaEntrega=" + horaEntrega +
                 ", descripcion='" + descripcion + '\'' +
-                ", recordatorio=" + recordatorio +
-                ", fechaVencimiento=" + fechaVencimiento +
                 ", estado=" + estado +
                 '}';
     }
