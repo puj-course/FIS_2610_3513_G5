@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - Plataforma Universitaria</title>
+    <meta name="description"
+        content="StudyHub - Tu plataforma universitaria todo en uno. Gestiona materias, horarios, calificaciones y más.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        /* ========== RESET & BASE ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --blue-50: #E3F2FD;
+            --blue-100: #BBDEFB;
+            --blue-200: #90CAF9;
+            --blue-300: #64B5F6;
+            --blue-400: #42A5F5;
+            --blue-500: #1E88E5;
+            --blue-600: #1565C0;
+            --blue-700: #0D47A1;
+            --blue-800: #0A3A7E;
+            --white: #FFFFFF;
+            --gray-50: #FAFBFC;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-400: #ADB5BD;
+            --gray-500: #868E96;
+            --gray-600: #495057;
+            --gray-700: #343A40;
+            --error-color: #1565C0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-700);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== MAIN LAYOUT ========== */
+        .app-container {
+            display: grid;
+            grid-template-columns: 240px 1fr 320px;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+            gap: 0;
+        }
+
+        /* ========== HEADER / TOP BAR ========== */
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 50%, var(--blue-400) 100%);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 2px 12px rgba(21, 101, 192, 0.3);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo .material-icons-round {
+            font-size: 32px;
+            color: var(--white);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 span {
+            font-weight: 300;
+            opacity: 0.85;
+        }
+
+        /* ========== LEFT SIDEBAR ========== */
+        .sidebar-left {
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: calc(100vh - 64px);
+        }
+
+        .profile-section {
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue-400), var(--blue-600));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 4px 16px rgba(30, 136, 229, 0.3);
+            position: relative;
+        }
+
+        .profile-avatar .material-icons-round {
+            font-size: 48px;
+            color: var(--white);
+        }
+
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 14px;
+            height: 14px;
+            background: #4CAF50;
+            border-radius: 50%;
+            border: 2.5px solid var(--white);
+        }
+
+        .profile-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .profile-id {
+            font-size: 13px;
+            color: var(--gray-500);
+            font-weight: 400;
+            background: var(--gray-100);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .profile-stats {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--blue-600);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            margin-top: 32px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .nav-item.active {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .nav-item .material-icons-round {
+            font-size: 20px;
+        }
+
+        /*  Acción Boton Flotante */
+        .fab-container {
+            padding: 8px;
+        }
+
+        .fab-button {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
+        }
+
+        .fab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+        }
+
+        .fab-button .material-icons-round {
+            font-size: 20px;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            padding: 28px 32px;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        /* Subject Cards */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .subject-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        /* Opción de Cartas*/
+        .card-menu {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+
+        .card-menu-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--gray-400);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .card-menu-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .card-menu-btn .material-icons-round {
+            font-size: 20px;
+        }
+
+        .card-dropdown {
+            position: absolute;
+            top: 36px;
+            right: 0;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--gray-200);
+            min-width: 160px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.95);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .card-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .card-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-600);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.15s ease;
+        }
+
+        .card-dropdown-item:hover {
+            background: var(--gray-50);
+        }
+
+        .card-dropdown-item.delete {
+            color: #E53935;
+        }
+
+        .card-dropdown-item.delete:hover {
+            background: #FFF5F5;
+        }
+
+        .card-dropdown-item .material-icons-round {
+            font-size: 18px;
+        }
+
+        /*Animación de eliminacion de carta  */
+        @keyframes cardFadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.9) translateY(-10px);
+            }
+        }
+
+        .subject-card.removing {
+            animation: cardFadeOut 0.35s ease forwards;
+            pointer-events: none;
+        }
+
+        .subject-card:nth-child(1)::before {
+            background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+        }
+
+        .subject-card:nth-child(2)::before {
+            background: linear-gradient(90deg, #42A5F5, #1E88E5);
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .subject-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .subject-card:nth-child(1) .subject-icon {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .subject-card:nth-child(2) .subject-icon {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .subject-icon .material-icons-round {
+            font-size: 24px;
+        }
+
+        .subject-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .subject-id {
+            font-size: 12px;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .subject-professor {
+            font-size: 13px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .subject-professor .material-icons-round {
+            font-size: 16px;
+        }
+
+        .subject-progress {
+            width: 100%;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .subject-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .subject-card:nth-child(1) .subject-progress-bar {
+            background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+            width: 65%;
+        }
+
+        .subject-card:nth-child(2) .subject-progress-bar {
+            background: linear-gradient(90deg, #42A5F5, #1E88E5);
+            width: 40%;
+        }
+
+        .subject-progress-label {
+            font-size: 11px;
+            color: var(--gray-400);
+            text-align: right;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: 32px;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-chip {
+            padding: 10px 20px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .action-chip:hover {
+            background: var(--blue-50);
+            border-color: var(--blue-200);
+            color: var(--blue-600);
+        }
+
+        .action-chip .material-icons-round {
+            font-size: 18px;
+        }
+
+        /* ========== RIGHT SIDEBAR ========== */
+        .sidebar-right {
+            background: var(--white);
+            border-left: 1px solid var(--gray-200);
+            padding: 24px 16px;
+            overflow-y: auto;
+            max-height: calc(100vh - 64px);
+        }
+
+        .widget {
+            margin-bottom: 24px;
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .widget-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-title .material-icons-round {
+            font-size: 18px;
+            color: var(--blue-500);
+        }
+
+        .widget-action {
+            font-size: 12px;
+            color: var(--blue-500);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Notificaciones */
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background: var(--gray-50);
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .notification-dot.blue {
+            background: var(--blue-500);
+        }
+
+        .notification-dot.light {
+            background: var(--gray-300);
+        }
+
+        .notification-text {
+            font-size: 13px;
+            color: var(--gray-600);
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        /* Horario*/
+        .schedule-container {
+            position: relative;
+        }
+
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            background: var(--blue-50);
+            border: 1px solid var(--blue-200);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--blue-600);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--blue-100);
+        }
+
+        .filter-btn .material-icons-round {
+            font-size: 14px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+
+        .schedule-table th {
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 10px;
+            border-bottom: 2px solid var(--blue-100);
+        }
+
+        .schedule-table td {
+            padding: 10px 4px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-400);
+            font-size: 11px;
+            height: 36px;
+        }
+
+        .schedule-table tr:hover td {
+            background: var(--gray-50);
+        }
+
+        .time-col {
+            font-weight: 500;
+            color: var(--gray-500) !important;
+            text-align: right !important;
+            padding-right: 8px !important;
+            white-space: nowrap;
+        }
+
+        /* Calendario */
+        .calendar-widget {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .calendar-month {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .calendar-nav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-500);
+            padding: 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-nav-btn:hover {
+            background: var(--blue-50);
+            color: var(--blue-500);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+        }
+
+        .calendar-day-name {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            padding: 4px;
+        }
+
+        .calendar-day {
+            font-size: 12px;
+            padding: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--gray-600);
+        }
+
+        .calendar-day:hover {
+            background: var(--blue-50);
+        }
+
+        .calendar-day.today {
+            background: var(--blue-500);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .calendar-day.other-month {
+            color: var(--gray-300);
+        }
+
+        .calendar-day.has-event {
+            position: relative;
+        }
+
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--blue-400);
+        }
+
+        /* ========== Animaciones ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subject-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .subject-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .widget {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .widget:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .widget:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 71, 161, 0.25);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            width: 560px;
+            max-width: 92vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+            transform: translateY(30px) scale(0.95);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            padding: 28px 32px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--blue-50), var(--blue-100));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue-600);
+        }
+
+        .modal-header-icon .material-icons-round {
+            font-size: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--gray-100);
+            color: var(--gray-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .modal-close .material-icons-round {
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 24px 32px 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+            letter-spacing: 0.01em;
+        }
+
+        .form-label .required {
+            color: #E53935;
+            margin-left: 2px;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-700);
+            background: var(--gray-50);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            border-color: var(--blue-400);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+        }
+
+        .form-input.error,
+        .form-select.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: var(--error-color);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        .modal-footer {
+            padding: 0 32px 28px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            padding: 12px 24px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            color: var(--gray-600);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+        }
+
+        .btn-save {
+            padding: 12px 28px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+        }
+
+        .btn-save .material-icons-round {
+            font-size: 18px;
+        }
+
+        /* notificaciones Toast  */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gray-700);
+            color: var(--white);
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast .material-icons-round {
+            font-size: 20px;
+            color: #4CAF50;
+        }
+
+        /* ========== Barra Scroll ========== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* ===== FAB DROPDOWN MENU ===== */
+
+.fab-container{
+    position:relative;
+}
+
+.fab-menu{
+    position:absolute;
+    bottom:70px;
+    left:0;
+    width:100%;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);
+    border:1px solid var(--gray-200);
+    display:none;
+    flex-direction:column;
+}
+
+.fab-menu.active{
+    display:flex;
+}
+
+.fab-option{
+    border:none;
+    background:none;
+    padding:12px 16px;
+    font-family:'Inter';
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    color:var(--gray-600);
+}
+
+.fab-option:hover{
+    background:var(--blue-50);
+    color:var(--blue-600);
+}
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <header class="header">
+            <div class="header-logo">
+                <span class="material-icons-round">school</span>
+                <h1>Study<span>Hub</span></h1>
+            </div>
+        </header>
+
+
+        <aside class="sidebar-left">
+            <div>
+                <!-- Profile -->
+                <div class="profile-section">
+                    <div class="profile-avatar">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div class="profile-name">Juan Pérez García</div>
+                    <div class="profile-id">ID: 20241089032</div>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">Materias</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4.2</div>
+                            <div class="stat-label">Promedio</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegacion -->
+                <nav class="sidebar-nav">
+                    <div class="nav-item active">
+                        <span class="material-icons-round">dashboard</span>
+                        Dashboard
+                    </div>
+                    <div class="nav-item">
+                        <span class="material-icons-round">menu_book</span>
+                        Mis Materias
+                    </div>
+                    <div class="nav-item">
+                        <span class="material-icons-round">assignment</span>
+                        Mis Tareas
+                    </div>
+                    <div class="nav-item">
+                        <span class="material-icons-round">calculate</span>
+                        Calculadora de Notas
+                    </div>
+                    <div class="nav-item">
+                        <span class="material-icons-round">rate_review</span>
+                        Reseñas
+                    </div>
+                    <div class="nav-item">
+                        <span class="material-icons-round">settings</span>
+                        Configuración
+                    </div>
+                </nav>
+            </div>
+
+            <!-- FAB Boton -->
+            <div class="fab-container">
+                <button class="fab-button" id="fab-add">
+                    <span class="material-icons-round">add</span>
+                    Agregar
+                </button>
+
+                <div class="fab-menu" id="fab-menu">
+                    <button class="fab-option" id="add-subject">
+                        <span class="material-icons-round">menu_book</span>
+                        Agregar Materia
+                    </button>
+
+                    <button class="fab-option" id="add-task">
+                        <span class="material-icons-round">assignment</span>
+                        Agregar Tarea
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Mis Materias Actuales</h2>
+                    <p class="section-subtitle">Semestre 2026-1 · 6 materias inscritas</p>
+                </div>
+            </div>
+
+            <!-- Carta Materias -->
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="card-menu">
+                        <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                            <span class="material-icons-round">more_vert</span>
+                        </button>
+                        <div class="card-dropdown">
+                            <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                                <span class="material-icons-round">delete_outline</span>
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="subject-icon">
+                        <span class="material-icons-round">code</span>
+                    </div>
+                    <div class="subject-name">Fundamentos de Ing. de Software</div>
+                    <div class="subject-id">ID: ISIS-2603 · Sección 01</div>
+                    <div class="subject-professor">
+                        <span class="material-icons-round">person</span>
+                        Prof. Carlos Ramírez
+                    </div>
+                    <div class="subject-progress">
+                        <div class="subject-progress-bar"></div>
+                    </div>
+                    <div class="subject-progress-label">65% del curso completado</div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="card-menu">
+                        <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                            <span class="material-icons-round">more_vert</span>
+                        </button>
+                        <div class="card-dropdown">
+                            <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                                <span class="material-icons-round">delete_outline</span>
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="subject-icon">
+                        <span class="material-icons-round">functions</span>
+                    </div>
+                    <div class="subject-name">Cálculo Diferencial</div>
+                    <div class="subject-id">ID: MATE-1203 · Sección 03</div>
+                    <div class="subject-professor">
+                        <span class="material-icons-round">person</span>
+                        Prof. María López
+                    </div>
+                    <div class="subject-progress">
+                        <div class="subject-progress-bar"></div>
+                    </div>
+                    <div class="subject-progress-label">40% del curso completado</div>
+                </div>
+            </div>
+
+            <!-- Acciones Rapidas -->
+            <div class="quick-actions">
+                <div class="section-header">
+                    <h2 class="section-title">Acciones Rápidas</h2>
+                </div>
+                <div class="actions-row">
+                    <button class="action-chip">
+                        <span class="material-icons-round">note_add</span>
+                        Nueva Nota
+                    </button>
+                    <button class="action-chip">
+                        <span class="material-icons-round">event</span>
+                        Nuevo Evento
+                    </button>
+                    <button class="action-chip">
+                        <span class="material-icons-round">book</span>
+                        Agregar Materia
+                    </button>
+                    <button class="action-chip">
+                        <span class="material-icons-round">star</span>
+                        Escribir Reseña
+                    </button>
+                </div>
+            </div>
+        </main>
+
+    
+        <aside class="sidebar-right">
+           
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-title">
+                        <span class="material-icons-round">notifications</span>
+                        Notificaciones
+                    </div>
+                    <span class="widget-action">Ver todas</span>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-dot blue"></div>
+                    <div>
+                        <div class="notification-text">Nueva tarea publicada en <strong>Fundamentos de Ing. de
+                                Software</strong></div>
+                        <div class="notification-time">Hace 2 horas</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-dot blue"></div>
+                    <div>
+                        <div class="notification-text">Recordatorio: Parcial de <strong>Cálculo Diferencial</strong> el
+                            viernes</div>
+                        <div class="notification-time">Hace 5 horas</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-dot light"></div>
+                    <div>
+                        <div class="notification-text">Tu reseña de <strong>Prof. Carlos Ramírez</strong> fue publicada
+                        </div>
+                        <div class="notification-time">Ayer</div>
+                    </div>
+                </div>
+            </div>
+
+   
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-title">
+                        <span class="material-icons-round">calendar_view_week</span>
+                        Horario Semanal
+                    </div>
+                    <button class="filter-btn">
+                        <span class="material-icons-round">filter_list</span>
+                        Filtrar
+                    </button>
+                </div>
+                <div class="schedule-container">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Lun</th>
+                                <th>Mar</th>
+                                <th>Mié</th>
+                                <th>Jue</th>
+                                <th>Vie</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="time-col">7:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">8:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">9:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">10:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">11:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">12:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">13:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">14:00</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+   
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-title">
+                        <span class="material-icons-round">calendar_month</span>
+                        Calendario
+                    </div>
+                </div>
+                <div class="calendar-widget">
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn">
+                            <span class="material-icons-round">chevron_left</span>
+                        </button>
+                        <span class="calendar-month">Febrero 2026</span>
+                        <button class="calendar-nav-btn">
+                            <span class="material-icons-round">chevron_right</span>
+                        </button>
+                    </div>
+                    <div class="calendar-grid">
+                    
+                        <div class="calendar-day-name">Lu</div>
+                        <div class="calendar-day-name">Ma</div>
+                        <div class="calendar-day-name">Mi</div>
+                        <div class="calendar-day-name">Ju</div>
+                        <div class="calendar-day-name">Vi</div>
+                        <div class="calendar-day-name">Sa</div>
+                        <div class="calendar-day-name">Do</div>
+                 
+                        <div class="calendar-day other-month"></div>
+                        <div class="calendar-day other-month"></div>
+                        <div class="calendar-day other-month"></div>
+                        <div class="calendar-day other-month"></div>
+                        <div class="calendar-day other-month"></div>
+                        <div class="calendar-day other-month"></div>
+                        <div class="calendar-day">1</div>
+                     
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day has-event">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                     
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day today">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day has-event">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                 
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day other-month"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- ===== MODAL: AGREGAR MATERIA ===== -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <span class="material-icons-round">library_add</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Agregar Nueva Materia</div>
+                        <div class="modal-subtitle">Completa todos los campos para registrar la asignatura</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="subject-form" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="subject-name">Nombre de la Asignatura <span
+                                class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-name" placeholder="Ej: Cálculo Diferencial"
+                            required>
+                        <div class="form-error" id="error-name">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="subject-code">Código de la Asignatura <span
+                                    class="required">*</span></label>
+                            <input class="form-input" type="text" id="subject-code" placeholder="Ej: MATE-1203"
+                                required>
+                            <div class="form-error" id="error-code">Este campo es obligatorio</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="subject-credits">Créditos <span
+                                    class="required">*</span></label>
+                            <input class="form-input" type="number" id="subject-credits" placeholder="Ej: 3" min="1"
+                                max="10" required>
+                            <div class="form-error" id="error-credits">Ingresa un número válido</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject-professor">Profesor <span
+                                class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-professor" placeholder="Ej: Prof. María López"
+                            required>
+                        <div class="form-error" id="error-professor">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject-schedule">Horario <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-schedule"
+                            placeholder="Ej: Lun y Mié 10:00 - 12:00" required>
+                        <div class="form-error" id="error-schedule">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject-semester">Periodo / Semestre <span
+                                class="required">*</span></label>
+                        <select class="form-select" id="subject-semester" required>
+                            <option value="" disabled selected>Selecciona un periodo</option>
+                            <option value="2025-1">2025-1</option>
+                            <option value="2025-2">2025-2</option>
+                            <option value="2026-1">2026-1</option>
+                            <option value="2026-2">2026-2</option>
+                        </select>
+                        <div class="form-error" id="error-semester">Selecciona un periodo</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">
+                        <span class="material-icons-round">save</span>
+                        Guardar Materia
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: AGREGAR TAREA ===== -->
+
+<div class="modal-overlay" id="task-modal-overlay">
+<div class="modal">
+
+<div class="modal-header">
+<div class="modal-header-left">
+
+<div class="modal-header-icon">
+<span class="material-icons-round">assignment</span>
+</div>
+
+<div>
+<div class="modal-title">Agregar Nueva Tarea</div>
+<div class="modal-subtitle">Registra una tarea o parcial</div>
+</div>
+
+</div>
+
+<button class="modal-close" id="task-modal-close">
+<span class="material-icons-round">close</span>
+</button>
+
+</div>
+
+
+<form id="task-form">
+
+<div class="modal-body">
+
+<div class="form-group">
+<label class="form-label">Título de la Tarea</label>
+<input class="form-input" id="task-title" placeholder="Ej: Taller Derivadas">
+</div>
+
+<div class="form-group">
+<label class="form-label">Asignatura</label>
+
+<select class="form-select" id="task-subject" required>
+<option value="">Selecciona una materia</option>
+</select>
+
+</div>
+
+
+<div class="form-row">
+
+<div class="form-group">
+<label class="form-label">Fecha de entrega</label>
+<input class="form-input" type="date" id="task-date" required>
+</div>
+
+<div class="form-group">
+<label class="form-label">Hora</label>
+<input class="form-input" type="time" id="task-time" required>
+</div>
+
+</div>
+
+<div class="form-group">
+<label class="form-label">Descripción</label>
+<input class="form-input" id="task-description" placeholder="Detalles de la tarea">
+</div>
+
+</div>
+
+
+<div class="modal-footer">
+
+<button type="button" class="btn-cancel" id="task-btn-cancel">
+Cancelar
+</button>
+
+<button type="submit" class="btn-save">
+<span class="material-icons-round">save</span>
+Guardar Tarea
+</button>
+
+</div>
+
+</form>
+
+</div>
+</div>
+
+    <div class="toast" id="toast">
+        <span class="material-icons-round">check_circle</span>
+        <span id="toast-text">Materia agregada exitosamente</span>
+    </div>
+
+    <script>
+   
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalClose = document.getElementById('modal-close');
+        const btnCancel = document.getElementById('btn-cancel');
+        const fabAdd = document.getElementById('fab-add');
+        const fabMenu = document.getElementById('fab-menu');
+        const addSubjectBtn = document.getElementById('add-subject');
+        const addTaskBtn = document.getElementById('add-task');
+        const subjectForm = document.getElementById('subject-form');
+        const subjectsGrid = document.querySelector('.subjects-grid');
+        const toast = document.getElementById('toast');
+        const taskModal = document.getElementById('task-modal-overlay');
+        const taskModalClose = document.getElementById('task-modal-close');
+        const taskBtnCancel = document.getElementById('task-btn-cancel');
+        const taskForm = document.getElementById('task-form');
+        const taskSubjectSelect = document.getElementById('task-subject');
+
+        function openTaskModal(){
+
+        taskSubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
+        const cards = document.querySelectorAll('.subject-card');
+        cards.forEach(card => {
+        
+            const subjectName = card.querySelector('.subject-name').textContent;
+            
+            const option = document.createElement('option');
+            option.value = subjectName;
+            option.textContent = subjectName;
+
+            taskSubjectSelect.appendChild(option);
+
+        });
+
+        taskModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+     
+        const quickActionChips = document.querySelectorAll('.action-chip');
+        quickActionChips.forEach(chip => {
+            if (chip.textContent.trim().includes('Agregar Materia')) {
+                chip.addEventListener('click', openModal);
+            }
+        });
+
+
+        const cardColors = [
+            { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
+            { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
+            { gradient: 'linear-gradient(90deg, #FF7043, #F4511E)', bg: '#FBE9E7', text: '#D84315', icon: '#FF7043' },
+            { gradient: 'linear-gradient(90deg, #EC407A, #D81B60)', bg: '#FCE4EC', text: '#AD1457', icon: '#EC407A' },
+            { gradient: 'linear-gradient(90deg, #FFA726, #FB8C00)', bg: '#FFF3E0', text: '#E65100', icon: '#FFA726' },
+            { gradient: 'linear-gradient(90deg, #42A5F5, #1E88E5)', bg: '#E3F2FD', text: '#1565C0', icon: '#42A5F5' },
+            { gradient: 'linear-gradient(90deg, #66BB6A, #43A047)', bg: '#E8F5E9', text: '#2E7D32', icon: '#66BB6A' },
+        ];
+
+        const cardIcons = ['science', 'psychology', 'engineering', 'architecture', 'biotech', 'hub', 'auto_stories', 'analytics', 'memory', 'data_object', 'terminal', 'dns'];
+
+        let colorIndex = 0;
+
+   
+        function openModal() {
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            setTimeout(() => document.getElementById('subject-name').focus(), 350);
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            subjectForm.reset();
+            clearErrors();
+        }
+
+        fabAdd.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fabMenu.classList.toggle('active');
+        });
+        addSubjectBtn.addEventListener('click', () => {
+            fabMenu.classList.remove('active');
+            openModal();
+        });
+
+        addTaskBtn.addEventListener('click', () => {
+            fabMenu.classList.remove('active');
+            openTaskModal();
+        });
+
+        function closeTaskModal(){
+            taskModal.classList.remove('active');
+            document.body.style.overflow = '';
+            taskForm.reset();
+        }
+
+        taskModalClose.addEventListener('click', closeTaskModal);
+        taskBtnCancel.addEventListener('click', closeTaskModal);
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.fab-container')) {
+                fabMenu.classList.remove('active');
+            }
+        });
+
+        modalClose.addEventListener('click', closeModal);
+        btnCancel.addEventListener('click', closeModal);
+
+  
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+     
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+        });
+
+    
+        function clearErrors() {
+            document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
+        }
+
+       
+        document.querySelectorAll('.form-input, .form-select').forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('error');
+                const errorEl = input.parentElement.querySelector('.form-error');
+                if (errorEl) errorEl.classList.remove('visible');
+            });
+        });
+
+        function validateForm() {
+            clearErrors();
+            let isValid = true;
+
+            const fields = [
+                { id: 'subject-name', errorId: 'error-name' },
+                { id: 'subject-code', errorId: 'error-code' },
+                { id: 'subject-credits', errorId: 'error-credits' },
+                { id: 'subject-professor', errorId: 'error-professor' },
+                { id: 'subject-schedule', errorId: 'error-schedule' },
+                { id: 'subject-semester', errorId: 'error-semester' },
+            ];
+
+            fields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const error = document.getElementById(field.errorId);
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    error.classList.add('visible');
+                    isValid = false;
+                }
+            });
+
+            const credits = document.getElementById('subject-credits');
+            if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
+                credits.classList.add('error');
+                document.getElementById('error-credits').classList.add('visible');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+
+        function createSubjectCard(data) {
+            const color = cardColors[colorIndex % cardColors.length];
+            const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
+            colorIndex++;
+
+            const card = document.createElement('div');
+            card.className = 'subject-card';
+            card.style.animationDelay = '0s';
+
+            card.innerHTML = `
+                <div class="card-menu">
+                    <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                        <span class="material-icons-round">more_vert</span>
+                    </button>
+                    <div class="card-dropdown">
+                        <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                            <span class="material-icons-round">delete_outline</span>
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:${getComputedStyle(document.documentElement).getPropertyValue('--radius-lg')} ${getComputedStyle(document.documentElement).getPropertyValue('--radius-lg')} 0 0;"></div>
+                <div class="subject-icon" style="background:${color.bg};color:${color.text}">
+                    <span class="material-icons-round">${icon}</span>
+                </div>
+                <div class="subject-name">${data.name}</div>
+                <div class="subject-id">ID: ${data.code} · ${data.credits} créditos · ${data.semester}</div>
+                <div class="subject-professor">
+                    <span class="material-icons-round">person</span>
+                    ${data.professor}
+                </div>
+                <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
+                    <span class="material-icons-round" style="font-size:16px">schedule</span>
+                    ${data.schedule}
+                </div>
+                <div class="subject-progress">
+                    <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
+                </div>
+                <div class="subject-progress-label">0% del curso completado</div>
+            `;
+
+            subjectsGrid.appendChild(card);
+
+     
+            requestAnimationFrame(() => {
+                card.style.animation = 'fadeInUp 0.5s ease forwards';
+            });
+        }
+
+
+        function showToast(message) {
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+    
+        subjectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            const data = {
+                name: document.getElementById('subject-name').value.trim(),
+                code: document.getElementById('subject-code').value.trim().toUpperCase(),
+                credits: document.getElementById('subject-credits').value.trim(),
+                professor: document.getElementById('subject-professor').value.trim(),
+                schedule: document.getElementById('subject-schedule').value.trim(),
+                semester: document.getElementById('subject-semester').value,
+            };
+
+            createSubjectCard(data);
+            closeModal();
+            showToast(`"${data.name}" agregada exitosamente`);
+
+            // Update subject count in subtitle
+            const subtitle = document.querySelector('.section-subtitle');
+            const currentCount = subjectsGrid.children.length;
+            subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
+
+          
+            const statValues = document.querySelectorAll('.stat-value');
+            if (statValues.length > 0) statValues[0].textContent = currentCount;
+        });
+
+      
+        function toggleCardMenu(btn) {
+    
+            document.querySelectorAll('.card-dropdown.open').forEach(d => {
+                if (d !== btn.nextElementSibling) d.classList.remove('open');
+            });
+            const dropdown = btn.nextElementSibling;
+            dropdown.classList.toggle('open');
+        }
+
+       
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.card-menu')) {
+                document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+     
+        function deleteCard(btn) {
+            const card = btn.closest('.subject-card');
+            const name = card.querySelector('.subject-name')?.textContent || 'Materia';
+
+          
+            card.classList.add('removing');
+
+            card.addEventListener('animationend', () => {
+                card.remove();
+                updateSubjectCount();
+                showToast(`"${name}" eliminada`);
+            });
+        }
+
+        function updateSubjectCount() {
+            const currentCount = subjectsGrid.children.length;
+            const subtitle = document.querySelector('.section-subtitle');
+            subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
+            const statValues = document.querySelectorAll('.stat-value');
+            if (statValues.length > 0) statValues[0].textContent = currentCount;
+        }
+    </script>
+</body>
+
+</html>
