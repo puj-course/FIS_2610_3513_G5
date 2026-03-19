@@ -6,22 +6,14 @@ StudyHub es una aplicación universitaria diseñada para la gestión integral de
 ---
 
 ## Equipo del Proyecto
-| Nombre        | Rol                   | GitHub / Perfil |
-|--------------|-----------------------|-----------------|
-| Federico     | Scrum Master          | github.com/feder |
-| Valeria      | Product Owner         | github.com/Valeria |
-| Estudiante 3 | Sprint Planner        | github.com/usuario3 |
-| Estudiante 4 | Configuration Manager | github.com/usuario4 |
-| Estudiante 5 | QA Lead               | github.com/usuario5 |
-| Estudiante 6 | DevOps Engineer       | github.com/usuario6 |
-
----
-
-## Tecnologías Utilizadas
-- **Frontend:** HTML / CSS / JS
-- **Backend:** Java – Spring Boot
-- **Base de Datos:** PostgreSQL
-- **Control de versiones:** Git
+| Nombre        | Rol                   | GitHub / Perfil         |
+|--------------|-----------------------|--------------------------|
+| Sarah        | Scrum Master          | github.com/barrerosarah9 |
+| Valeria      | Product Owner         | github.com/valgomezzz    |
+| Manuel       | Sprint Planner        | github.com/Manuel-jmMo   |
+| Matias       | Configuration Manager | github.com/matiasssss10  |
+| Valeria      | QA Lead               | github.com/valgomezzz    |
+| Federico     | DevOps Engineer       | github.com/Fede-17       |
 
 ---
 
@@ -42,21 +34,6 @@ StudyHub es una aplicación universitaria diseñada para la gestión integral de
 
 ## Arquitectura y Diseño
 El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), donde una aplicación cliente consume servicios a través de una API central.
-
----
-
-
----
-
-## Equipo del Proyecto
-| Nombre        | Rol                   | GitHub / Perfil         |
-|--------------|-----------------------|--------------------------|
-| Sarah        | Scrum Master          | github.com/barrerosarah9 |
-| Valeria      | Product Owner         | github.com/valgomezzz    |
-| Manuel       | Sprint Planner        | github.com/Manuel-jmMo   |
-| Matias       | Configuration Manager | github.com/matiasssss10  |
-| Valeria      | QA Lead               | github.com/valgomezzz    |
-| Federico     | DevOps Engineer       | github.com/Fede-17       |
 
 ---
 
@@ -139,15 +116,12 @@ cd FIS_2610_3513_G5
 ## Ejecución con Docker
 No se ha llegado a la implementación con Docker
 
----
-
 ## Contexto Académico
 - **Asignatura:** Fundamentos de Ingeniería de Software
 - **Docente:** Luis Gabriel Moreno Sandoval, PhD
-- **Contacto:** morenoluis@javeriana.edu.co
+- **Institución:** Pontificia Universidad Javeriana
 
 ---
-
 
 ## Equipo de desarrollo y Contacto
 **Valeria Gómez**  
@@ -167,8 +141,6 @@ Estudiante de Ingeniería en Sistemas, Pontificia Universidad Javeriana
 📧 [slbarrero@javeriana.edu.co](mailto:slbarrero@javeriana.edu.co)
 
 ---
-"- Matias"
-"- Federico" 
-"- Valeria" 
+
 ## Licencia
 Proyecto desarrollado con fines académicos.
