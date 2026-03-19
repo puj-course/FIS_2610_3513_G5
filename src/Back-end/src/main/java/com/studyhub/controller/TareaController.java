@@ -1,6 +1,8 @@
 package com.studyhub.controller;
 
+import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
+import com.studyhub.repository.AsignaturaRepository;
 import com.studyhub.repository.TareaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +18,38 @@ import java.util.Map;
 public class TareaController {
 
     private final TareaRepository tareaRepository;
+    private final AsignaturaRepository asignaturaRepository;
 
-    public TareaController(TareaRepository tareaRepository) {
+    public TareaController(TareaRepository tareaRepository, AsignaturaRepository asignaturaRepository) {
         this.tareaRepository = tareaRepository;
+        this.asignaturaRepository = asignaturaRepository;
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> crearTarea(@RequestBody Tarea tarea) {
+    public ResponseEntity<Map<String, Object>> crearTarea(@RequestBody Map<String, Object> body) {
+        Map<String, Object> respuesta = new HashMap<>();
+
+        // Validar y obtener asignatura
+        Long asignaturaId = Long.valueOf(body.get("asignaturaId").toString());
+        Asignatura asignatura = asignaturaRepository.findById(asignaturaId).orElse(null);
+        if (asignatura == null) {
+            respuesta.put("mensaje", "Asignatura no encontrada");
+            return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
+        }
+
+        Tarea tarea = new Tarea();
+        tarea.setTitulo(body.get("titulo").toString());
+        tarea.setAsignatura(asignatura);
+        tarea.setFechaEntrega(java.time.LocalDate.parse(body.get("fechaEntrega").toString()));
+        tarea.setHoraEntrega(java.time.LocalTime.parse(body.get("horaEntrega").toString()));
+        tarea.setDescripcion(body.containsKey("descripcion") ? body.get("descripcion").toString() : null);
         tarea.setEstado(true); // toda tarea nueva nace como pendiente
+
         Tarea tareaGuardada = tareaRepository.save(tarea);
         System.out.println("Tarea guardada en BD: " + tareaGuardada);
 
-        Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Tarea guardada exitosamente");
         respuesta.put("tarea", tareaGuardada);
-
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
@@ -44,7 +63,7 @@ public class TareaController {
     public ResponseEntity<Map<String, Object>> toggleEstado(@PathVariable Long id) {
         return tareaRepository.findById(id)
                 .map(tarea -> {
-                    tarea.setEstado(!tarea.isEstado()); // invierte el estado actual
+                    tarea.setEstado(!tarea.isEstado());
                     tareaRepository.save(tarea);
 
                     String mensaje = tarea.isEstado() ? "Tarea marcada como pendiente" : "Tarea marcada como terminada";
@@ -52,7 +71,6 @@ public class TareaController {
                     Map<String, Object> respuesta = new HashMap<>();
                     respuesta.put("mensaje", mensaje);
                     respuesta.put("tarea", tarea);
-
                     return new ResponseEntity<>(respuesta, HttpStatus.OK);
                 })
                 .orElseGet(() -> {

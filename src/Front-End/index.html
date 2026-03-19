@@ -1091,44 +1091,44 @@
 
         /* ===== FAB DROPDOWN MENU ===== */
 
-.fab-container{
-    position:relative;
-}
+        .fab-container {
+            position: relative;
+        }
 
-.fab-menu{
-    position:absolute;
-    bottom:70px;
-    left:0;
-    width:100%;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 8px 24px rgba(0,0,0,0.15);
-    border:1px solid var(--gray-200);
-    display:none;
-    flex-direction:column;
-}
+        .fab-menu {
+            position: absolute;
+            bottom: 70px;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--gray-200);
+            display: none;
+            flex-direction: column;
+        }
 
-.fab-menu.active{
-    display:flex;
-}
+        .fab-menu.active {
+            display: flex;
+        }
 
-.fab-option{
-    border:none;
-    background:none;
-    padding:12px 16px;
-    font-family:'Inter';
-    font-size:14px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    color:var(--gray-600);
-}
+        .fab-option {
+            border: none;
+            background: none;
+            padding: 12px 16px;
+            font-family: 'Inter';
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
 
-.fab-option:hover{
-    background:var(--blue-50);
-    color:var(--blue-600);
-}
+        .fab-option:hover {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
     </style>
 </head>
 
@@ -1307,9 +1307,9 @@
             </div>
         </main>
 
-    
+
         <aside class="sidebar-right">
-           
+
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1344,7 +1344,7 @@
                 </div>
             </div>
 
-   
+
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1438,7 +1438,7 @@
                 </div>
             </div>
 
-   
+
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1457,7 +1457,7 @@
                         </button>
                     </div>
                     <div class="calendar-grid">
-                    
+
                         <div class="calendar-day-name">Lu</div>
                         <div class="calendar-day-name">Ma</div>
                         <div class="calendar-day-name">Mi</div>
@@ -1465,7 +1465,7 @@
                         <div class="calendar-day-name">Vi</div>
                         <div class="calendar-day-name">Sa</div>
                         <div class="calendar-day-name">Do</div>
-                 
+
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
@@ -1473,7 +1473,7 @@
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day">1</div>
-                     
+
                         <div class="calendar-day">2</div>
                         <div class="calendar-day">3</div>
                         <div class="calendar-day">4</div>
@@ -1481,7 +1481,7 @@
                         <div class="calendar-day has-event">6</div>
                         <div class="calendar-day">7</div>
                         <div class="calendar-day">8</div>
-                     
+
                         <div class="calendar-day">9</div>
                         <div class="calendar-day">10</div>
                         <div class="calendar-day">11</div>
@@ -1489,7 +1489,7 @@
                         <div class="calendar-day today">13</div>
                         <div class="calendar-day">14</div>
                         <div class="calendar-day">15</div>
-                        
+
                         <div class="calendar-day">16</div>
                         <div class="calendar-day">17</div>
                         <div class="calendar-day">18</div>
@@ -1497,7 +1497,7 @@
                         <div class="calendar-day">20</div>
                         <div class="calendar-day">21</div>
                         <div class="calendar-day">22</div>
-                 
+
                         <div class="calendar-day">23</div>
                         <div class="calendar-day">24</div>
                         <div class="calendar-day">25</div>
@@ -1593,88 +1593,88 @@
 
     <!-- ===== MODAL: AGREGAR TAREA ===== -->
 
-<div class="modal-overlay" id="task-modal-overlay">
-<div class="modal">
+    <div class="modal-overlay" id="task-modal-overlay">
+        <div class="modal">
 
-<div class="modal-header">
-<div class="modal-header-left">
+            <div class="modal-header">
+                <div class="modal-header-left">
 
-<div class="modal-header-icon">
-<span class="material-icons-round">assignment</span>
-</div>
+                    <div class="modal-header-icon">
+                        <span class="material-icons-round">assignment</span>
+                    </div>
 
-<div>
-<div class="modal-title">Agregar Nueva Tarea</div>
-<div class="modal-subtitle">Registra una tarea o parcial</div>
-</div>
+                    <div>
+                        <div class="modal-title">Agregar Nueva Tarea</div>
+                        <div class="modal-subtitle">Registra una tarea o parcial</div>
+                    </div>
 
-</div>
+                </div>
 
-<button class="modal-close" id="task-modal-close">
-<span class="material-icons-round">close</span>
-</button>
+                <button class="modal-close" id="task-modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
 
-</div>
-
-
-<form id="task-form">
-
-<div class="modal-body">
-
-<div class="form-group">
-<label class="form-label">Título de la Tarea</label>
-<input class="form-input" id="task-title" placeholder="Ej: Taller Derivadas">
-</div>
-
-<div class="form-group">
-<label class="form-label">Asignatura</label>
-
-<select class="form-select" id="task-subject" required>
-<option value="">Selecciona una materia</option>
-</select>
-
-</div>
+            </div>
 
 
-<div class="form-row">
+            <form id="task-form">
 
-<div class="form-group">
-<label class="form-label">Fecha de entrega</label>
-<input class="form-input" type="date" id="task-date" required>
-</div>
+                <div class="modal-body">
 
-<div class="form-group">
-<label class="form-label">Hora</label>
-<input class="form-input" type="time" id="task-time" required>
-</div>
+                    <div class="form-group">
+                        <label class="form-label">Título de la Tarea</label>
+                        <input class="form-input" id="task-title" placeholder="Ej: Taller Derivadas">
+                    </div>
 
-</div>
+                    <div class="form-group">
+                        <label class="form-label">Asignatura</label>
 
-<div class="form-group">
-<label class="form-label">Descripción</label>
-<input class="form-input" id="task-description" placeholder="Detalles de la tarea">
-</div>
+                        <select class="form-select" id="task-subject" required>
+                            <option value="">Selecciona una materia</option>
+                        </select>
 
-</div>
+                    </div>
 
 
-<div class="modal-footer">
+                    <div class="form-row">
 
-<button type="button" class="btn-cancel" id="task-btn-cancel">
-Cancelar
-</button>
+                        <div class="form-group">
+                            <label class="form-label">Fecha de entrega</label>
+                            <input class="form-input" type="date" id="task-date" required>
+                        </div>
 
-<button type="submit" class="btn-save">
-<span class="material-icons-round">save</span>
-Guardar Tarea
-</button>
+                        <div class="form-group">
+                            <label class="form-label">Hora</label>
+                            <input class="form-input" type="time" id="task-time" required>
+                        </div>
 
-</div>
+                    </div>
 
-</form>
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <input class="form-input" id="task-description" placeholder="Detalles de la tarea">
+                    </div>
 
-</div>
-</div>
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn-cancel" id="task-btn-cancel">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-save">
+                        <span class="material-icons-round">save</span>
+                        Guardar Tarea
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
@@ -1682,7 +1682,10 @@ Guardar Tarea
     </div>
 
     <script>
-   
+
+        const API = 'http://localhost:8080';
+
+        // ── Referencias al DOM ──────────────────────────────────────────
         const modalOverlay = document.getElementById('modal-overlay');
         const modalClose = document.getElementById('modal-close');
         const btnCancel = document.getElementById('btn-cancel');
@@ -1699,53 +1702,23 @@ Guardar Tarea
         const taskForm = document.getElementById('task-form');
         const taskSubjectSelect = document.getElementById('task-subject');
 
-        function openTaskModal(){
-
-        taskSubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
-        const cards = document.querySelectorAll('.subject-card');
-        cards.forEach(card => {
-        
-            const subjectName = card.querySelector('.subject-name').textContent;
-            
-            const option = document.createElement('option');
-            option.value = subjectName;
-            option.textContent = subjectName;
-
-            taskSubjectSelect.appendChild(option);
-
-        });
-
-        taskModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-     
-        const quickActionChips = document.querySelectorAll('.action-chip');
-        quickActionChips.forEach(chip => {
-            if (chip.textContent.trim().includes('Agregar Materia')) {
-                chip.addEventListener('click', openModal);
-            }
-        });
-
-
+        // ── Colores e iconos para tarjetas ─────────────────────────────
         const cardColors = [
-            { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
-            { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
-            { gradient: 'linear-gradient(90deg, #FF7043, #F4511E)', bg: '#FBE9E7', text: '#D84315', icon: '#FF7043' },
-            { gradient: 'linear-gradient(90deg, #EC407A, #D81B60)', bg: '#FCE4EC', text: '#AD1457', icon: '#EC407A' },
-            { gradient: 'linear-gradient(90deg, #FFA726, #FB8C00)', bg: '#FFF3E0', text: '#E65100', icon: '#FFA726' },
-            { gradient: 'linear-gradient(90deg, #42A5F5, #1E88E5)', bg: '#E3F2FD', text: '#1565C0', icon: '#42A5F5' },
-            { gradient: 'linear-gradient(90deg, #66BB6A, #43A047)', bg: '#E8F5E9', text: '#2E7D32', icon: '#66BB6A' },
+            { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1' },
+            { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C' },
+            { gradient: 'linear-gradient(90deg, #FF7043, #F4511E)', bg: '#FBE9E7', text: '#D84315' },
+            { gradient: 'linear-gradient(90deg, #EC407A, #D81B60)', bg: '#FCE4EC', text: '#AD1457' },
+            { gradient: 'linear-gradient(90deg, #FFA726, #FB8C00)', bg: '#FFF3E0', text: '#E65100' },
+            { gradient: 'linear-gradient(90deg, #42A5F5, #1E88E5)', bg: '#E3F2FD', text: '#1565C0' },
+            { gradient: 'linear-gradient(90deg, #66BB6A, #43A047)', bg: '#E8F5E9', text: '#2E7D32' },
         ];
-
         const cardIcons = ['science', 'psychology', 'engineering', 'architecture', 'biotech', 'hub', 'auto_stories', 'analytics', 'memory', 'data_object', 'terminal', 'dns'];
-
         let colorIndex = 0;
 
-   
+        // ── Modal Asignatura ───────────────────────────────────────────
         function openModal() {
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
             setTimeout(() => document.getElementById('subject-name').focus(), 350);
         }
 
@@ -1756,55 +1729,70 @@ Guardar Tarea
             clearErrors();
         }
 
-        fabAdd.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fabMenu.classList.toggle('active');
-        });
-        addSubjectBtn.addEventListener('click', () => {
-            fabMenu.classList.remove('active');
-            openModal();
-        });
+        // ── Modal Tarea ────────────────────────────────────────────────
+        function openTaskModal() {
+            // Poblar el select con las tarjetas actuales, usando data-id como value
+            taskSubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
+            document.querySelectorAll('.subject-card').forEach(card => {
+                const id = card.dataset.id;           // ID guardado desde el backend
+                const name = card.querySelector('.subject-name').textContent;
+                if (!id) return;                        // tarjetas sin ID de BD se omiten
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = name;
+                taskSubjectSelect.appendChild(option);
+            });
 
-        addTaskBtn.addEventListener('click', () => {
-            fabMenu.classList.remove('active');
-            openTaskModal();
-        });
+            taskModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-        function closeTaskModal(){
+        function closeTaskModal() {
             taskModal.classList.remove('active');
             document.body.style.overflow = '';
             taskForm.reset();
         }
 
+        // ── FAB ────────────────────────────────────────────────────────
+        fabAdd.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fabMenu.classList.toggle('active');
+        });
+        addSubjectBtn.addEventListener('click', () => { fabMenu.classList.remove('active'); openModal(); });
+        addTaskBtn.addEventListener('click', () => { fabMenu.classList.remove('active'); openTaskModal(); });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.fab-container')) fabMenu.classList.remove('active');
+        });
+
+        // ── Cerrar modales ─────────────────────────────────────────────
+        modalClose.addEventListener('click', closeModal);
+        btnCancel.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
         taskModalClose.addEventListener('click', closeTaskModal);
         taskBtnCancel.addEventListener('click', closeTaskModal);
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.fab-container')) {
-                fabMenu.classList.remove('active');
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modalOverlay.classList.contains('active')) closeModal();
+                if (taskModal.classList.contains('active')) closeTaskModal();
             }
         });
 
-        modalClose.addEventListener('click', closeModal);
-        btnCancel.addEventListener('click', closeModal);
-
-  
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeModal();
+        // ── Acciones rápidas ───────────────────────────────────────────
+        document.querySelectorAll('.action-chip').forEach(chip => {
+            if (chip.textContent.trim().includes('Agregar Materia')) {
+                chip.addEventListener('click', openModal);
+            }
         });
 
-     
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
-        });
-
-    
+        // ── Validación Asignatura ──────────────────────────────────────
         function clearErrors() {
             document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
             document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
         }
 
-       
         document.querySelectorAll('.form-input, .form-select').forEach(input => {
             input.addEventListener('input', () => {
                 input.classList.remove('error');
@@ -1813,10 +1801,9 @@ Guardar Tarea
             });
         });
 
-        function validateForm() {
+        function validateSubjectForm() {
             clearErrors();
             let isValid = true;
-
             const fields = [
                 { id: 'subject-name', errorId: 'error-name' },
                 { id: 'subject-code', errorId: 'error-code' },
@@ -1825,152 +1812,183 @@ Guardar Tarea
                 { id: 'subject-schedule', errorId: 'error-schedule' },
                 { id: 'subject-semester', errorId: 'error-semester' },
             ];
-
-            fields.forEach(field => {
-                const input = document.getElementById(field.id);
-                const error = document.getElementById(field.errorId);
+            fields.forEach(({ id, errorId }) => {
+                const input = document.getElementById(id);
                 if (!input.value.trim()) {
                     input.classList.add('error');
-                    error.classList.add('visible');
+                    document.getElementById(errorId).classList.add('visible');
                     isValid = false;
                 }
             });
-
             const credits = document.getElementById('subject-credits');
             if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
                 credits.classList.add('error');
                 document.getElementById('error-credits').classList.add('visible');
                 isValid = false;
             }
-
             return isValid;
         }
 
-
-        function createSubjectCard(data) {
+        // ── Crear tarjeta en el DOM ────────────────────────────────────
+        function createSubjectCard(data, dbId) {
             const color = cardColors[colorIndex % cardColors.length];
             const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
             colorIndex++;
 
             const card = document.createElement('div');
             card.className = 'subject-card';
-            card.style.animationDelay = '0s';
+            card.dataset.id = dbId;          // ← guardamos el ID del backend aquí
 
             card.innerHTML = `
-                <div class="card-menu">
-                    <button class="card-menu-btn" onclick="toggleCardMenu(this)">
-                        <span class="material-icons-round">more_vert</span>
-                    </button>
-                    <div class="card-dropdown">
-                        <button class="card-dropdown-item delete" onclick="deleteCard(this)">
-                            <span class="material-icons-round">delete_outline</span>
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:${getComputedStyle(document.documentElement).getPropertyValue('--radius-lg')} ${getComputedStyle(document.documentElement).getPropertyValue('--radius-lg')} 0 0;"></div>
-                <div class="subject-icon" style="background:${color.bg};color:${color.text}">
-                    <span class="material-icons-round">${icon}</span>
-                </div>
-                <div class="subject-name">${data.name}</div>
-                <div class="subject-id">ID: ${data.code} · ${data.credits} créditos · ${data.semester}</div>
-                <div class="subject-professor">
-                    <span class="material-icons-round">person</span>
-                    ${data.professor}
-                </div>
-                <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
-                    <span class="material-icons-round" style="font-size:16px">schedule</span>
-                    ${data.schedule}
-                </div>
-                <div class="subject-progress">
-                    <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
-                </div>
-                <div class="subject-progress-label">0% del curso completado</div>
-            `;
+        <div class="card-menu">
+            <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                <span class="material-icons-round">more_vert</span>
+            </button>
+            <div class="card-dropdown">
+                <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                    <span class="material-icons-round">delete_outline</span>
+                    Eliminar
+                </button>
+            </div>
+        </div>
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
+        <div class="subject-icon" style="background:${color.bg};color:${color.text}">
+            <span class="material-icons-round">${icon}</span>
+        </div>
+        <div class="subject-name">${data.nombre}</div>
+        <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
+        <div class="subject-professor">
+            <span class="material-icons-round">person</span>
+            ${data.profesor}
+        </div>
+        <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
+            <span class="material-icons-round" style="font-size:16px">schedule</span>
+            ${data.horario}
+        </div>
+        <div class="subject-progress">
+            <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
+        </div>
+        <div class="subject-progress-label">0% del curso completado</div>
+    `;
 
             subjectsGrid.appendChild(card);
-
-     
-            requestAnimationFrame(() => {
-                card.style.animation = 'fadeInUp 0.5s ease forwards';
-            });
         }
 
-
+        // ── Toast ──────────────────────────────────────────────────────
         function showToast(message) {
-            const toastText = document.getElementById('toast-text');
-            toastText.textContent = message;
+            document.getElementById('toast-text').textContent = message;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-    
-        subjectForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            if (!validateForm()) return;
-
-            const data = {
-                name: document.getElementById('subject-name').value.trim(),
-                code: document.getElementById('subject-code').value.trim().toUpperCase(),
-                credits: document.getElementById('subject-credits').value.trim(),
-                professor: document.getElementById('subject-professor').value.trim(),
-                schedule: document.getElementById('subject-schedule').value.trim(),
-                semester: document.getElementById('subject-semester').value,
-            };
-
-            createSubjectCard(data);
-            closeModal();
-            showToast(`"${data.name}" agregada exitosamente`);
-
-            // Update subject count in subtitle
-            const subtitle = document.querySelector('.section-subtitle');
-            const currentCount = subjectsGrid.children.length;
-            subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
-
-          
+        function updateSubjectCount() {
+            const count = subjectsGrid.children.length;
+            document.querySelector('.section-subtitle').textContent = `Semestre 2026-1 · ${count} materias inscritas`;
             const statValues = document.querySelectorAll('.stat-value');
-            if (statValues.length > 0) statValues[0].textContent = currentCount;
-        });
-
-      
-        function toggleCardMenu(btn) {
-    
-            document.querySelectorAll('.card-dropdown.open').forEach(d => {
-                if (d !== btn.nextElementSibling) d.classList.remove('open');
-            });
-            const dropdown = btn.nextElementSibling;
-            dropdown.classList.toggle('open');
+            if (statValues.length > 0) statValues[0].textContent = count;
         }
 
-       
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.card-menu')) {
-                document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
+        // ── Submit: Guardar Asignatura ─────────────────────────────────
+        subjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateSubjectForm()) return;
+
+            const payload = {
+                nombre: document.getElementById('subject-name').value.trim(),
+                codigo: document.getElementById('subject-code').value.trim().toUpperCase(),
+                creditos: parseInt(document.getElementById('subject-credits').value),
+                profesor: document.getElementById('subject-professor').value.trim(),
+                horario: document.getElementById('subject-schedule').value.trim(),
+                periodo: document.getElementById('subject-semester').value,
+            };
+
+            try {
+                const res = await fetch(`${API}/asignaturas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!res.ok) throw new Error('Error al guardar');
+
+                const json = await res.json();          // { mensaje, asignatura: { id, nombre, ... } }
+                createSubjectCard(json.asignatura, json.asignatura.id);
+                closeModal();
+                showToast(`"${json.asignatura.nombre}" agregada exitosamente`);
+                updateSubjectCount();
+
+            } catch (err) {
+                console.error(err);
+                showToast('Error al conectar con el servidor');
             }
         });
 
-     
+        // ── Submit: Guardar Tarea ──────────────────────────────────────
+        taskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const titulo = document.getElementById('task-title').value.trim();
+            const asignaturaId = document.getElementById('task-subject').value;
+            const fechaEntrega = document.getElementById('task-date').value;
+            const horaEntrega = document.getElementById('task-time').value;
+            const descripcion = document.getElementById('task-description').value.trim();
+
+            // Validación básica de campos obligatorios
+            if (!titulo || !asignaturaId || !fechaEntrega || !horaEntrega) {
+                showToast('Completa los campos obligatorios');
+                return;
+            }
+
+            const payload = {
+                titulo,
+                asignaturaId: parseInt(asignaturaId),
+                fechaEntrega,       // "2026-06-15"  → LocalDate en Spring
+                horaEntrega,        // "23:59"       → LocalTime en Spring
+                descripcion: descripcion || null,
+            };
+
+            try {
+                const res = await fetch(`${API}/tareas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!res.ok) throw new Error('Error al guardar');
+
+                const json = await res.json();          // { mensaje, tarea: { id, titulo, ... } }
+                closeTaskModal();
+                showToast(`"${json.tarea.titulo}" guardada exitosamente`);
+
+            } catch (err) {
+                console.error(err);
+                showToast('Error al conectar con el servidor');
+            }
+        });
+
+        // ── Menú tarjeta ───────────────────────────────────────────────
+        function toggleCardMenu(btn) {
+            document.querySelectorAll('.card-dropdown.open').forEach(d => {
+                if (d !== btn.nextElementSibling) d.classList.remove('open');
+            });
+            btn.nextElementSibling.classList.toggle('open');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.card-menu'))
+                document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
+        });
+
+        // ── Eliminar tarjeta ───────────────────────────────────────────
         function deleteCard(btn) {
             const card = btn.closest('.subject-card');
             const name = card.querySelector('.subject-name')?.textContent || 'Materia';
-
-          
             card.classList.add('removing');
-
             card.addEventListener('animationend', () => {
                 card.remove();
                 updateSubjectCount();
                 showToast(`"${name}" eliminada`);
             });
-        }
-
-        function updateSubjectCount() {
-            const currentCount = subjectsGrid.children.length;
-            const subtitle = document.querySelector('.section-subtitle');
-            subtitle.textContent = `Semestre 2026-1 · ${currentCount} materias inscritas`;
-            const statValues = document.querySelectorAll('.stat-value');
-            if (statValues.length > 0) statValues[0].textContent = currentCount;
         }
     </script>
 </body>
