@@ -1096,6 +1096,128 @@
             background: var(--gray-400);
         }
 
+        /* ========== VISTA DE CALIFICACIONES ========== */
+        .grades-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .grades-view.active {
+            display: flex;
+        }
+
+        .dashboard-view {
+            display: block;
+        }
+
+        .dashboard-view.hidden {
+            display: none;
+        }
+
+        .grades-view-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            background: var(--blue-50);
+            border-color: var(--blue-200);
+            color: var(--blue-600);
+        }
+
+        .back-btn .material-icons-round {
+            font-size: 20px;
+        }
+
+        .grades-view-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .grades-view-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        /* Estado vacío */
+        .grades-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 60px 0;
+        }
+
+        .grades-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grades-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .grades-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        .grades-add-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
+            margin-top: 8px;
+        }
+
+        .grades-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+        }
+
+        .grades-add-btn .material-icons-round {
+            font-size: 20px;
+        }
+
         /* ========== MODAL CALIFICACIÓN - Resumen porcentaje ========== */
         .grade-percent-summary {
             background: var(--gray-50);
@@ -1302,6 +1424,9 @@
 
         <!-- ===== MAIN CONTENT ===== -->
         <main class="main-content">
+
+            <!-- Vista: Dashboard (por defecto) -->
+            <div class="dashboard-view" id="dashboard-view">
             <div class="section-header">
                 <div>
                     <h2 class="section-title">Mis Materias Actuales</h2>
@@ -1333,7 +1458,7 @@
                     <div class="subject-icon">
                         <span class="material-icons-round">code</span>
                     </div>
-                    <div class="subject-name">Fundamentos de Ing. de Software</div>
+                    <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Fundamentos de Ing. de Software</div>
                     <div class="subject-id">ID: ISIS-2603 · Sección 01</div>
                     <div class="subject-professor">
                         <span class="material-icons-round">person</span>
@@ -1366,7 +1491,7 @@
                     <div class="subject-icon">
                         <span class="material-icons-round">functions</span>
                     </div>
-                    <div class="subject-name">Cálculo Diferencial</div>
+                    <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Cálculo Diferencial</div>
                     <div class="subject-id">ID: MATE-1203 · Sección 03</div>
                     <div class="subject-professor">
                         <span class="material-icons-round">person</span>
@@ -1404,6 +1529,34 @@
                     </button>
                 </div>
             </div>
+
+            </div><!-- /.dashboard-view -->
+
+            <!-- Vista: Calificaciones de asignatura -->
+            <div class="grades-view" id="grades-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" id="grades-back-btn">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <div class="grades-view-title" id="grades-view-title">Calificaciones</div>
+                        <div class="grades-view-subtitle" id="grades-view-subtitle"></div>
+                    </div>
+                </div>
+
+                <!-- Estado vacío -->
+                <div class="grades-empty" id="grades-empty">
+                    <div class="grades-empty-icon">
+                        <span class="material-icons-round">grade</span>
+                    </div>
+                    <p class="grades-empty-text">Aún no hay calificaciones registradas</p>
+                    <button class="grades-add-btn" id="grades-add-btn">
+                        <span class="material-icons-round">add</span>
+                        Agregar
+                    </button>
+                </div>
+            </div><!-- /.grades-view -->
+
         </main>
 
 
@@ -2105,7 +2258,7 @@
             <div class="card-dropdown">
                 <button class="card-dropdown-item" onclick="openGradeModal(this.closest('.subject-card'))">
                     <span class="material-icons-round">grade</span>
-                    Agregar Nueva Calificación
+                    Agregar Calificación
                 </button>
                 <div class="card-dropdown-divider"></div>
                 <button class="card-dropdown-item delete" onclick="deleteCard(this)">
@@ -2118,7 +2271,7 @@
         <div class="subject-icon" style="background:${color.bg};color:${color.text}">
             <span class="material-icons-round">${icon}</span>
         </div>
-        <div class="subject-name">${data.nombre}</div>
+        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
         <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
         <div class="subject-professor">
             <span class="material-icons-round">person</span>
@@ -2230,67 +2383,73 @@
         });
 
         // ── Submit: Guardar Calificación ───────────────────────────────
-        gradeForm.addEventListener('submit', (e) => {
+        document.getElementById('grade-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            e.stopPropagation();
 
-            // Limpiar errores solo de este formulario
-            document.getElementById('grade-name').classList.remove('error');
-            document.getElementById('grade-score').classList.remove('error');
-            document.getElementById('grade-percent').classList.remove('error');
-            document.getElementById('error-grade-name').classList.remove('visible');
-            document.getElementById('error-grade-score').classList.remove('visible');
-            document.getElementById('error-grade-percent').classList.remove('visible');
+            var inputNombre  = document.getElementById('grade-name');
+            var inputNota    = document.getElementById('grade-score');
+            var inputPct     = document.getElementById('grade-percent');
+            var errNombre    = document.getElementById('error-grade-name');
+            var errNota      = document.getElementById('error-grade-score');
+            var errPct       = document.getElementById('error-grade-percent');
 
-            const nombre  = document.getElementById('grade-name').value.trim();
-            const notaRaw = document.getElementById('grade-score').value;
-            const pctRaw  = document.getElementById('grade-percent').value;
-            let valid = true;
+            // Limpiar estado previo
+            inputNombre.classList.remove('error');
+            inputNota.classList.remove('error');
+            inputPct.classList.remove('error');
+            errNombre.style.display = 'none';
+            errNota.style.display   = 'none';
+            errPct.style.display    = 'none';
+
+            var nombre  = inputNombre.value.trim();
+            var notaRaw = inputNota.value;
+            var pctRaw  = inputPct.value;
+            var valid   = true;
 
             // Validar nombre
             if (!nombre) {
-                document.getElementById('grade-name').classList.add('error');
-                document.getElementById('error-grade-name').textContent = 'Este campo es obligatorio';
-                document.getElementById('error-grade-name').classList.add('visible');
+                inputNombre.classList.add('error');
+                errNombre.textContent = 'Este campo es obligatorio';
+                errNombre.style.display = 'block';
                 valid = false;
             }
 
-            // Validar nota (0.0 – 5.0, decimal)
-            const nota = parseFloat(notaRaw);
+            // Validar nota (0.0 – 5.0)
+            var nota = parseFloat(notaRaw);
             if (notaRaw === '' || isNaN(nota) || nota < 0 || nota > 5) {
-                document.getElementById('grade-score').classList.add('error');
-                document.getElementById('error-grade-score').textContent = 'Ingresa un valor entre 0.0 y 5.0';
-                document.getElementById('error-grade-score').classList.add('visible');
+                inputNota.classList.add('error');
+                errNota.textContent = 'Ingresa un valor entre 0.0 y 5.0';
+                errNota.style.display = 'block';
                 valid = false;
             }
 
             // Validar porcentaje (1 – 100)
-            const pct = parseInt(pctRaw);
+            var pct = parseInt(pctRaw, 10);
             if (pctRaw === '' || isNaN(pct) || pct < 1 || pct > 100) {
-                document.getElementById('grade-percent').classList.add('error');
-                document.getElementById('error-grade-percent').textContent = 'Ingresa un valor entre 1% y 100%';
-                document.getElementById('error-grade-percent').classList.add('visible');
+                inputPct.classList.add('error');
+                errPct.textContent = 'Ingresa un valor entre 1% y 100%';
+                errPct.style.display = 'block';
                 valid = false;
-            } else if (activeCardForGrade && activeCardForGrade.dataset.gradeKey) {
+            } else if (activeCardForGrade) {
                 // Validar que no supere el 100% acumulado
-                const gradeKey  = activeCardForGrade.dataset.gradeKey;
-                const usedSoFar = getUsedPercent(gradeKey);
-                if (usedSoFar + pct > 100) {
-                    document.getElementById('grade-percent').classList.add('error');
-                    document.getElementById('error-grade-percent').textContent =
-                        `El porcentaje acumulado (${usedSoFar}% + ${pct}%) supera el 100%`;
-                    document.getElementById('error-grade-percent').classList.add('visible');
+                var key     = activeCardForGrade.dataset.gradeKey || '';
+                var used    = getUsedPercent(key);
+                if (used + pct > 100) {
+                    inputPct.classList.add('error');
+                    errPct.textContent = 'El porcentaje acumulado (' + used + '% + ' + pct + '%) supera el 100%';
+                    errPct.style.display = 'block';
                     valid = false;
                 }
             }
 
-            // Si hay errores, no continuar
             if (!valid) return;
 
             // Guardar en el store
             if (activeCardForGrade) {
-                const gradeKey = activeCardForGrade.dataset.gradeKey;
-                if (!gradesStore[gradeKey]) gradesStore[gradeKey] = [];
-                gradesStore[gradeKey].push({ nombre, nota, porcentaje: pct });
+                var key = activeCardForGrade.dataset.gradeKey;
+                if (!gradesStore[key]) gradesStore[key] = [];
+                gradesStore[key].push({ nombre: nombre, nota: nota, porcentaje: pct });
             }
 
             closeGradeModal();
@@ -2308,6 +2467,54 @@
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.card-menu'))
                 document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
+        });
+
+        // ── Vista de Calificaciones ────────────────────────────────────
+        const dashboardView  = document.getElementById('dashboard-view');
+        const gradesView     = document.getElementById('grades-view');
+        const gradesViewTitle    = document.getElementById('grades-view-title');
+        const gradesViewSubtitle = document.getElementById('grades-view-subtitle');
+        const gradesEmpty    = document.getElementById('grades-empty');
+        const gradesAddBtn   = document.getElementById('grades-add-btn');
+        const gradesBackBtn  = document.getElementById('grades-back-btn');
+
+        let activeCardForView = null;
+
+        function openGradesView(card) {
+            activeCardForView = card;
+
+            const nombre   = card.querySelector('.subject-name').textContent;
+            const subId    = card.querySelector('.subject-id')?.textContent || '';
+
+            gradesViewTitle.textContent    = nombre;
+            gradesViewSubtitle.textContent = subId;
+
+            // Asegurarse de que la tarjeta tenga gradeKey
+            if (!card.dataset.gradeKey) {
+                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
+            }
+
+            const grades = gradesStore[card.dataset.gradeKey] || [];
+
+            // Por ahora solo mostramos el estado vacío
+            gradesEmpty.style.display = grades.length === 0 ? 'flex' : 'none';
+
+            dashboardView.classList.add('hidden');
+            gradesView.classList.add('active');
+        }
+
+        function closeGradesView() {
+            gradesView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            activeCardForView = null;
+        }
+
+        // Botón atrás
+        gradesBackBtn.addEventListener('click', closeGradesView);
+
+        // Botón "+ Agregar" abre el modal de calificación para la tarjeta activa
+        gradesAddBtn.addEventListener('click', () => {
+            if (activeCardForView) openGradeModal(activeCardForView);
         });
 
         // ── Eliminar tarjeta ───────────────────────────────────────────
