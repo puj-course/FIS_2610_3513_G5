@@ -64,4 +64,24 @@ public class NotaService {
         }
         return false;
     }
+    
+    public double calcularPromedio(Long asignaturaId) {
+
+        List<Nota> notas = notaRepository.findByAsignaturaId(asignaturaId);
+
+        if (notas.isEmpty()) {
+            return 0.0;
+        }
+
+        double suma = 0.0;
+
+        for (Nota nota : notas) {
+            double calificacion = nota.getCalificacion();
+            double porcentaje = nota.getPorcentaje();
+
+            suma += calificacion * (porcentaje / 100);
+        }
+
+        return suma;
+    }
 }
