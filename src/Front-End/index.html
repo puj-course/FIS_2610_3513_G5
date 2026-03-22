@@ -1256,7 +1256,7 @@
 
         /* Columna del ícono de eliminar */
         .grades-table thead th:last-child {
-            width: 48px;
+            width: 80px;
             text-align: center;
         }
 
@@ -1296,18 +1296,33 @@
             padding: 8px;
         }
 
+        /* Botones de acción de fila (lápiz y caneca) */
+        .grade-row-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .grade-edit-btn,
         .grade-delete-btn {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             border: none;
             background: transparent;
-            color: var(--gray-400);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            color: var(--gray-400);
+            flex-shrink: 0;
+        }
+
+        .grade-edit-btn:hover {
+            background: var(--blue-50);
+            color: var(--blue-600);
         }
 
         .grade-delete-btn:hover {
@@ -1315,8 +1330,54 @@
             color: #E53935;
         }
 
+        .grade-edit-btn .material-icons-round,
         .grade-delete-btn .material-icons-round {
             font-size: 18px;
+        }
+
+        /* Fila en modo edición */
+        .grades-table tbody tr.editing {
+            background: var(--blue-50);
+        }
+
+        .grades-table tbody tr.editing td {
+            padding: 8px 20px;
+        }
+
+        /* Inputs dentro de la tabla al editar */
+        .grade-inline-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1.5px solid var(--blue-300);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--gray-700);
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+        }
+
+        .grade-inline-input:focus {
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+        }
+
+        .grade-inline-input.error {
+            border-color: #E53935;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+        }
+
+        /* El input de nombre es text-align left */
+        .grade-inline-input.name-input {
+            text-align: left;
+            min-width: 140px;
+        }
+
+        .grade-inline-input.number-input {
+            max-width: 80px;
         }
 
         /* Nota con badge de color */
@@ -2198,6 +2259,13 @@
             return 'bad';
         }
 
+        /** Actualiza solo el promedio en pantalla */
+        function refreshAverage(key) {
+            const avg = calcWeightedAverage(key);
+            gradesAverageValue.textContent = avg.toFixed(2);
+            gradesAverageValue.className   = 'grades-average-value ' + avgClass(avg);
+        }
+
         /** Renderiza (o actualiza) la tabla de calificaciones de la tarjeta activa */
         function renderGradesTable(card) {
             if (!card) return;
@@ -2205,56 +2273,147 @@
             const grades = gradesStore[key] || [];
 
             if (grades.length === 0) {
-                gradesEmpty.style.display          = 'flex';
+                gradesEmpty.style.display = 'flex';
                 gradesTableContainer.classList.remove('visible');
                 return;
             }
 
-            // Hay calificaciones: ocultar estado vacío, mostrar tabla
             gradesEmpty.style.display = 'none';
             gradesTableContainer.classList.add('visible');
-
-            // Vaciar cuerpo de la tabla
             gradesTableBody.innerHTML = '';
 
             grades.forEach((g, idx) => {
                 const tr = document.createElement('tr');
                 tr.dataset.gradeIndex = idx;
+                tr.dataset.gradeKey   = key;
                 tr.innerHTML = `
-                    <td>${g.nombre}</td>
-                    <td>
+                    <td class="cell-nombre">${g.nombre}</td>
+                    <td class="cell-nota" style="text-align:center;">
                         <span class="grade-score-badge ${scoreClass(g.nota)}">${g.nota.toFixed(1)}</span>
                     </td>
-                    <td>
+                    <td class="cell-pct" style="text-align:center;">
                         <span class="grade-percent-pill">${g.porcentaje}%</span>
                     </td>
-                    <td>
-                        <button class="grade-delete-btn" title="Eliminar calificación"
-                                onclick="deleteGradeRow(this, '${key}', ${idx})">
-                            <span class="material-icons-round">delete_outline</span>
-                        </button>
+                    <td style="text-align:center; padding:8px; white-space:nowrap;">
+                        <div class="grade-row-actions">
+                            <button class="grade-edit-btn" title="Editar" onclick="toggleEditRow(this)">
+                                <span class="material-icons-round">edit</span>
+                            </button>
+                            <button class="grade-delete-btn" title="Eliminar" onclick="deleteGradeRow(this)">
+                                <span class="material-icons-round">delete_outline</span>
+                            </button>
+                        </div>
                     </td>
                 `;
                 gradesTableBody.appendChild(tr);
             });
 
-            // Actualizar promedio
-            const avg = calcWeightedAverage(key);
-            gradesAverageValue.textContent = avg.toFixed(2);
-            gradesAverageValue.className   = 'grades-average-value ' + avgClass(avg);
+            refreshAverage(key);
+        }
+
+        /** Activa / desactiva el modo edición inline de una fila */
+        function toggleEditRow(btn) {
+            const tr  = btn.closest('tr');
+            const key = tr.dataset.gradeKey;
+            const idx = parseInt(tr.dataset.gradeIndex, 10);
+
+            if (tr.classList.contains('editing')) {
+                // ── Guardar cambios ──────────────────────────────────
+                const inputNombre = tr.querySelector('.grade-inline-input.name-input');
+                const inputNota   = tr.querySelector('.grade-inline-input.nota-input');
+                const inputPct    = tr.querySelector('.grade-inline-input.pct-input');
+
+                const newNombre = inputNombre.value.trim();
+                const newNota   = parseFloat(inputNota.value);
+                const newPct    = parseInt(inputPct.value, 10);
+
+                // Validación rápida
+                let valid = true;
+                if (!newNombre) { inputNombre.classList.add('error'); valid = false; }
+                else inputNombre.classList.remove('error');
+
+                if (isNaN(newNota) || newNota < 0 || newNota > 5) { inputNota.classList.add('error'); valid = false; }
+                else inputNota.classList.remove('error');
+
+                // Verificar que el porcentaje no exceda 100 considerando el resto de filas
+                const otherPct = (gradesStore[key] || []).reduce((s, g, i) => i !== idx ? s + g.porcentaje : s, 0);
+                if (isNaN(newPct) || newPct < 1 || newPct > 100 || otherPct + newPct > 100) {
+                    inputPct.classList.add('error'); valid = false;
+                } else inputPct.classList.remove('error');
+
+                if (!valid) return;
+
+                // Persistir en el store
+                gradesStore[key][idx] = { nombre: newNombre, nota: newNota, porcentaje: newPct };
+
+                // Volver a modo vista
+                tr.classList.remove('editing');
+                tr.querySelector('.cell-nombre').textContent = newNombre;
+                tr.querySelector('.cell-nota').innerHTML =
+                    `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
+                tr.querySelector('.cell-pct').innerHTML =
+                    `<span class="grade-percent-pill">${newPct}%</span>`;
+
+                btn.querySelector('.material-icons-round').textContent = 'edit';
+                btn.title = 'Editar';
+
+                refreshAverage(key);
+
+            } else {
+                // ── Activar modo edición ─────────────────────────────
+                // Cerrar cualquier otra fila que esté en modo edición
+                gradesTableBody.querySelectorAll('tr.editing').forEach(row => {
+                    if (row !== tr) {
+                        const editBtn = row.querySelector('.grade-edit-btn');
+                        if (editBtn) toggleEditRow(editBtn);   // guardar cambios de la otra fila
+                    }
+                });
+
+                const g = gradesStore[key][idx];
+                tr.classList.add('editing');
+
+                tr.querySelector('.cell-nombre').innerHTML =
+                    `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
+                tr.querySelector('.cell-nota').innerHTML =
+                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
+                tr.querySelector('.cell-pct').innerHTML =
+                    `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
+
+                // Actualizar promedio en tiempo real mientras el usuario escribe
+                tr.querySelectorAll('.grade-inline-input').forEach(input => {
+                    input.addEventListener('input', () => {
+                        const tmpNota = parseFloat(tr.querySelector('.nota-input').value);
+                        const tmpPct  = parseInt(tr.querySelector('.pct-input').value, 10);
+                        if (!isNaN(tmpNota) && !isNaN(tmpPct) && tmpNota >= 0 && tmpNota <= 5 && tmpPct >= 1 && tmpPct <= 100) {
+                            // Calcular promedio provisional sin tocar el store
+                            const provisional = (gradesStore[key] || []).reduce((sum, gr, i) => {
+                                if (i === idx) return sum + tmpNota * (tmpPct / 100);
+                                return sum + gr.nota * (gr.porcentaje / 100);
+                            }, 0);
+                            gradesAverageValue.textContent = provisional.toFixed(2);
+                            gradesAverageValue.className   = 'grades-average-value ' + avgClass(provisional);
+                        }
+                    });
+                });
+
+                btn.querySelector('.material-icons-round').textContent = 'check';
+                btn.title = 'Guardar';
+
+                // Foco en el campo nombre
+                tr.querySelector('.name-input').focus();
+            }
         }
 
         /** Elimina una calificación individual de la tabla */
-        function deleteGradeRow(btn, key, idx) {
-            const tr = btn.closest('tr');
-            tr.classList.add('removing');
+        function deleteGradeRow(btn) {
+            const tr  = btn.closest('tr');
+            const key = tr.dataset.gradeKey;
+            const idx = parseInt(tr.dataset.gradeIndex, 10);
 
+            tr.classList.add('removing');
             tr.addEventListener('animationend', () => {
-                // Eliminar del store
                 gradesStore[key].splice(idx, 1);
-                // Re-renderizar con la tarjeta activa en la vista
                 renderGradesTable(activeCardForView);
-                // Actualizar el resumen de porcentaje del modal si está abierto
                 if (activeCardForGrade && activeCardForGrade.dataset.gradeKey === key) {
                     updatePercentSummary(key);
                 }
