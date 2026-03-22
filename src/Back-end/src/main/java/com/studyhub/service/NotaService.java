@@ -17,6 +17,19 @@ public class NotaService {
     }
 
     public Nota agregarNota(Nota nota) {
+        if (nota.getPorcentaje() < 0 || nota.getPorcentaje() > 100) {
+            throw new RuntimeException("El porcentaje debe estar entre 0 y 100");
+        }
+        List<Nota> notas = notaRepository.findByAsignaturaId(nota.getAsignatura().getId());
+
+        double suma = 0.0;
+        for (Nota n : notas) {
+            suma += n.getPorcentaje();
+        }
+        if (suma + nota.getPorcentaje() > 100) {
+            throw new RuntimeException("La suma de porcentajes no puede superar el 100%");
+        }
+
         return notaRepository.save(nota);
     }
 
