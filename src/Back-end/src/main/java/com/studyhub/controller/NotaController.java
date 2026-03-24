@@ -103,4 +103,15 @@ public class NotaController {
             return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
         }
     }
+    
+    @GetMapping("/promedio/{asignaturaId}")
+    public ResponseEntity<Map<String, Object>> obtenerPromedio(@PathVariable Long asignaturaId) {
+
+        double promedio = notaService.calcularPromedio(asignaturaId);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("promedio", promedio);
+
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
 }
