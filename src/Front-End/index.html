@@ -2652,7 +2652,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="grade-score">
-                                Nota <span class="required">*</span>
+                                Nota
                             </label>
                             <input class="form-input" type="number" id="grade-score"
                                 placeholder="Ej: 4.5" min="0" max="5" step="0.1" required>
@@ -2752,15 +2752,21 @@
 
         /** Clase CSS del badge según la nota (escala 0-5) */
         function scoreClass(nota) {
+            if (nota === null) return 'mid';
             if (nota >= 3.5) return 'high';
             if (nota >= 3.0) return 'mid';
             return 'low';
         }
 
-        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100) */
+        /** Texto del badge de nota */
+        function scoreLabel(nota) {
+            return nota === null ? '—' : nota.toFixed(1);
+        }
+
+        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100), ignora entradas sin nota */
         function calcWeightedAverage(key) {
             const list = gradesStore[key] || [];
-            return list.reduce((sum, g) => sum + g.nota * (g.porcentaje / 100), 0);
+            return list.reduce((sum, g) => g.nota !== null ? sum + g.nota * (g.porcentaje / 100) : sum, 0);
         }
 
         /** Clase CSS del promedio final */
@@ -2799,7 +2805,7 @@
                 tr.innerHTML = `
                     <td class="cell-nombre">${g.nombre}</td>
                     <td class="cell-nota" style="text-align:center;">
-                        <span class="grade-score-badge ${scoreClass(g.nota)}">${g.nota.toFixed(1)}</span>
+                        <span class="grade-score-badge ${scoreClass(g.nota)}">${scoreLabel(g.nota)}</span>
                     </td>
                     <td class="cell-pct" style="text-align:center;">
                         <span class="grade-percent-pill">${g.porcentaje}%</span>
@@ -2860,7 +2866,7 @@
                 tr.classList.remove('editing');
                 tr.querySelector('.cell-nombre').textContent = newNombre;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
+                    `<span class="grade-score-badge ${scoreClass(newNota)}">${scoreLabel(newNota)}</span>`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<span class="grade-percent-pill">${newPct}%</span>`;
 
@@ -2885,7 +2891,7 @@
                 tr.querySelector('.cell-nombre').innerHTML =
                     `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
+                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota !== null ? g.nota.toFixed(1) : ''}">`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
 
@@ -3618,7 +3624,7 @@
             }
 
             const nota = parseFloat(notaRaw);
-            if (notaRaw === '' || isNaN(nota) || nota < 0 || nota > 5) {
+            if (notaRaw !== '' && (isNaN(nota) || nota < 0 || nota > 5)) {
                 inputNota.classList.add('error');
                 errNota.textContent   = 'Ingresa un valor entre 0.0 y 5.0';
                 errNota.style.display = 'block';
@@ -3648,7 +3654,7 @@
             if (activeCardForGrade) {
                 const key = activeCardForGrade.dataset.gradeKey;
                 if (!gradesStore[key]) gradesStore[key] = [];
-                gradesStore[key].push({ nombre, nota, porcentaje: pct });
+                gradesStore[key].push({ nombre, nota: notaRaw === '' ? null : nota, porcentaje: pct });
             }
 
             closeGradeModal();
