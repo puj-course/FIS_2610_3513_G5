@@ -2046,6 +2046,133 @@
             font-weight: 500;
         }
 
+        /* ========== VISTA: MIS TAREAS (GLOBAL) ========== */
+        .all-tasks-view {
+            display: none;
+            flex-direction: column;
+        }
+
+        .all-tasks-view.active {
+            display: flex;
+        }
+
+        .all-tasks-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .all-tasks-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Tabla global de tareas con scroll horizontal */
+        .all-tasks-wrap {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .all-tasks-wrap::-webkit-scrollbar { height: 6px; }
+        .all-tasks-wrap::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+        .all-tasks-wrap::-webkit-scrollbar-thumb { background: var(--blue-200); border-radius: 3px; }
+        .all-tasks-wrap::-webkit-scrollbar-thumb:hover { background: var(--blue-400); }
+
+        .all-tasks-table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+        }
+
+        .all-tasks-table thead tr {
+            background: var(--blue-700);
+        }
+
+        .all-tasks-table thead th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .all-tasks-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s ease;
+            animation: rowFadeIn 0.3s ease forwards;
+        }
+
+        .all-tasks-table tbody tr:last-child { border-bottom: none; }
+        .all-tasks-table tbody tr:hover { background: var(--gray-50); }
+
+        .all-tasks-table tbody td {
+            padding: 15px 20px;
+            font-size: 13px;
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        /* Pill de asignatura */
+        .task-subject-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--blue-50);
+            color: var(--blue-700);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
+        .task-subject-pill .subj-color-dot {
+            width: 8px;
+            height: 8px;
+        }
+
+        /* Estado vacío global */
+        .all-tasks-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 72px 0;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .all-tasks-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .all-tasks-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .all-tasks-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
         /* ===== FAB DROPDOWN MENU ===== */
         .fab-menu {
             position: absolute;
@@ -2123,7 +2250,7 @@
                         <span class="material-icons-round">menu_book</span>
                         Mis Materias
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-mis-tareas" onclick="openAllTasksView()">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
                     </div>
@@ -2353,6 +2480,29 @@
                 </div>
                 <div id="tasks-list-content"></div>
             </div><!-- /.tasks-view -->
+
+            <!-- Vista: Mis Tareas (global) -->
+            <div class="all-tasks-view" id="all-tasks-view">
+                <div class="all-tasks-header">
+                    <div class="all-tasks-header-left">
+                        <button class="back-btn" id="all-tasks-back-btn">
+                            <span class="material-icons-round">arrow_back</span>
+                        </button>
+                        <div>
+                            <div class="subjects-list-title">
+                                Mis Tareas
+                                <span class="subjects-count-badge" id="all-tasks-count-badge">0</span>
+                            </div>
+                            <div class="subjects-list-subtitle">Todas las tareas registradas</div>
+                        </div>
+                    </div>
+                    <button class="grades-add-inline-btn" onclick="openTaskModal()">
+                        <span class="material-icons-round">add</span>
+                        Nueva tarea
+                    </button>
+                </div>
+                <div id="all-tasks-content"></div>
+            </div><!-- /.all-tasks-view -->
 
         </main>
 
@@ -3257,10 +3407,122 @@
             gradesView.classList.remove('active');
             subjectsListView.classList.remove('active');
             tasksView.classList.remove('active');
+            allTasksView.classList.remove('active');
             dashboardView.classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('nav-dashboard').classList.add('active');
         }
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA: MIS TAREAS (GLOBAL)
+        // ══════════════════════════════════════════════════════════════
+
+        const allTasksView      = document.getElementById('all-tasks-view');
+        const allTasksContent   = document.getElementById('all-tasks-content');
+        const allTasksCountBadge= document.getElementById('all-tasks-count-badge');
+        const allTasksBackBtn   = document.getElementById('all-tasks-back-btn');
+
+        /** Recopila TODAS las tareas del store, añadiendo el nombre de la asignatura */
+        function getAllTasks() {
+            const all = [];
+            Object.entries(tasksStore).forEach(([subjectName, tasks]) => {
+                tasks.forEach(t => all.push({ ...t, asignatura: subjectName }));
+            });
+            // Ordenar: próximas primero (por fecha)
+            all.sort((a, b) => {
+                const da = new Date(`${a.fechaEntrega}T${a.horaEntrega || '23:59'}`);
+                const db = new Date(`${b.fechaEntrega}T${b.horaEntrega || '23:59'}`);
+                return da - db;
+            });
+            return all;
+        }
+
+        /** Renderiza la tabla global de todas las tareas */
+        function renderAllTasksList() {
+            const all = getAllTasks();
+            allTasksCountBadge.textContent = all.length;
+
+            if (all.length === 0) {
+                allTasksContent.innerHTML = `
+                    <div class="all-tasks-empty">
+                        <div class="all-tasks-empty-icon">
+                            <span class="material-icons-round">assignment</span>
+                        </div>
+                        <p class="all-tasks-empty-text">Aún no hay tareas registradas</p>
+                    </div>`;
+                return;
+            }
+
+            const rows = all.map((t, i) => {
+                const st       = taskStatus(t.fechaEntrega, t.horaEntrega);
+                const dotColor = dotColors[
+                    Array.from(subjectsGrid.querySelectorAll('.subject-card'))
+                        .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === t.asignatura)
+                    % dotColors.length
+                ] || dotColors[0];
+
+                return `
+                    <tr>
+                        <td class="task-title-cell">
+                            <div class="task-title-text">${t.titulo}</div>
+                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="task-subject-pill">
+                                <span class="subj-color-dot" style="background:${dotColor};"></span>
+                                ${t.asignatura}
+                            </span>
+                        </td>
+                        <td class="task-date-cell">
+                            <div class="task-date-main">${formatDate(t.fechaEntrega)}</div>
+                            ${t.horaEntrega ? `<div class="task-time-text">${t.horaEntrega}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="task-status-badge ${st.key}">
+                                <span class="material-icons-round">${st.icon}</span>
+                                ${st.label}
+                            </span>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            allTasksContent.innerHTML = `
+                <div class="all-tasks-wrap">
+                    <table class="all-tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Asignatura</th>
+                                <th>Fecha de entrega</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        /** Abre la vista global de Mis Tareas */
+        function openAllTasksView() {
+            renderAllTasksList();
+            dashboardView.classList.add('hidden');
+            gradesView.classList.remove('active');
+            subjectsListView.classList.remove('active');
+            tasksView.classList.remove('active');
+            allTasksView.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-mis-tareas').classList.add('active');
+        }
+
+        /** Cierra la vista global de Mis Tareas y vuelve al dashboard */
+        function closeAllTasksView() {
+            allTasksView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-dashboard').classList.add('active');
+        }
+
+        allTasksBackBtn.addEventListener('click', closeAllTasksView);
 
         // ══════════════════════════════════════════════════════════════
         //  MODAL ASIGNATURA
@@ -3581,6 +3843,7 @@
 
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
+                if (allTasksView.classList.contains('active')) renderAllTasksList();
             } catch (err) {
                 console.error(err);
                 // Guardar en tasksStore igualmente para poder usar la vista sin backend
@@ -3592,6 +3855,7 @@
                 }
                 closeTaskModal();
                 showToast(`"${titulo}" guardada exitosamente`);
+                if (allTasksView.classList.contains('active')) renderAllTasksList();
             }
         });
 
