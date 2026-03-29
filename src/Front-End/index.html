@@ -3093,6 +3093,8 @@
         // 'dashboard' | 'subjects-list'
         let gradesPreviousView = 'dashboard';
 
+        // ── Calificaciones ─────────────────────────────────────────────
+
         /** Abre la vista de calificaciones desde una tarjeta del dashboard */
         function openGradesViewFromDashboard(card) {
             gradesPreviousView = 'dashboard';
@@ -3114,20 +3116,18 @@
             }
 
             renderGradesTable(card);
-
-            dashboardView.classList.add('hidden');
-            gradesView.classList.add('active');
+            showView('grades');
         }
 
         function closeGradesView() {
-            gradesView.classList.remove('active');
             activeCardForView = null;
-
             if (gradesPreviousView === 'subjects-list') {
                 renderSubjectsList();
-                subjectsListView.classList.add('active');
+                showView('subjects-list');
+                setNavActive('nav-mis-materias');
             } else {
-                dashboardView.classList.remove('hidden');
+                showView('dashboard');
+                setNavActive('nav-dashboard');
             }
         }
 
@@ -3268,21 +3268,14 @@
         /** Abre la vista de Mis Materias */
         function openSubjectsListView() {
             renderSubjectsList();
-            dashboardView.classList.add('hidden');
-            gradesView.classList.remove('active');
-            subjectsListView.classList.add('active');
-            // Actualizar nav activo
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-mis-materias').classList.add('active');
+            showView('subjects-list');
+            setNavActive('nav-mis-materias');
         }
 
         /** Cierra la vista de Mis Materias y vuelve al dashboard */
         function closeSubjectsListView() {
-            subjectsListView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
-            // Restaurar nav activo al dashboard
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.querySelector('.nav-item:first-child').classList.add('active');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
         }
 
         /** Desde la lista de materias, navega directo a las calificaciones de esa tarjeta */
@@ -3290,7 +3283,7 @@
             const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
             if (!cards[cardIndex]) return;
             gradesPreviousView = 'subjects-list';
-            subjectsListView.classList.remove('active');
+            showView('grades');
             openGradesView(cards[cardIndex]);
         }
 
@@ -3385,32 +3378,24 @@
 
             tasksViewTitle.textContent    = nombre;
             tasksViewSubtitle.textContent = 'Tareas registradas';
-
             renderTasksList(nombre);
-
-            subjectsListView.classList.remove('active');
-            dashboardView.classList.add('hidden');
-            tasksView.classList.add('active');
+            showView('tasks');
         }
 
         /** Cierra la vista de tareas y vuelve a la lista de materias */
         function closeTasksView() {
-            tasksView.classList.remove('active');
+            tasksListContent.innerHTML = '';
             renderSubjectsList();
-            subjectsListView.classList.add('active');
+            showView('subjects-list');
+            setNavActive('nav-mis-materias');
         }
 
         tasksBackBtn.addEventListener('click', closeTasksView);
 
         /** Cierra todas las vistas y vuelve al dashboard */
         function goToDashboard() {
-            gradesView.classList.remove('active');
-            subjectsListView.classList.remove('active');
-            tasksView.classList.remove('active');
-            allTasksView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-dashboard').classList.add('active');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
         }
 
         // ══════════════════════════════════════════════════════════════
@@ -3421,6 +3406,31 @@
         const allTasksContent   = document.getElementById('all-tasks-content');
         const allTasksCountBadge= document.getElementById('all-tasks-count-badge');
         const allTasksBackBtn   = document.getElementById('all-tasks-back-btn');
+
+        // ══════════════════════════════════════════════════════════════
+        //  NAVEGACIÓN CENTRALIZADA — definida aquí para que todas las
+        //  constantes de vistas ya estén inicializadas.
+        // ══════════════════════════════════════════════════════════════
+
+        /** Muestra exactamente UNA vista y oculta todas las demás. */
+        function showView(view) {
+            if (view === 'dashboard') {
+                dashboardView.classList.remove('hidden');
+            } else {
+                dashboardView.classList.add('hidden');
+            }
+            gradesView.classList.toggle('active',        view === 'grades');
+            subjectsListView.classList.toggle('active',  view === 'subjects-list');
+            tasksView.classList.toggle('active',         view === 'tasks');
+            allTasksView.classList.toggle('active',      view === 'all-tasks');
+        }
+
+        /** Actualiza el ítem activo del sidebar */
+        function setNavActive(navId) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const el = document.getElementById(navId);
+            if (el) el.classList.add('active');
+        }
 
         /** Recopila TODAS las tareas del store, añadiendo el nombre de la asignatura */
         function getAllTasks() {
@@ -3505,21 +3515,14 @@
         /** Abre la vista global de Mis Tareas */
         function openAllTasksView() {
             renderAllTasksList();
-            dashboardView.classList.add('hidden');
-            gradesView.classList.remove('active');
-            subjectsListView.classList.remove('active');
-            tasksView.classList.remove('active');
-            allTasksView.classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-mis-tareas').classList.add('active');
+            showView('all-tasks');
+            setNavActive('nav-mis-tareas');
         }
 
         /** Cierra la vista global de Mis Tareas y vuelve al dashboard */
         function closeAllTasksView() {
-            allTasksView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-dashboard').classList.add('active');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
         }
 
         allTasksBackBtn.addEventListener('click', closeAllTasksView);
