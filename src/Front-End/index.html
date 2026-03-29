@@ -1569,6 +1569,610 @@
         .grade-percent-summary.warning .grade-percent-value { color: #F9A825; }
         .grade-percent-summary.danger  .grade-percent-value { color: #E53935; }
 
+        /* ========== VISTA: MIS MATERIAS ========== */
+        .subjects-list-view {
+            display: none;
+            flex-direction: column;
+        }
+
+        .subjects-list-view.active {
+            display: flex;
+        }
+
+        .subjects-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .subjects-list-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .subjects-list-title-wrap .subjects-list-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .subjects-list-title-wrap .subjects-list-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .subjects-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--blue-600);
+            color: var(--white);
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 20px;
+            padding: 3px 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Tabla de materias */
+        .subjects-list-wrap {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+            overflow-y: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Barra de scroll horizontal visible y estilizada */
+        .subjects-list-wrap::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .subjects-list-wrap::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        .subjects-list-wrap::-webkit-scrollbar-thumb {
+            background: var(--blue-200);
+            border-radius: 3px;
+        }
+
+        .subjects-list-wrap::-webkit-scrollbar-thumb:hover {
+            background: var(--blue-400);
+        }
+
+        .subjects-list-table {
+            width: 100%;
+            min-width: 680px;
+            border-collapse: collapse;
+        }
+
+        .subjects-list-table thead tr {
+            background: var(--blue-700);
+        }
+
+        .subjects-list-table thead th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .subjects-list-table thead th:last-child {
+            text-align: center;
+            width: 220px;
+        }
+
+        /* Contenedor de los dos botones de acción */
+        .subj-actions-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .subj-view-btn.tasks {
+            border-color: var(--gray-300);
+            color: var(--gray-600);
+        }
+
+        .subj-view-btn.tasks:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+            color: var(--gray-700);
+        }
+
+        .subjects-list-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s ease;
+        }
+
+        .subjects-list-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .subjects-list-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .subjects-list-table tbody td {
+            padding: 16px 20px;
+            font-size: 13px;
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        .subjects-list-table tbody td:last-child {
+            text-align: center;
+        }
+
+        /* Celda de nombre con acento de color */
+        .subj-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .subj-color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .subj-name-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            line-height: 1.3;
+        }
+
+        .subj-code-text {
+            font-size: 11px;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Profesor */
+        .subj-prof-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray-600);
+        }
+
+        .subj-prof-cell .material-icons-round {
+            font-size: 15px;
+            color: var(--gray-400);
+        }
+
+        /* Horario */
+        .subj-schedule-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray-500);
+            font-size: 12px;
+        }
+
+        .subj-schedule-cell .material-icons-round {
+            font-size: 15px;
+            color: var(--gray-400);
+        }
+
+        /* Créditos pill */
+        .subj-credits-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--blue-50);
+            color: var(--blue-600);
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 20px;
+            padding: 3px 12px;
+            white-space: nowrap;
+        }
+
+        /* Periodo pill */
+        .subj-period-pill {
+            display: inline-block;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 20px;
+            padding: 3px 10px;
+        }
+
+        /* Botón ver calificaciones */
+        .subj-view-btn {
+            padding: 7px 16px;
+            background: transparent;
+            border: 1.5px solid var(--blue-200);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--blue-600);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .subj-view-btn:hover {
+            background: var(--blue-50);
+            border-color: var(--blue-400);
+        }
+
+        .subj-view-btn .material-icons-round {
+            font-size: 15px;
+        }
+
+        /* Estado vacío de la lista */
+        .subjects-list-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 72px 0;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .subjects-list-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .subjects-list-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .subjects-list-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        /* Animación entrada de filas */
+        @keyframes rowFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .subjects-list-table tbody tr {
+            animation: rowFadeIn 0.3s ease forwards;
+        }
+
+        .subjects-list-table tbody tr:nth-child(2) { animation-delay: 0.05s; }
+        .subjects-list-table tbody tr:nth-child(3) { animation-delay: 0.10s; }
+        .subjects-list-table tbody tr:nth-child(4) { animation-delay: 0.15s; }
+        .subjects-list-table tbody tr:nth-child(5) { animation-delay: 0.20s; }
+        .subjects-list-table tbody tr:nth-child(n+6) { animation-delay: 0.25s; }
+
+        /* ========== VISTA: TAREAS DE ASIGNATURA ========== */
+        .tasks-view {
+            display: none;
+            flex-direction: column;
+        }
+
+        .tasks-view.active {
+            display: flex;
+        }
+
+        .tasks-view-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .tasks-view-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .tasks-view-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        /* Tabla de tareas */
+        .tasks-table-wrap {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tasks-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tasks-table thead tr {
+            background: var(--blue-700);
+        }
+
+        .tasks-table thead th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .tasks-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s ease;
+            animation: rowFadeIn 0.3s ease forwards;
+        }
+
+        .tasks-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .tasks-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .tasks-table tbody td {
+            padding: 15px 20px;
+            font-size: 13px;
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        /* Título de tarea con descripción debajo */
+        .task-title-cell .task-title-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .task-title-cell .task-desc-text {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 2px;
+        }
+
+        /* Fecha / hora */
+        .task-date-cell {
+            white-space: nowrap;
+        }
+
+        .task-date-cell .task-date-main {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .task-date-cell .task-time-text {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 2px;
+        }
+
+        /* Badge de estado */
+        .task-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .task-status-badge .material-icons-round {
+            font-size: 14px;
+        }
+
+        .task-status-badge.pending {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .task-status-badge.upcoming {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .task-status-badge.overdue {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Estado vacío de tareas */
+        .tasks-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 72px 0;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .tasks-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tasks-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .tasks-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        /* ========== VISTA: MIS TAREAS (GLOBAL) ========== */
+        .all-tasks-view {
+            display: none;
+            flex-direction: column;
+        }
+
+        .all-tasks-view.active {
+            display: flex;
+        }
+
+        .all-tasks-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .all-tasks-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Tabla global de tareas con scroll horizontal */
+        .all-tasks-wrap {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .all-tasks-wrap::-webkit-scrollbar { height: 6px; }
+        .all-tasks-wrap::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+        .all-tasks-wrap::-webkit-scrollbar-thumb { background: var(--blue-200); border-radius: 3px; }
+        .all-tasks-wrap::-webkit-scrollbar-thumb:hover { background: var(--blue-400); }
+
+        .all-tasks-table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+        }
+
+        .all-tasks-table thead tr {
+            background: var(--blue-700);
+        }
+
+        .all-tasks-table thead th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .all-tasks-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s ease;
+            animation: rowFadeIn 0.3s ease forwards;
+        }
+
+        .all-tasks-table tbody tr:last-child { border-bottom: none; }
+        .all-tasks-table tbody tr:hover { background: var(--gray-50); }
+
+        .all-tasks-table tbody td {
+            padding: 15px 20px;
+            font-size: 13px;
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        /* Pill de asignatura */
+        .task-subject-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--blue-50);
+            color: var(--blue-700);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
+        .task-subject-pill .subj-color-dot {
+            width: 8px;
+            height: 8px;
+        }
+
+        /* Estado vacío global */
+        .all-tasks-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 72px 0;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .all-tasks-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .all-tasks-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .all-tasks-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
         /* ===== FAB DROPDOWN MENU ===== */
         .fab-menu {
             position: absolute;
@@ -1638,15 +2242,15 @@
                 </div>
 
                 <nav class="sidebar-nav">
-                    <div class="nav-item active">
+                    <div class="nav-item active" id="nav-dashboard" onclick="goToDashboard()">
                         <span class="material-icons-round">dashboard</span>
                         Dashboard
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-mis-materias" onclick="openSubjectsListView()">
                         <span class="material-icons-round">menu_book</span>
                         Mis Materias
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-mis-tareas" onclick="openAllTasksView()">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
                     </div>
@@ -1717,7 +2321,7 @@
                         <div class="subject-icon">
                             <span class="material-icons-round">code</span>
                         </div>
-                        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Fundamentos de Ing. de Software</div>
+                        <div class="subject-name" onclick="openGradesViewFromDashboard(this.closest('.subject-card'))" style="cursor:pointer;">Fundamentos de Ing. de Software</div>
                         <div class="subject-id">ID: ISIS-2603 · Sección 01</div>
                         <div class="subject-professor">
                             <span class="material-icons-round">person</span>
@@ -1750,7 +2354,7 @@
                         <div class="subject-icon">
                             <span class="material-icons-round">functions</span>
                         </div>
-                        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Cálculo Diferencial</div>
+                        <div class="subject-name" onclick="openGradesViewFromDashboard(this.closest('.subject-card'))" style="cursor:pointer;">Cálculo Diferencial</div>
                         <div class="subject-id">ID: MATE-1203 · Sección 03</div>
                         <div class="subject-professor">
                             <span class="material-icons-round">person</span>
@@ -1843,6 +2447,62 @@
                     </div>
                 </div>
             </div><!-- /.grades-view -->
+
+            <!-- Vista: Mis Materias -->
+            <div class="subjects-list-view" id="subjects-list-view">
+                <div class="subjects-list-header">
+                    <div class="subjects-list-header-left">
+                        <button class="back-btn" id="subjects-list-back-btn">
+                            <span class="material-icons-round">arrow_back</span>
+                        </button>
+                        <div class="subjects-list-title-wrap">
+                            <div class="subjects-list-title">
+                                Mis Materias
+                                <span class="subjects-count-badge" id="subjects-count-badge">0</span>
+                            </div>
+                            <div class="subjects-list-subtitle" id="subjects-list-subtitle">Semestre 2026-1</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="subjects-list-content"></div>
+            </div><!-- /.subjects-list-view -->
+
+            <!-- Vista: Tareas de asignatura -->
+            <div class="tasks-view" id="tasks-view">
+                <div class="tasks-view-header">
+                    <button class="back-btn" id="tasks-back-btn">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <div class="tasks-view-title" id="tasks-view-title">Tareas</div>
+                        <div class="tasks-view-subtitle" id="tasks-view-subtitle"></div>
+                    </div>
+                </div>
+                <div id="tasks-list-content"></div>
+            </div><!-- /.tasks-view -->
+
+            <!-- Vista: Mis Tareas (global) -->
+            <div class="all-tasks-view" id="all-tasks-view">
+                <div class="all-tasks-header">
+                    <div class="all-tasks-header-left">
+                        <button class="back-btn" id="all-tasks-back-btn">
+                            <span class="material-icons-round">arrow_back</span>
+                        </button>
+                        <div>
+                            <div class="subjects-list-title">
+                                Mis Tareas
+                                <span class="subjects-count-badge" id="all-tasks-count-badge">0</span>
+                            </div>
+                            <div class="subjects-list-subtitle">Todas las tareas registradas</div>
+                        </div>
+                    </div>
+                    <button class="grades-add-inline-btn" onclick="openTaskModal()">
+                        <span class="material-icons-round">add</span>
+                        Nueva tarea
+                    </button>
+                </div>
+                <div id="all-tasks-content"></div>
+            </div><!-- /.all-tasks-view -->
 
         </main>
 
@@ -2142,7 +2802,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="grade-score">
-                                Nota <span class="required">*</span>
+                                Nota
                             </label>
                             <input class="form-input" type="number" id="grade-score"
                                 placeholder="Ej: 4.5" min="0" max="5" step="0.1" required>
@@ -2242,15 +2902,21 @@
 
         /** Clase CSS del badge según la nota (escala 0-5) */
         function scoreClass(nota) {
+            if (nota === null) return 'mid';
             if (nota >= 3.5) return 'high';
             if (nota >= 3.0) return 'mid';
             return 'low';
         }
 
-        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100) */
+        /** Texto del badge de nota */
+        function scoreLabel(nota) {
+            return nota === null ? '—' : nota.toFixed(1);
+        }
+
+        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100), ignora entradas sin nota */
         function calcWeightedAverage(key) {
             const list = gradesStore[key] || [];
-            return list.reduce((sum, g) => sum + g.nota * (g.porcentaje / 100), 0);
+            return list.reduce((sum, g) => g.nota !== null ? sum + g.nota * (g.porcentaje / 100) : sum, 0);
         }
 
         /** Clase CSS del promedio final */
@@ -2289,7 +2955,7 @@
                 tr.innerHTML = `
                     <td class="cell-nombre">${g.nombre}</td>
                     <td class="cell-nota" style="text-align:center;">
-                        <span class="grade-score-badge ${scoreClass(g.nota)}">${g.nota.toFixed(1)}</span>
+                        <span class="grade-score-badge ${scoreClass(g.nota)}">${scoreLabel(g.nota)}</span>
                     </td>
                     <td class="cell-pct" style="text-align:center;">
                         <span class="grade-percent-pill">${g.porcentaje}%</span>
@@ -2350,7 +3016,7 @@
                 tr.classList.remove('editing');
                 tr.querySelector('.cell-nombre').textContent = newNombre;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
+                    `<span class="grade-score-badge ${scoreClass(newNota)}">${scoreLabel(newNota)}</span>`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<span class="grade-percent-pill">${newPct}%</span>`;
 
@@ -2375,7 +3041,7 @@
                 tr.querySelector('.cell-nombre').innerHTML =
                     `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
+                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota !== null ? g.nota.toFixed(1) : ''}">`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
 
@@ -2424,8 +3090,18 @@
         //  VISTA DE CALIFICACIONES
         // ══════════════════════════════════════════════════════════════
 
+        // 'dashboard' | 'subjects-list'
+        let gradesPreviousView = 'dashboard';
+
+        /** Abre la vista de calificaciones desde una tarjeta del dashboard */
+        function openGradesViewFromDashboard(card) {
+            gradesPreviousView = 'dashboard';
+            openGradesView(card);
+        }
+
         function openGradesView(card) {
             activeCardForView = card;
+            if (!gradesPreviousView) gradesPreviousView = 'dashboard';
 
             const nombre = card.querySelector('.subject-name').textContent;
             const subId  = card.querySelector('.subject-id')?.textContent || '';
@@ -2445,8 +3121,14 @@
 
         function closeGradesView() {
             gradesView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
             activeCardForView = null;
+
+            if (gradesPreviousView === 'subjects-list') {
+                renderSubjectsList();
+                subjectsListView.classList.add('active');
+            } else {
+                dashboardView.classList.remove('hidden');
+            }
         }
 
         gradesBackBtn.addEventListener('click', closeGradesView);
@@ -2460,6 +3142,387 @@
         gradesAddInlineBtn.addEventListener('click', () => {
             if (activeCardForView) openGradeModal(activeCardForView);
         });
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA: MIS MATERIAS
+        // ══════════════════════════════════════════════════════════════
+
+        const subjectsListView    = document.getElementById('subjects-list-view');
+        const subjectsListContent = document.getElementById('subjects-list-content');
+        const subjectsCountBadge  = document.getElementById('subjects-count-badge');
+        const subjectsListBackBtn = document.getElementById('subjects-list-back-btn');
+
+        // Paleta de colores para los puntos de acento (coincide con cardColors)
+        const dotColors = [
+            '#7C4DFF','#26A69A','#FF7043','#EC407A',
+            '#FFA726','#42A5F5','#66BB6A'
+        ];
+
+        /** Lee los datos de todas las tarjetas del DOM y renderiza la lista */
+        function renderSubjectsList() {
+            const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
+
+            // Actualizar badge del contador
+            subjectsCountBadge.textContent = cards.length;
+
+            if (cards.length === 0) {
+                subjectsListContent.innerHTML = `
+                    <div class="subjects-list-empty">
+                        <div class="subjects-list-empty-icon">
+                            <span class="material-icons-round">menu_book</span>
+                        </div>
+                        <p class="subjects-list-empty-text">Aún no hay materias registradas</p>
+                    </div>`;
+                return;
+            }
+
+            // Construir filas de la tabla
+            const rows = cards.map((card, i) => {
+                const nombre   = card.querySelector('.subject-name')?.textContent?.trim() || '—';
+                const idText   = card.querySelector('.subject-id')?.textContent?.trim()   || '—';
+                const profText = card.querySelector('.subject-professor')?.textContent?.trim().replace(/^person\s*/, '') || '—';
+
+                // Horario: puede estar en un div con ícono "schedule"
+                const scheduleEl = Array.from(card.querySelectorAll('div')).find(
+                    d => d.querySelector('.material-icons-round')?.textContent?.trim() === 'schedule'
+                );
+                const horario = scheduleEl
+                    ? scheduleEl.textContent.replace('schedule', '').trim()
+                    : '—';
+
+                // Extraer créditos y periodo del campo subject-id  (ej: "ID: ISIS-2603 · Sección 01")
+                // Para tarjetas dinámicas el formato es "ID: XXXX · N créditos · PERIODO"
+                let creditos = '—';
+                let periodo  = '—';
+                let codigo   = idText;
+
+                const creditMatch  = idText.match(/(\d+)\s*créditos/);
+                const periodoMatch = idText.match(/(\d{4}-\d)/);
+                if (creditMatch)  creditos = creditMatch[1];
+                if (periodoMatch) periodo  = periodoMatch[1];
+
+                // Código es la primera parte antes del primer ·
+                const parts = idText.split('·');
+                codigo = parts[0].replace('ID:', '').trim();
+
+                const dotColor = dotColors[i % dotColors.length];
+
+                return `
+                    <tr data-card-index="${i}">
+                        <td>
+                            <div class="subj-name-cell">
+                                <div class="subj-color-dot" style="background:${dotColor};"></div>
+                                <div>
+                                    <div class="subj-name-text">${nombre}</div>
+                                    <div class="subj-code-text">${codigo}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="subj-prof-cell">
+                                <span class="material-icons-round">person</span>
+                                ${profText}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="subj-schedule-cell">
+                                <span class="material-icons-round">schedule</span>
+                                ${horario}
+                            </div>
+                        </td>
+                        <td><span class="subj-credits-pill">${creditos === '—' ? '—' : creditos + ' cr.'}</span></td>
+                        <td><span class="subj-period-pill">${periodo}</span></td>
+                        <td>
+                            <div class="subj-actions-cell">
+                                <button class="subj-view-btn" onclick="openGradesViewFromList(${i})">
+                                    <span class="material-icons-round">grade</span>
+                                    Ver calificaciones
+                                </button>
+                                <button class="subj-view-btn tasks" onclick="openTasksViewFromList(${i})">
+                                    <span class="material-icons-round">assignment</span>
+                                    Ver tareas
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            subjectsListContent.innerHTML = `
+                <div class="subjects-list-wrap">
+                    <table class="subjects-list-table">
+                        <thead>
+                            <tr>
+                                <th>Asignatura</th>
+                                <th>Profesor</th>
+                                <th>Horario</th>
+                                <th>Créditos</th>
+                                <th>Periodo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        /** Abre la vista de Mis Materias */
+        function openSubjectsListView() {
+            renderSubjectsList();
+            dashboardView.classList.add('hidden');
+            gradesView.classList.remove('active');
+            subjectsListView.classList.add('active');
+            // Actualizar nav activo
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-mis-materias').classList.add('active');
+        }
+
+        /** Cierra la vista de Mis Materias y vuelve al dashboard */
+        function closeSubjectsListView() {
+            subjectsListView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            // Restaurar nav activo al dashboard
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector('.nav-item:first-child').classList.add('active');
+        }
+
+        /** Desde la lista de materias, navega directo a las calificaciones de esa tarjeta */
+        function openGradesViewFromList(cardIndex) {
+            const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
+            if (!cards[cardIndex]) return;
+            gradesPreviousView = 'subjects-list';
+            subjectsListView.classList.remove('active');
+            openGradesView(cards[cardIndex]);
+        }
+
+        subjectsListBackBtn.addEventListener('click', closeSubjectsListView);
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA: TAREAS DE ASIGNATURA
+        // ══════════════════════════════════════════════════════════════
+
+        const tasksView        = document.getElementById('tasks-view');
+        const tasksViewTitle   = document.getElementById('tasks-view-title');
+        const tasksViewSubtitle= document.getElementById('tasks-view-subtitle');
+        const tasksListContent = document.getElementById('tasks-list-content');
+        const tasksBackBtn     = document.getElementById('tasks-back-btn');
+
+        // Store en memoria: subjectName → [{ titulo, fechaEntrega, horaEntrega, descripcion }]
+        const tasksStore = {};
+
+        /** Calcula el estado de una tarea según su fecha */
+        function taskStatus(fecha, hora) {
+            const now      = new Date();
+            const deadline = new Date(`${fecha}T${hora || '23:59'}`);
+            const diffDays = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+            if (deadline < now)   return { key: 'overdue',  label: 'Vencida',    icon: 'cancel' };
+            if (diffDays <= 3)    return { key: 'pending',  label: 'Próxima',    icon: 'schedule' };
+            return               { key: 'upcoming', label: 'Pendiente',  icon: 'pending' };
+        }
+
+        /** Formatea una fecha "YYYY-MM-DD" a "DD/MM/YYYY" */
+        function formatDate(fecha) {
+            if (!fecha) return '—';
+            const [y, m, d] = fecha.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        /** Renderiza la lista de tareas de una asignatura */
+        function renderTasksList(subjectName) {
+            const tasks = tasksStore[subjectName] || [];
+
+            if (tasks.length === 0) {
+                tasksListContent.innerHTML = `
+                    <div class="tasks-empty">
+                        <div class="tasks-empty-icon">
+                            <span class="material-icons-round">assignment</span>
+                        </div>
+                        <p class="tasks-empty-text">No hay tareas registradas para esta asignatura</p>
+                    </div>`;
+                return;
+            }
+
+            const rows = tasks.map((t, idx) => {
+                const st = taskStatus(t.fechaEntrega, t.horaEntrega);
+                return `
+                    <tr>
+                        <td class="task-title-cell">
+                            <div class="task-title-text">${t.titulo}</div>
+                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
+                        </td>
+                        <td class="task-date-cell">
+                            <div class="task-date-main">${formatDate(t.fechaEntrega)}</div>
+                            ${t.horaEntrega ? `<div class="task-time-text">${t.horaEntrega}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="task-status-badge ${st.key}">
+                                <span class="material-icons-round">${st.icon}</span>
+                                ${st.label}
+                            </span>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            tasksListContent.innerHTML = `
+                <div class="tasks-table-wrap">
+                    <table class="tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Fecha de entrega</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        /** Abre la vista de tareas desde la lista de materias */
+        function openTasksViewFromList(cardIndex) {
+            const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
+            if (!cards[cardIndex]) return;
+            const nombre = cards[cardIndex].querySelector('.subject-name')?.textContent?.trim() || '';
+
+            tasksViewTitle.textContent    = nombre;
+            tasksViewSubtitle.textContent = 'Tareas registradas';
+
+            renderTasksList(nombre);
+
+            subjectsListView.classList.remove('active');
+            dashboardView.classList.add('hidden');
+            tasksView.classList.add('active');
+        }
+
+        /** Cierra la vista de tareas y vuelve a la lista de materias */
+        function closeTasksView() {
+            tasksView.classList.remove('active');
+            renderSubjectsList();
+            subjectsListView.classList.add('active');
+        }
+
+        tasksBackBtn.addEventListener('click', closeTasksView);
+
+        /** Cierra todas las vistas y vuelve al dashboard */
+        function goToDashboard() {
+            gradesView.classList.remove('active');
+            subjectsListView.classList.remove('active');
+            tasksView.classList.remove('active');
+            allTasksView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-dashboard').classList.add('active');
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA: MIS TAREAS (GLOBAL)
+        // ══════════════════════════════════════════════════════════════
+
+        const allTasksView      = document.getElementById('all-tasks-view');
+        const allTasksContent   = document.getElementById('all-tasks-content');
+        const allTasksCountBadge= document.getElementById('all-tasks-count-badge');
+        const allTasksBackBtn   = document.getElementById('all-tasks-back-btn');
+
+        /** Recopila TODAS las tareas del store, añadiendo el nombre de la asignatura */
+        function getAllTasks() {
+            const all = [];
+            Object.entries(tasksStore).forEach(([subjectName, tasks]) => {
+                tasks.forEach(t => all.push({ ...t, asignatura: subjectName }));
+            });
+            // Ordenar: próximas primero (por fecha)
+            all.sort((a, b) => {
+                const da = new Date(`${a.fechaEntrega}T${a.horaEntrega || '23:59'}`);
+                const db = new Date(`${b.fechaEntrega}T${b.horaEntrega || '23:59'}`);
+                return da - db;
+            });
+            return all;
+        }
+
+        /** Renderiza la tabla global de todas las tareas */
+        function renderAllTasksList() {
+            const all = getAllTasks();
+            allTasksCountBadge.textContent = all.length;
+
+            if (all.length === 0) {
+                allTasksContent.innerHTML = `
+                    <div class="all-tasks-empty">
+                        <div class="all-tasks-empty-icon">
+                            <span class="material-icons-round">assignment</span>
+                        </div>
+                        <p class="all-tasks-empty-text">Aún no hay tareas registradas</p>
+                    </div>`;
+                return;
+            }
+
+            const rows = all.map((t, i) => {
+                const st       = taskStatus(t.fechaEntrega, t.horaEntrega);
+                const dotColor = dotColors[
+                    Array.from(subjectsGrid.querySelectorAll('.subject-card'))
+                        .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === t.asignatura)
+                    % dotColors.length
+                ] || dotColors[0];
+
+                return `
+                    <tr>
+                        <td class="task-title-cell">
+                            <div class="task-title-text">${t.titulo}</div>
+                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="task-subject-pill">
+                                <span class="subj-color-dot" style="background:${dotColor};"></span>
+                                ${t.asignatura}
+                            </span>
+                        </td>
+                        <td class="task-date-cell">
+                            <div class="task-date-main">${formatDate(t.fechaEntrega)}</div>
+                            ${t.horaEntrega ? `<div class="task-time-text">${t.horaEntrega}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="task-status-badge ${st.key}">
+                                <span class="material-icons-round">${st.icon}</span>
+                                ${st.label}
+                            </span>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            allTasksContent.innerHTML = `
+                <div class="all-tasks-wrap">
+                    <table class="all-tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Asignatura</th>
+                                <th>Fecha de entrega</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        /** Abre la vista global de Mis Tareas */
+        function openAllTasksView() {
+            renderAllTasksList();
+            dashboardView.classList.add('hidden');
+            gradesView.classList.remove('active');
+            subjectsListView.classList.remove('active');
+            tasksView.classList.remove('active');
+            allTasksView.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-mis-tareas').classList.add('active');
+        }
+
+        /** Cierra la vista global de Mis Tareas y vuelve al dashboard */
+        function closeAllTasksView() {
+            allTasksView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-dashboard').classList.add('active');
+        }
+
+        allTasksBackBtn.addEventListener('click', closeAllTasksView);
 
         // ══════════════════════════════════════════════════════════════
         //  MODAL ASIGNATURA
@@ -2673,7 +3736,7 @@
                 <div class="subject-icon" style="background:${color.bg};color:${color.text}">
                     <span class="material-icons-round">${icon}</span>
                 </div>
-                <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
+                <div class="subject-name" onclick="openGradesViewFromDashboard(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
                 <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
                 <div class="subject-professor">
                     <span class="material-icons-round">person</span>
@@ -2769,11 +3832,30 @@
                 });
                 if (!res.ok) throw new Error('Error al guardar');
                 const json = await res.json();
+
+                // Guardar también en tasksStore para la vista frontend
+                const selectedOption = taskSubjectSelect.options[taskSubjectSelect.selectedIndex];
+                const subjName = selectedOption ? selectedOption.textContent : '';
+                if (subjName) {
+                    if (!tasksStore[subjName]) tasksStore[subjName] = [];
+                    tasksStore[subjName].push({ titulo, fechaEntrega, horaEntrega, descripcion: descripcion || null });
+                }
+
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
+                if (allTasksView.classList.contains('active')) renderAllTasksList();
             } catch (err) {
                 console.error(err);
-                showToast('Error al conectar con el servidor');
+                // Guardar en tasksStore igualmente para poder usar la vista sin backend
+                const selectedOption = taskSubjectSelect.options[taskSubjectSelect.selectedIndex];
+                const subjName = selectedOption ? selectedOption.textContent : '';
+                if (subjName) {
+                    if (!tasksStore[subjName]) tasksStore[subjName] = [];
+                    tasksStore[subjName].push({ titulo, fechaEntrega, horaEntrega, descripcion: descripcion || null });
+                }
+                closeTaskModal();
+                showToast(`"${titulo}" guardada exitosamente`);
+                if (allTasksView.classList.contains('active')) renderAllTasksList();
             }
         });
 
@@ -2806,7 +3888,7 @@
             }
 
             const nota = parseFloat(notaRaw);
-            if (notaRaw === '' || isNaN(nota) || nota < 0 || nota > 5) {
+            if (notaRaw !== '' && (isNaN(nota) || nota < 0 || nota > 5)) {
                 inputNota.classList.add('error');
                 errNota.textContent   = 'Ingresa un valor entre 0.0 y 5.0';
                 errNota.style.display = 'block';
@@ -2836,7 +3918,7 @@
             if (activeCardForGrade) {
                 const key = activeCardForGrade.dataset.gradeKey;
                 if (!gradesStore[key]) gradesStore[key] = [];
-                gradesStore[key].push({ nombre, nota, porcentaje: pct });
+                gradesStore[key].push({ nombre, nota: notaRaw === '' ? null : nota, porcentaje: pct });
             }
 
             closeGradeModal();
