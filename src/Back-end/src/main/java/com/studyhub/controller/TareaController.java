@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,5 +94,21 @@ public class TareaController {
         Map<String, String> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Tarea eliminada exitosamente");
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
+    
+    @GetMapping("/fecha/{fecha}")
+    public ResponseEntity<List<Tarea>> obtenerTareasPorFecha(@PathVariable String fecha) {
+
+        LocalDate fechaParsed;
+
+        try {
+            fechaParsed = LocalDate.parse(fecha);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        List<Tarea> tareas = tareaRepository.findByFechaEntrega(fechaParsed);
+
+        return new ResponseEntity<>(tareas, HttpStatus.OK);
     }
 }
