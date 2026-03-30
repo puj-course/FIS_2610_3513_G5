@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,14 @@ public class TareaController {
         Tarea tarea = new Tarea();
         tarea.setTitulo(body.get("titulo").toString());
         tarea.setAsignatura(asignatura);
-        tarea.setFechaEntrega(java.time.LocalDate.parse(body.get("fechaEntrega").toString()));
-        tarea.setHoraEntrega(java.time.LocalTime.parse(body.get("horaEntrega").toString()));
+        try {
+            tarea.setFechaEntrega(LocalDate.parse(body.get("fechaEntrega").toString()));
+            tarea.setHoraEntrega(LocalTime.parse(body.get("horaEntrega").toString()));
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("mensaje", "Formato de fecha u hora inválido");
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
         tarea.setDescripcion(body.containsKey("descripcion") ? body.get("descripcion").toString() : null);
         tarea.setEstado(true); // toda tarea nueva nace como pendiente
 
