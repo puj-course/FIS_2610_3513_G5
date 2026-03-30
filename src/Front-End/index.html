@@ -3898,14 +3898,25 @@
             'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
         ];
 
+
+        async function fetchTareasPorFecha(fecha) {
+            try {
+                const res = await fetch(`${API}/tareas/fecha=${fecha}`);
+                if (!res.ok) throw new Error("Error al traer tareas");
+
+                return await res.json();
+            } catch (error) {
+            console.error(error);
+        return [];
+            }
+        }
         /** Devuelve todas las tareas que caen en un día concreto */
-        function getTasksForDay(year, month, day) {
-            const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-            const result = [];
-            Object.values(tasksStore).forEach(tasks => {
-                tasks.forEach(t => { if (t.fechaEntrega === dateStr) result.push(t); });
-            });
-            return result;
+        async function getTasksForDay(year, month, day) {
+            const fecha = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+            const tareas = await fetchTareasPorFecha(fecha);
+
+            return tareas;
         }
 
         /** Renderiza el grid del mes actual */
@@ -4046,7 +4057,7 @@
         const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
         /** Renderiza la vista de un día concreto */
-        function renderDayView(date) {
+        async function renderDayView(date) {
             activeDayDate = date;
 
             const dayName  = DAY_NAMES[date.getDay()];
@@ -4057,7 +4068,7 @@
             dayViewTitle.textContent    = `${dayName} ${dayNum}`;
             dayViewSubtitle.textContent = `${monthName} ${year}`;
 
-            const tasks = getTasksForDay(year, date.getMonth(), dayNum);
+            const tasks = await getTasksForDay(year, date.getMonth(), dayNum);
 
             if (tasks.length === 0) {
                 dayViewContent.innerHTML = `
@@ -4120,9 +4131,9 @@
         }
 
         /** Abre la vista de un día */
-        function openDayView(year, month, day) {
+        async function openDayView(year, month, day) {
             const date = new Date(year, month, day);
-            renderDayView(date);
+            await renderDayView(date);
             // La sidebar ya está oculta (venimos del calendario expandido)
             // Solo cambiamos qué vista del main-content es visible
             calendarExpandedView.classList.remove('active');
@@ -4472,6 +4483,9 @@
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
                 if (allTasksView.classList.contains('active')) renderAllTasksList();
+                if(activeDayDate){
+                    await renderDayView(activeDayDate);
+                }
             } catch (err) {
                 console.error(err);
                 // Guardar en tasksStore igualmente para poder usar la vista sin backend

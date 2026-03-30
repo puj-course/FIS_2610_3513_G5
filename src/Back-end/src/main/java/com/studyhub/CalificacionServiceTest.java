@@ -1,7 +1,9 @@
-package com.studyhub.service;
+package com.studyhub;
 
 import com.studyhub.model.Calificacion;
 import com.studyhub.repository.CalificacionRepository;
+import com.studyhub.service.CalificacionService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
