@@ -2173,6 +2173,284 @@
             font-weight: 500;
         }
 
+        /* ========== VISTA: CALENDARIO EXPANDIDO ========== */
+        .calendar-expanded-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .calendar-expanded-view.active {
+            display: flex;
+        }
+
+        /* Cuando el calendario está activo, la sidebar derecha se oculta
+           y el main-content se expande para ocupar su espacio */
+        .app-container.calendar-open .sidebar-right {
+            display: none;
+        }
+
+        .app-container.calendar-open .main-content {
+            grid-column: 2 / -1;
+        }
+
+        .calendar-expanded-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .calendar-expanded-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .calendar-expanded-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .calendar-expanded-month {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-700);
+            min-width: 160px;
+            text-align: center;
+        }
+
+        /* Cabecera días de la semana */
+        .calendar-expanded-week-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .calendar-expanded-week-header div {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 0;
+        }
+
+        /* Grid de días */
+        .calendar-expanded-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            flex: 1;
+        }
+
+        .cal-day-cell {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 10px 12px 8px;
+            min-height: 100px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Empuja las barras hacia abajo */
+        .cal-day-cell .cal-bars {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cal-day-cell:hover {
+            border-color: var(--blue-300);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cal-day-cell.today {
+            border-color: var(--blue-500);
+            background: var(--blue-50);
+        }
+
+        .cal-day-cell.other-month {
+            background: var(--gray-50);
+            opacity: 0.55;
+        }
+
+        .cal-day-number {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+            line-height: 1;
+        }
+
+        .cal-day-cell.today .cal-day-number {
+            width: 26px;
+            height: 26px;
+            background: var(--blue-500);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .cal-day-cell.other-month .cal-day-number {
+            color: var(--gray-400);
+        }
+
+        /* Evento / tarea en la celda del día */
+        .cal-event-chip {
+            display: block;
+            width: 100%;
+            height: 5px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            /* El color se pone inline via JS */
+        }
+
+        .cal-event-chip .chip-color-bar,
+        .cal-event-chip .chip-label {
+            display: none;   /* no se usan en este diseño */
+        }
+
+        .cal-event-chip.overdue {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .cal-event-chip.pending {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        /* ========== VISTA: DÍA ESPECÍFICO ========== */
+        .calendar-day-view {
+            display: none;
+            flex-direction: column;
+        }
+
+        .calendar-day-view.active {
+            display: flex;
+        }
+
+        .app-container.calendar-open .calendar-day-view {
+            /* Hereda el grid-column expandido del calendario */
+        }
+
+        .calendar-day-view-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .day-view-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Caja de estado vacío del día */
+        .day-view-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 72px 0;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .day-view-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-view-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .day-view-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        /* Tabla de tareas del día */
+        .day-tasks-wrap {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .day-tasks-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .day-tasks-table thead tr {
+            background: var(--blue-700);
+        }
+
+        .day-tasks-table thead th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .day-tasks-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s ease;
+            animation: rowFadeIn 0.3s ease forwards;
+        }
+
+        .day-tasks-table tbody tr:last-child { border-bottom: none; }
+        .day-tasks-table tbody tr:hover { background: var(--gray-50); }
+
+        .day-tasks-table tbody td {
+            padding: 16px 20px;
+            font-size: 13px;
+            color: var(--gray-700);
+            vertical-align: middle;
+        }
+
+        /* Cursor pointer en las celdas del calendario */
+        .cal-day-cell {
+            cursor: pointer;
+        }
+
+        #calendar-widget-title .calendar-title-text {
+            text-decoration: none;
+            transition: text-decoration 0.15s ease;
+        }
+
+        #calendar-widget-title:hover .calendar-title-text {
+            text-decoration: underline;
+        }
+
         /* ===== FAB DROPDOWN MENU ===== */
         .fab-menu {
             position: absolute;
@@ -2504,6 +2782,68 @@
                 <div id="all-tasks-content"></div>
             </div><!-- /.all-tasks-view -->
 
+            <!-- Vista: Calendario expandido -->
+            <div class="calendar-expanded-view" id="calendar-expanded-view">
+                <div class="calendar-expanded-header">
+                    <div class="calendar-expanded-header-left">
+                        <button class="back-btn" id="calendar-back-btn">
+                            <span class="material-icons-round">arrow_back</span>
+                        </button>
+                        <div>
+                            <div class="subjects-list-title">Calendario</div>
+                            <div class="subjects-list-subtitle" id="calendar-expanded-subtitle">Febrero 2026</div>
+                        </div>
+                    </div>
+                    <div class="calendar-expanded-nav">
+                        <button class="calendar-nav-btn" id="cal-prev-btn">
+                            <span class="material-icons-round">chevron_left</span>
+                        </button>
+                        <span class="calendar-expanded-month" id="cal-expanded-month">Febrero 2026</span>
+                        <button class="calendar-nav-btn" id="cal-next-btn">
+                            <span class="material-icons-round">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cabecera días de la semana -->
+                <div class="calendar-expanded-week-header">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mié</div>
+                    <div>Jue</div>
+                    <div>Vie</div>
+                    <div>Sáb</div>
+                    <div>Dom</div>
+                </div>
+
+                <!-- Grid de días (generado por JS) -->
+                <div class="calendar-expanded-grid" id="calendar-expanded-grid"></div>
+            </div><!-- /.calendar-expanded-view -->
+
+            <!-- Vista: Día específico -->
+            <div class="calendar-day-view" id="calendar-day-view">
+                <div class="calendar-day-view-header">
+                    <div class="calendar-expanded-header-left">
+                        <button class="back-btn" id="day-view-back-btn">
+                            <span class="material-icons-round">arrow_back</span>
+                        </button>
+                        <div>
+                            <div class="subjects-list-title" id="day-view-title">Lunes 13</div>
+                            <div class="subjects-list-subtitle" id="day-view-subtitle">Febrero 2026</div>
+                        </div>
+                    </div>
+                    <div class="day-view-nav">
+                        <button class="calendar-nav-btn" id="day-prev-btn" title="Día anterior">
+                            <span class="material-icons-round">chevron_left</span>
+                        </button>
+                        <button class="calendar-nav-btn" id="day-next-btn" title="Día siguiente">
+                            <span class="material-icons-round">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="day-view-content"></div>
+            </div><!-- /.calendar-day-view -->
+
         </main>
 
         <aside class="sidebar-right">
@@ -2577,9 +2917,9 @@
 
             <div class="widget">
                 <div class="widget-header">
-                    <div class="widget-title">
+                    <div class="widget-title" onclick="openCalendarView()" style="cursor:pointer;" title="Ver calendario completo" id="calendar-widget-title">
                         <span class="material-icons-round">calendar_month</span>
-                        Calendario
+                        <span class="calendar-title-text">Calendario</span>
                     </div>
                 </div>
                 <div class="calendar-widget">
@@ -3093,6 +3433,8 @@
         // 'dashboard' | 'subjects-list'
         let gradesPreviousView = 'dashboard';
 
+        // ── Calificaciones ─────────────────────────────────────────────
+
         /** Abre la vista de calificaciones desde una tarjeta del dashboard */
         function openGradesViewFromDashboard(card) {
             gradesPreviousView = 'dashboard';
@@ -3114,20 +3456,18 @@
             }
 
             renderGradesTable(card);
-
-            dashboardView.classList.add('hidden');
-            gradesView.classList.add('active');
+            showView('grades');
         }
 
         function closeGradesView() {
-            gradesView.classList.remove('active');
             activeCardForView = null;
-
             if (gradesPreviousView === 'subjects-list') {
                 renderSubjectsList();
-                subjectsListView.classList.add('active');
+                showView('subjects-list');
+                setNavActive('nav-mis-materias');
             } else {
-                dashboardView.classList.remove('hidden');
+                showView('dashboard');
+                setNavActive('nav-dashboard');
             }
         }
 
@@ -3268,21 +3608,14 @@
         /** Abre la vista de Mis Materias */
         function openSubjectsListView() {
             renderSubjectsList();
-            dashboardView.classList.add('hidden');
-            gradesView.classList.remove('active');
-            subjectsListView.classList.add('active');
-            // Actualizar nav activo
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-mis-materias').classList.add('active');
+            showView('subjects-list');
+            setNavActive('nav-mis-materias');
         }
 
         /** Cierra la vista de Mis Materias y vuelve al dashboard */
         function closeSubjectsListView() {
-            subjectsListView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
-            // Restaurar nav activo al dashboard
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.querySelector('.nav-item:first-child').classList.add('active');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
         }
 
         /** Desde la lista de materias, navega directo a las calificaciones de esa tarjeta */
@@ -3290,7 +3623,7 @@
             const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
             if (!cards[cardIndex]) return;
             gradesPreviousView = 'subjects-list';
-            subjectsListView.classList.remove('active');
+            showView('grades');
             openGradesView(cards[cardIndex]);
         }
 
@@ -3385,32 +3718,24 @@
 
             tasksViewTitle.textContent    = nombre;
             tasksViewSubtitle.textContent = 'Tareas registradas';
-
             renderTasksList(nombre);
-
-            subjectsListView.classList.remove('active');
-            dashboardView.classList.add('hidden');
-            tasksView.classList.add('active');
+            showView('tasks');
         }
 
         /** Cierra la vista de tareas y vuelve a la lista de materias */
         function closeTasksView() {
-            tasksView.classList.remove('active');
+            tasksListContent.innerHTML = '';
             renderSubjectsList();
-            subjectsListView.classList.add('active');
+            showView('subjects-list');
+            setNavActive('nav-mis-materias');
         }
 
         tasksBackBtn.addEventListener('click', closeTasksView);
 
         /** Cierra todas las vistas y vuelve al dashboard */
         function goToDashboard() {
-            gradesView.classList.remove('active');
-            subjectsListView.classList.remove('active');
-            tasksView.classList.remove('active');
-            allTasksView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-dashboard').classList.add('active');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
         }
 
         // ══════════════════════════════════════════════════════════════
@@ -3421,6 +3746,40 @@
         const allTasksContent   = document.getElementById('all-tasks-content');
         const allTasksCountBadge= document.getElementById('all-tasks-count-badge');
         const allTasksBackBtn   = document.getElementById('all-tasks-back-btn');
+
+        // ══════════════════════════════════════════════════════════════
+        //  NAVEGACIÓN CENTRALIZADA — definida aquí para que todas las
+        //  constantes de vistas ya estén inicializadas.
+        // ══════════════════════════════════════════════════════════════
+
+        /** Muestra exactamente UNA vista y oculta todas las demás. */
+        function showView(view) {
+            if (view === 'dashboard') {
+                dashboardView.classList.remove('hidden');
+            } else {
+                dashboardView.classList.add('hidden');
+            }
+            gradesView.classList.toggle('active',             view === 'grades');
+            subjectsListView.classList.toggle('active',       view === 'subjects-list');
+            tasksView.classList.toggle('active',              view === 'tasks');
+            allTasksView.classList.toggle('active',           view === 'all-tasks');
+            // calendarExpandedView se inicializa más abajo, usamos getElementById como fallback seguro
+            const calView = document.getElementById('calendar-expanded-view');
+            if (calView) calView.classList.toggle('active',   view === 'calendar');
+            const calDayView = document.getElementById('calendar-day-view');
+            if (calDayView) calDayView.classList.remove('active'); // siempre se cierra con showView
+            // Quitar la clase del grid al salir del calendario
+            if (view !== 'calendar') {
+                document.querySelector('.app-container').classList.remove('calendar-open');
+            }
+        }
+
+        /** Actualiza el ítem activo del sidebar */
+        function setNavActive(navId) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const el = document.getElementById(navId);
+            if (el) el.classList.add('active');
+        }
 
         /** Recopila TODAS las tareas del store, añadiendo el nombre de la asignatura */
         function getAllTasks() {
@@ -3505,24 +3864,304 @@
         /** Abre la vista global de Mis Tareas */
         function openAllTasksView() {
             renderAllTasksList();
-            dashboardView.classList.add('hidden');
-            gradesView.classList.remove('active');
-            subjectsListView.classList.remove('active');
-            tasksView.classList.remove('active');
-            allTasksView.classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-mis-tareas').classList.add('active');
+            showView('all-tasks');
+            setNavActive('nav-mis-tareas');
         }
 
         /** Cierra la vista global de Mis Tareas y vuelve al dashboard */
         function closeAllTasksView() {
-            allTasksView.classList.remove('active');
-            dashboardView.classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-dashboard').classList.add('active');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
         }
 
         allTasksBackBtn.addEventListener('click', closeAllTasksView);
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA: CALENDARIO EXPANDIDO
+        // ══════════════════════════════════════════════════════════════
+
+        const calendarExpandedView = document.getElementById('calendar-expanded-view');
+        const calExpandedGrid      = document.getElementById('calendar-expanded-grid');
+        const calExpandedMonth     = document.getElementById('cal-expanded-month');
+        const calendarSubtitle     = document.getElementById('calendar-expanded-subtitle');
+        const calPrevBtn           = document.getElementById('cal-prev-btn');
+        const calNextBtn           = document.getElementById('cal-next-btn');
+        const calBackBtn           = document.getElementById('calendar-back-btn');
+        const appContainer         = document.querySelector('.app-container');
+
+        // Estado del mes visible en el calendario expandido
+        let calYear  = 2026;
+        let calMonth = 1;   // 0 = enero
+
+        const MONTH_NAMES = [
+            'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+        ];
+
+
+        async function fetchTareasPorFecha(fecha) {
+            try {
+                const res = await fetch(`${API}/tareas/fecha=${fecha}`);
+                if (!res.ok) throw new Error("Error al traer tareas");
+
+                return await res.json();
+            } catch (error) {
+            console.error(error);
+        return [];
+            }
+        }
+        /** Devuelve todas las tareas que caen en un día concreto */
+        async function getTasksForDay(year, month, day) {
+            const fecha = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+            const tareas = await fetchTareasPorFecha(fecha);
+
+            return tareas;
+        }
+
+        /** Renderiza el grid del mes actual */
+        function renderExpandedCalendar() {
+            const label = `${MONTH_NAMES[calMonth]} ${calYear}`;
+            calExpandedMonth.textContent = label;
+            calendarSubtitle.textContent = label;
+
+            const today     = new Date();
+            const firstDay  = new Date(calYear, calMonth, 1);
+            // Lunes = 0 … Domingo = 6
+            let startOffset = (firstDay.getDay() + 6) % 7;
+            const daysInMonth   = new Date(calYear, calMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate();
+
+            calExpandedGrid.innerHTML = '';
+
+            const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cal-day-cell';
+
+                let day, month, year, isCurrentMonth;
+
+                if (i < startOffset) {
+                    // Días del mes anterior
+                    day = daysInPrevMonth - startOffset + i + 1;
+                    month = calMonth - 1;
+                    year = calYear;
+                    if (month < 0) { month = 11; year--; }
+                    isCurrentMonth = false;
+                    cell.classList.add('other-month');
+                } else if (i >= startOffset + daysInMonth) {
+                    // Días del mes siguiente
+                    day = i - startOffset - daysInMonth + 1;
+                    month = calMonth + 1;
+                    year = calYear;
+                    if (month > 11) { month = 0; year++; }
+                    isCurrentMonth = false;
+                    cell.classList.add('other-month');
+                } else {
+                    day = i - startOffset + 1;
+                    month = calMonth;
+                    year = calYear;
+                    isCurrentMonth = true;
+                }
+
+                const isToday = isCurrentMonth
+                    && day === today.getDate()
+                    && calMonth === today.getMonth()
+                    && calYear === today.getFullYear();
+
+                if (isToday) cell.classList.add('today');
+
+                // Número del día
+                const numEl = document.createElement('div');
+                numEl.className = 'cal-day-number';
+                numEl.textContent = day;
+                cell.appendChild(numEl);
+
+                // Barras de color por tarea (estilo iOS Calendar)
+                const dayTasks = getTasksForDay(year, month, day);
+                if (dayTasks.length > 0) {
+                    const barsContainer = document.createElement('div');
+                    barsContainer.className = 'cal-bars';
+
+                    dayTasks.forEach(t => {
+                        // Color según la asignatura
+                        const asignatura = Object.entries(tasksStore)
+                            .find(([, arr]) => arr.includes(t))?.[0] || '';
+                        const subjIdx  = Array.from(subjectsGrid.querySelectorAll('.subject-card'))
+                            .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === asignatura);
+                        const barColor = dotColors[subjIdx >= 0 ? subjIdx % dotColors.length : 0];
+
+                        const bar = document.createElement('div');
+                        bar.className = 'cal-event-chip';
+                        bar.style.background = barColor;
+                        bar.title = `${t.titulo}${asignatura ? ' · ' + asignatura : ''}`;
+                        barsContainer.appendChild(bar);
+                    });
+
+                    cell.appendChild(barsContainer);
+                }
+
+                calExpandedGrid.appendChild(cell);
+
+                // Clic en celda → vista diaria
+                const cellYear = year, cellMonth = month, cellDay = day;
+                cell.addEventListener('click', () => openDayView(cellYear, cellMonth, cellDay));
+            }
+        }
+
+        /** Abre la vista de calendario expandido */
+        function openCalendarView() {
+            renderExpandedCalendar();
+            appContainer.classList.add('calendar-open');
+            showView('calendar');
+            setNavActive('nav-dashboard'); // no hay nav dedicado al calendario
+        }
+
+        /** Cierra el calendario expandido y vuelve al dashboard */
+        function closeCalendarView() {
+            appContainer.classList.remove('calendar-open');
+            showView('dashboard');
+            setNavActive('nav-dashboard');
+        }
+
+        calBackBtn.addEventListener('click', closeCalendarView);
+
+        calPrevBtn.addEventListener('click', () => {
+            calMonth--;
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderExpandedCalendar();
+        });
+
+        calNextBtn.addEventListener('click', () => {
+            calMonth++;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            renderExpandedCalendar();
+        });
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA: DÍA ESPECÍFICO
+        // ══════════════════════════════════════════════════════════════
+
+        const dayView        = document.getElementById('calendar-day-view');
+        const dayViewTitle   = document.getElementById('day-view-title');
+        const dayViewSubtitle= document.getElementById('day-view-subtitle');
+        const dayViewContent = document.getElementById('day-view-content');
+        const dayPrevBtn     = document.getElementById('day-prev-btn');
+        const dayNextBtn     = document.getElementById('day-next-btn');
+        const dayBackBtn     = document.getElementById('day-view-back-btn');
+
+        // Fecha activa en la vista diaria
+        let activeDayDate = null;   // objeto Date
+
+        const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+        /** Renderiza la vista de un día concreto */
+        async function renderDayView(date) {
+            activeDayDate = date;
+
+            const dayName  = DAY_NAMES[date.getDay()];
+            const dayNum   = date.getDate();
+            const monthName= MONTH_NAMES[date.getMonth()];
+            const year     = date.getFullYear();
+
+            dayViewTitle.textContent    = `${dayName} ${dayNum}`;
+            dayViewSubtitle.textContent = `${monthName} ${year}`;
+
+            const tasks = await getTasksForDay(year, date.getMonth(), dayNum);
+
+            if (tasks.length === 0) {
+                dayViewContent.innerHTML = `
+                    <div class="day-view-empty">
+                        <div class="day-view-empty-icon">
+                            <span class="material-icons-round">event_available</span>
+                        </div>
+                        <p class="day-view-empty-text">No hay tareas para este día</p>
+                    </div>`;
+                return;
+            }
+
+            const rows = tasks.map(t => {
+                const st = taskStatus(t.fechaEntrega, t.horaEntrega);
+                // Buscar asignatura
+                const asignatura = Object.entries(tasksStore)
+                    .find(([, arr]) => arr.includes(t))?.[0] || '—';
+                const dotIdx  = Array.from(subjectsGrid.querySelectorAll('.subject-card'))
+                    .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === asignatura);
+                const dotColor = dotColors[dotIdx % dotColors.length] || dotColors[0];
+
+                return `
+                    <tr>
+                        <td class="task-title-cell">
+                            <div class="task-title-text">${t.titulo}</div>
+                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
+                        </td>
+                        <td>
+                            <span class="task-subject-pill">
+                                <span class="subj-color-dot" style="background:${dotColor};"></span>
+                                ${asignatura}
+                            </span>
+                        </td>
+                        <td class="task-date-cell">
+                            ${t.horaEntrega ? `<div class="task-date-main">${t.horaEntrega}</div>` : '<span style="color:var(--gray-400)">—</span>'}
+                        </td>
+                        <td>
+                            <span class="task-status-badge ${st.key}">
+                                <span class="material-icons-round">${st.icon}</span>
+                                ${st.label}
+                            </span>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            dayViewContent.innerHTML = `
+                <div class="day-tasks-wrap">
+                    <table class="day-tasks-table">
+                        <thead>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Asignatura</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        /** Abre la vista de un día */
+        async function openDayView(year, month, day) {
+            const date = new Date(year, month, day);
+            await renderDayView(date);
+            // La sidebar ya está oculta (venimos del calendario expandido)
+            // Solo cambiamos qué vista del main-content es visible
+            calendarExpandedView.classList.remove('active');
+            dayView.classList.add('active');
+        }
+
+        /** Cierra la vista diaria y vuelve al calendario expandido */
+        function closeDayView() {
+            dayView.classList.remove('active');
+            calendarExpandedView.classList.add('active');
+        }
+
+        dayBackBtn.addEventListener('click', closeDayView);
+
+        // Navegar al día anterior / siguiente
+        dayPrevBtn.addEventListener('click', () => {
+            if (!activeDayDate) return;
+            const prev = new Date(activeDayDate);
+            prev.setDate(prev.getDate() - 1);
+            renderDayView(prev);
+        });
+
+        dayNextBtn.addEventListener('click', () => {
+            if (!activeDayDate) return;
+            const next = new Date(activeDayDate);
+            next.setDate(next.getDate() + 1);
+            renderDayView(next);
+        });
 
         // ══════════════════════════════════════════════════════════════
         //  MODAL ASIGNATURA
@@ -3844,6 +4483,9 @@
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
                 if (allTasksView.classList.contains('active')) renderAllTasksList();
+                if(activeDayDate){
+                    await renderDayView(activeDayDate);
+                }
             } catch (err) {
                 console.error(err);
                 // Guardar en tasksStore igualmente para poder usar la vista sin backend
