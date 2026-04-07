@@ -2020,9 +2020,27 @@
                         <div class="form-error" id="error-professor">Este campo es obligatorio</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="subject-schedule">Horario <span class="required">*</span></label>
-                        <input class="form-input" type="text" id="subject-schedule" placeholder="Ej: Lun y Mié 10:00 - 12:00" required>
-                        <div class="form-error" id="error-schedule">Este campo es obligatorio</div>
+                        <label class="form-label">Día(s) de la semana <span class="required">*</span></label>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;" id="subject-days">
+                            <label><input type="checkbox" value="Lun"> Lun</label>
+                            <label><input type="checkbox" value="Mar"> Mar</label>
+                            <label><input type="checkbox" value="Mié"> Mié</label>
+                            <label><input type="checkbox" value="Jue"> Jue</label>
+                            <label><input type="checkbox" value="Vie"> Vie</label>
+                        </div>
+                        <div class="form-error" id="error-days">Selecciona al menos un día</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="subject-start-time">Hora Inicio <span class="required">*</span></label>
+                            <input class="form-input" type="time" id="subject-start-time" required>
+                            <div class="form-error" id="error-start-time">Este campo es obligatorio</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="subject-end-time">Hora Fin <span class="required">*</span></label>
+                            <input class="form-input" type="time" id="subject-end-time" required>
+                            <div class="form-error" id="error-end-time">Este campo es obligatorio</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="subject-semester">Periodo / Semestre <span class="required">*</span></label>
@@ -2622,7 +2640,8 @@
                 { id: 'subject-code',      errorId: 'error-code' },
                 { id: 'subject-credits',   errorId: 'error-credits' },
                 { id: 'subject-professor', errorId: 'error-professor' },
-                { id: 'subject-schedule',  errorId: 'error-schedule' },
+                { id: 'subject-start-time', errorId: 'error-start-time' },
+                { id: 'subject-end-time',  errorId: 'error-end-time' },
                 { id: 'subject-semester',  errorId: 'error-semester' },
             ];
             fields.forEach(({ id, errorId }) => {
@@ -2633,6 +2652,13 @@
                     isValid = false;
                 }
             });
+            const checkboxes = document.querySelectorAll('#subject-days input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                document.getElementById('error-days').classList.add('visible');
+                isValid = false;
+            } else {
+                document.getElementById('error-days').classList.remove('visible');
+            }
             const credits = document.getElementById('subject-credits');
             if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
                 credits.classList.add('error');
@@ -2681,7 +2707,7 @@
                 </div>
                 <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
                     <span class="material-icons-round" style="font-size:16px">schedule</span>
-                    ${data.horario}
+                    ${data.dias || ''} ${data.horaInicio || ''} - ${data.horaFin || ''}
                 </div>
                 <div class="subject-progress">
                     <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
@@ -2711,12 +2737,15 @@
             e.preventDefault();
             if (!validateSubjectForm()) return;
 
+            const selectedDays = Array.from(document.querySelectorAll('#subject-days input[type="checkbox"]:checked')).map(cb => cb.value).join(',');
             const payload = {
                 nombre:   document.getElementById('subject-name').value.trim(),
                 codigo:   document.getElementById('subject-code').value.trim().toUpperCase(),
                 creditos: parseInt(document.getElementById('subject-credits').value),
                 profesor: document.getElementById('subject-professor').value.trim(),
-                horario:  document.getElementById('subject-schedule').value.trim(),
+                dias:     selectedDays,
+                horaInicio: document.getElementById('subject-start-time').value,
+                horaFin:    document.getElementById('subject-end-time').value,
                 periodo:  document.getElementById('subject-semester').value,
             };
 
@@ -2728,10 +2757,9 @@
                 });
                 if (!res.ok) throw new Error('Error al guardar');
                 const json = await res.json();
-                createSubjectCard(json.asignatura, json.asignatura.id);
+                loadSubjects();
                 closeModal();
                 showToast(`"${json.asignatura.nombre}" agregada exitosamente`);
-                updateSubjectCount();
             } catch (err) {
                 console.error(err);
                 showToast('Error al conectar con el servidor');
@@ -2874,8 +2902,85 @@
                 card.remove();
                 updateSubjectCount();
                 showToast(`"${name}" eliminada`);
+                // Recargar el horario entero es más fácil para limpiar los bloques eliminados
+                loadSubjects();
             });
         }
+
+        // ── Horario y Carga de Subjects ────────────────────────────────
+        const dayColumns = { 'Lun': 1, 'Mar': 2, 'Mié': 3, 'Jue': 4, 'Vie': 5, 'Sáb': 6, 'Dom': 7 };
+        
+        function renderScheduleBlock(data, colorObj) {
+            if (!data.dias || !data.horaInicio || !data.horaFin) return;
+            const dayStartHour = 7;
+            const rowHeight = 37; // 36px tr height + 1px border
+            const thead = document.querySelector('.schedule-table thead');
+            const headerHeight = thead ? thead.offsetHeight : 27;
+            const container = document.querySelector('.schedule-container');
+
+            const diasArray = data.dias.split(',').map(d => d.trim());
+            diasArray.forEach(dia => {
+                const colIndex = dayColumns[dia];
+                if (!colIndex) return;
+
+                const td = document.querySelector(`.schedule-table tbody tr:first-child td:nth-child(${colIndex + 1})`);
+                if (!td) return;
+                
+                const parseTime = (timeStr) => {
+                    const parts = timeStr.split(':');
+                    return parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+                };
+
+                const startOffset = parseTime(data.horaInicio) - dayStartHour;
+                const duration = parseTime(data.horaFin) - parseTime(data.horaInicio);
+                if (startOffset < 0 || duration <= 0) return;
+
+                const block = document.createElement('div');
+                block.className = 'schedule-block';
+                block.style.position = 'absolute';
+                block.style.top = `${headerHeight + startOffset * rowHeight}px`;
+                block.style.left = `${td.offsetLeft}px`;
+                block.style.width = `${td.offsetWidth}px`;
+                block.style.height = `${duration * rowHeight}px`;
+                block.style.background = colorObj.bg;
+                block.style.color = colorObj.text;
+                block.style.borderLeft = `3px solid ${colorObj.icon}`;
+                block.style.borderRadius = '3px';
+                block.style.padding = '2px 4px';
+                block.style.fontSize = '9.5px';
+                block.style.overflow = 'hidden';
+                block.style.zIndex = '10';
+                block.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                block.innerHTML = `<strong style="display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden">${data.nombre}</strong>${data.horaInicio.substring(0,5)} - ${data.horaFin.substring(0,5)}`;
+
+                container.appendChild(block);
+            });
+        }
+
+        async function loadSubjects() {
+            try {
+                const res = await fetch(`${API}/asignaturas`);
+                if (!res.ok) throw new Error('Error fetch asignaturas');
+                const subjects = await res.json();
+                
+                subjectsGrid.innerHTML = '';
+                document.querySelectorAll('.schedule-block').forEach(el => el.remove());
+                colorIndex = 0; // reset colors
+                
+                subjects.forEach(sub => {
+                    const color = cardColors[colorIndex % cardColors.length];
+                    createSubjectCard(sub, sub.id); // esto incrementa colorIndex internamente
+                    renderScheduleBlock(sub, color);
+                });
+                updateSubjectCount();
+            } catch (err) {
+                console.error('Error cargando asignaturas:', err);
+            }
+        }
+
+        // Init load
+        document.addEventListener('DOMContentLoaded', loadSubjects);
+
     </script>
 </body>
 </html>
