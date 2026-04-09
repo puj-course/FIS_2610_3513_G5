@@ -1,0 +1,30 @@
+name: Java CI with Maven (Packaging)
+
+on:
+  push:
+    branches: [ "main", "feature-pipelines" ]
+  pull_request:
+    branches: [ "main", "feature-pipelines" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build and Package with Maven
+      run: mvn -B package --file src/Back-end/pom.xml
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: studyhub-backend-jar
+        path: src/Back-end/target/*.jar
