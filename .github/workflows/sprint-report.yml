@@ -1,0 +1,100 @@
+name: Sprint Report
+
+on:
+  schedule:
+    - cron: '0 5 * * 6'  # Cada sábado a media noche (5am UTC = medianoche Colombia)
+  workflow_dispatch:      # Permite lanzarlo manualmente si es necesario
+
+jobs:
+  generate-sprint-report:
+    name: Generar Reporte de Sprint
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      # 1. Checkout del repositorio
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Obtiene el historial completo de commits
+
+      # 2. Configurar Java y Maven
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # 3. Build y pruebas del proyecto
+      - name: Build con Maven
+        id: maven_build
+        run: |
+          mvn clean verify --batch-mode --no-transfer-progress 2>&1 | tee maven_output.txt
+          echo "build_status=$?" >> $GITHUB_OUTPUT
+
+      - name: Extraer resultados de pruebas
+        id: test_results
+        if: always()
+        run: |
+          SUREFIRE_DIR="target/surefire-reports"
+          TESTS_RUN=0
+          TESTS_FAILED=0
+          TESTS_SKIPPED=0
+
+          if [ -d "$SUREFIRE_DIR" ]; then
+            for xml in $SUREFIRE_DIR/*.xml; do
+              [ -f "$xml" ] || continue
+              run=$(grep -oP 'tests="\K[0-9]+' "$xml" | head -1)
+              fail=$(grep -oP 'failures="\K[0-9]+' "$xml" | head -1)
+              skip=$(grep -oP 'skipped="\K[0-9]+' "$xml" | head -1)
+              TESTS_RUN=$((TESTS_RUN + ${run:-0}))
+              TESTS_FAILED=$((TESTS_FAILED + ${fail:-0}))
+              TESTS_SKIPPED=$((TESTS_SKIPPED + ${skip:-0}))
+            done
+          fi
+
+          TESTS_PASSED=$((TESTS_RUN - TESTS_FAILED - TESTS_SKIPPED))
+          echo "tests_run=$TESTS_RUN"         >> $GITHUB_OUTPUT
+          echo "tests_passed=$TESTS_PASSED"   >> $GITHUB_OUTPUT
+          echo "tests_failed=$TESTS_FAILED"   >> $GITHUB_OUTPUT
+          echo "tests_skipped=$TESTS_SKIPPED" >> $GITHUB_OUTPUT
+
+      # 4. Recopilar commits del sprint
+      - name: Recopilar commits del período
+        id: commits
+        run: |
+          SPRINT_END=$(date +%Y-%m-%d)
+          SPRINT_START=$(date -d "6 days ago" +%Y-%m-%d)
+
+          BASE_DATE="2026-04-05"
+          DAYS=$(( ( $(date -d "$SPRINT_END" +%s) - $(date -d "$BASE_DATE" +%s) ) / 86400 ))
+          SPRINT_NUM=$(( DAYS / 6 + 7 ))
+          SPRINT_NAME="Sprint $SPRINT_NUM"
+
+          echo "sprint_start=$SPRINT_START" >> $GITHUB_OUTPUT
+          echo "sprint_end=$SPRINT_END"     >> $GITHUB_OUTPUT
+          echo "sprint_name=$SPRINT_NAME"   >> $GITHUB_OUTPUT
+
+          COMMIT_COUNT=$(git log \
+            --after="${SPRINT_START}T00:00:00" \
+            --before="${SPRINT_END}T23:59:59" \
+            --oneline | wc -l)
+
+          AUTHORS=$(git log \
+            --after="${SPRINT_START}T00:00:00" \
+            --before="${SPRINT_END}T23:59:59" \
+            --format="%an" | sort -u | tr '\n' ', ' | sed 's/,$//')
+
+          git log \
+            --after="${SPRINT_START}T00:00:00" \
+            --before="${SPRINT_END}T23:59:59" \
+            --pretty=format:"- \`%h\` %s (%an, %ad)" \
+            --date=short \
+            --max-count=20 > commits_list.txt
+
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          echo "authors=$AUTHORS"           >> $GITHUB_OUTPUT
