@@ -1,9 +1,10 @@
-package com.studyhub.service;
+package com.studyhub.service.facade;
 
 import com.studyhub.dto.AuthResponse;
 import com.studyhub.dto.LoginRequest;
 import com.studyhub.dto.RegistroRequest;
 import com.studyhub.model.Usuario;
+import com.studyhub.service.UsuarioService;
 import com.studyhub.model.UsuarioBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
