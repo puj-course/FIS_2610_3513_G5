@@ -1,6 +1,8 @@
-// Implementación del Builder para HorarioDTO
+package com.studyhub.service.builder;
+import com.studyhub.dto.horarioDTO;
+
 public class HorarioBuilder {
-    private HorarioDTO dto = new HorarioDTO();
+    private horarioDTO dto = new horarioDTO();
 
     public HorarioBuilder conAsignatura(String nombre) {
         dto.setNombreNombreAsignatura(nombre);
@@ -17,7 +19,7 @@ public class HorarioBuilder {
         return this;
     }
 
-    public HorarioDTO build() {
+    public horarioDTO build() {
         return dto;
     }
 }

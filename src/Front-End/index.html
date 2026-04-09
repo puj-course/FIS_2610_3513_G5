@@ -1569,888 +1569,6 @@
         .grade-percent-summary.warning .grade-percent-value { color: #F9A825; }
         .grade-percent-summary.danger  .grade-percent-value { color: #E53935; }
 
-        /* ========== VISTA: MIS MATERIAS ========== */
-        .subjects-list-view {
-            display: none;
-            flex-direction: column;
-        }
-
-        .subjects-list-view.active {
-            display: flex;
-        }
-
-        .subjects-list-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .subjects-list-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .subjects-list-title-wrap .subjects-list-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-700);
-        }
-
-        .subjects-list-title-wrap .subjects-list-subtitle {
-            font-size: 13px;
-            color: var(--gray-500);
-            margin-top: 2px;
-        }
-
-        .subjects-count-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--blue-600);
-            color: var(--white);
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 20px;
-            padding: 3px 10px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-
-        /* Tabla de materias */
-        .subjects-list-wrap {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-            overflow-x: auto;
-            overflow-y: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* Barra de scroll horizontal visible y estilizada */
-        .subjects-list-wrap::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .subjects-list-wrap::-webkit-scrollbar-track {
-            background: var(--gray-100);
-            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-        }
-
-        .subjects-list-wrap::-webkit-scrollbar-thumb {
-            background: var(--blue-200);
-            border-radius: 3px;
-        }
-
-        .subjects-list-wrap::-webkit-scrollbar-thumb:hover {
-            background: var(--blue-400);
-        }
-
-        .subjects-list-table {
-            width: 100%;
-            min-width: 680px;
-            border-collapse: collapse;
-        }
-
-        .subjects-list-table thead tr {
-            background: var(--blue-700);
-        }
-
-        .subjects-list-table thead th {
-            padding: 14px 20px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--white);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .subjects-list-table thead th:last-child {
-            text-align: center;
-            width: 220px;
-        }
-
-        /* Contenedor de los dos botones de acción */
-        .subj-actions-cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .subj-view-btn.tasks {
-            border-color: var(--gray-300);
-            color: var(--gray-600);
-        }
-
-        .subj-view-btn.tasks:hover {
-            background: var(--gray-100);
-            border-color: var(--gray-400);
-            color: var(--gray-700);
-        }
-
-        .subjects-list-table tbody tr {
-            border-bottom: 1px solid var(--gray-100);
-            transition: background 0.15s ease;
-        }
-
-        .subjects-list-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .subjects-list-table tbody tr:hover {
-            background: var(--gray-50);
-        }
-
-        .subjects-list-table tbody td {
-            padding: 16px 20px;
-            font-size: 13px;
-            color: var(--gray-700);
-            vertical-align: middle;
-        }
-
-        .subjects-list-table tbody td:last-child {
-            text-align: center;
-        }
-
-        /* Celda de nombre con acento de color */
-        .subj-name-cell {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .subj-color-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .subj-name-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-            line-height: 1.3;
-        }
-
-        .subj-code-text {
-            font-size: 11px;
-            color: var(--gray-400);
-            font-weight: 500;
-            margin-top: 2px;
-        }
-
-        /* Profesor */
-        .subj-prof-cell {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--gray-600);
-        }
-
-        .subj-prof-cell .material-icons-round {
-            font-size: 15px;
-            color: var(--gray-400);
-        }
-
-        /* Horario */
-        .subj-schedule-cell {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--gray-500);
-            font-size: 12px;
-        }
-
-        .subj-schedule-cell .material-icons-round {
-            font-size: 15px;
-            color: var(--gray-400);
-        }
-
-        /* Créditos pill */
-        .subj-credits-pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--blue-50);
-            color: var(--blue-600);
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 20px;
-            padding: 3px 12px;
-            white-space: nowrap;
-        }
-
-        /* Periodo pill */
-        .subj-period-pill {
-            display: inline-block;
-            background: var(--gray-100);
-            color: var(--gray-600);
-            font-size: 12px;
-            font-weight: 500;
-            border-radius: 20px;
-            padding: 3px 10px;
-        }
-
-        /* Botón ver calificaciones */
-        .subj-view-btn {
-            padding: 7px 16px;
-            background: transparent;
-            border: 1.5px solid var(--blue-200);
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            color: var(--blue-600);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .subj-view-btn:hover {
-            background: var(--blue-50);
-            border-color: var(--blue-400);
-        }
-
-        .subj-view-btn .material-icons-round {
-            font-size: 15px;
-        }
-
-        /* Estado vacío de la lista */
-        .subjects-list-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 72px 0;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-        }
-
-        .subjects-list-empty-icon {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .subjects-list-empty-icon .material-icons-round {
-            font-size: 36px;
-            color: var(--gray-400);
-        }
-
-        .subjects-list-empty-text {
-            font-size: 15px;
-            color: var(--gray-400);
-            font-weight: 500;
-        }
-
-        /* Animación entrada de filas */
-        @keyframes rowFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .subjects-list-table tbody tr {
-            animation: rowFadeIn 0.3s ease forwards;
-        }
-
-        .subjects-list-table tbody tr:nth-child(2) { animation-delay: 0.05s; }
-        .subjects-list-table tbody tr:nth-child(3) { animation-delay: 0.10s; }
-        .subjects-list-table tbody tr:nth-child(4) { animation-delay: 0.15s; }
-        .subjects-list-table tbody tr:nth-child(5) { animation-delay: 0.20s; }
-        .subjects-list-table tbody tr:nth-child(n+6) { animation-delay: 0.25s; }
-
-        /* ========== VISTA: TAREAS DE ASIGNATURA ========== */
-        .tasks-view {
-            display: none;
-            flex-direction: column;
-        }
-
-        .tasks-view.active {
-            display: flex;
-        }
-
-        .tasks-view-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .tasks-view-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-700);
-        }
-
-        .tasks-view-subtitle {
-            font-size: 13px;
-            color: var(--gray-500);
-            margin-top: 2px;
-        }
-
-        /* Tabla de tareas */
-        .tasks-table-wrap {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .tasks-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .tasks-table thead tr {
-            background: var(--blue-700);
-        }
-
-        .tasks-table thead th {
-            padding: 14px 20px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--white);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .tasks-table tbody tr {
-            border-bottom: 1px solid var(--gray-100);
-            transition: background 0.15s ease;
-            animation: rowFadeIn 0.3s ease forwards;
-        }
-
-        .tasks-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .tasks-table tbody tr:hover {
-            background: var(--gray-50);
-        }
-
-        .tasks-table tbody td {
-            padding: 15px 20px;
-            font-size: 13px;
-            color: var(--gray-700);
-            vertical-align: middle;
-        }
-
-        /* Título de tarea con descripción debajo */
-        .task-title-cell .task-title-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-
-        .task-title-cell .task-desc-text {
-            font-size: 12px;
-            color: var(--gray-400);
-            margin-top: 2px;
-        }
-
-        /* Fecha / hora */
-        .task-date-cell {
-            white-space: nowrap;
-        }
-
-        .task-date-cell .task-date-main {
-            font-weight: 500;
-            color: var(--gray-700);
-        }
-
-        .task-date-cell .task-time-text {
-            font-size: 12px;
-            color: var(--gray-400);
-            margin-top: 2px;
-        }
-
-        /* Badge de estado */
-        .task-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .task-status-badge .material-icons-round {
-            font-size: 14px;
-        }
-
-        .task-status-badge.pending {
-            background: #FFF3E0;
-            color: #E65100;
-        }
-
-        .task-status-badge.upcoming {
-            background: var(--blue-50);
-            color: var(--blue-600);
-        }
-
-        .task-status-badge.overdue {
-            background: #FFEBEE;
-            color: #C62828;
-        }
-
-        /* Estado vacío de tareas */
-        .tasks-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 72px 0;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-        }
-
-        .tasks-empty-icon {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tasks-empty-icon .material-icons-round {
-            font-size: 36px;
-            color: var(--gray-400);
-        }
-
-        .tasks-empty-text {
-            font-size: 15px;
-            color: var(--gray-400);
-            font-weight: 500;
-        }
-
-        /* ========== VISTA: MIS TAREAS (GLOBAL) ========== */
-        .all-tasks-view {
-            display: none;
-            flex-direction: column;
-        }
-
-        .all-tasks-view.active {
-            display: flex;
-        }
-
-        .all-tasks-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .all-tasks-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        /* Tabla global de tareas con scroll horizontal */
-        .all-tasks-wrap {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-            overflow-x: auto;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .all-tasks-wrap::-webkit-scrollbar { height: 6px; }
-        .all-tasks-wrap::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
-        .all-tasks-wrap::-webkit-scrollbar-thumb { background: var(--blue-200); border-radius: 3px; }
-        .all-tasks-wrap::-webkit-scrollbar-thumb:hover { background: var(--blue-400); }
-
-        .all-tasks-table {
-            width: 100%;
-            min-width: 700px;
-            border-collapse: collapse;
-        }
-
-        .all-tasks-table thead tr {
-            background: var(--blue-700);
-        }
-
-        .all-tasks-table thead th {
-            padding: 14px 20px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--white);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .all-tasks-table tbody tr {
-            border-bottom: 1px solid var(--gray-100);
-            transition: background 0.15s ease;
-            animation: rowFadeIn 0.3s ease forwards;
-        }
-
-        .all-tasks-table tbody tr:last-child { border-bottom: none; }
-        .all-tasks-table tbody tr:hover { background: var(--gray-50); }
-
-        .all-tasks-table tbody td {
-            padding: 15px 20px;
-            font-size: 13px;
-            color: var(--gray-700);
-            vertical-align: middle;
-        }
-
-        /* Pill de asignatura */
-        .task-subject-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--blue-50);
-            color: var(--blue-700);
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 20px;
-            padding: 4px 12px;
-            white-space: nowrap;
-        }
-
-        .task-subject-pill .subj-color-dot {
-            width: 8px;
-            height: 8px;
-        }
-
-        /* Estado vacío global */
-        .all-tasks-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 72px 0;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-        }
-
-        .all-tasks-empty-icon {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .all-tasks-empty-icon .material-icons-round {
-            font-size: 36px;
-            color: var(--gray-400);
-        }
-
-        .all-tasks-empty-text {
-            font-size: 15px;
-            color: var(--gray-400);
-            font-weight: 500;
-        }
-
-        /* ========== VISTA: CALENDARIO EXPANDIDO ========== */
-        .calendar-expanded-view {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .calendar-expanded-view.active {
-            display: flex;
-        }
-
-        /* Cuando el calendario está activo, la sidebar derecha se oculta
-           y el main-content se expande para ocupar su espacio */
-        .app-container.calendar-open .sidebar-right {
-            display: none;
-        }
-
-        .app-container.calendar-open .main-content {
-            grid-column: 2 / -1;
-        }
-
-        .calendar-expanded-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .calendar-expanded-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .calendar-expanded-nav {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .calendar-expanded-month {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--gray-700);
-            min-width: 160px;
-            text-align: center;
-        }
-
-        /* Cabecera días de la semana */
-        .calendar-expanded-week-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .calendar-expanded-week-header div {
-            text-align: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 8px 0;
-        }
-
-        /* Grid de días */
-        .calendar-expanded-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            flex: 1;
-        }
-
-        .cal-day-cell {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
-            padding: 10px 12px 8px;
-            min-height: 100px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        /* Empuja las barras hacia abajo */
-        .cal-day-cell .cal-bars {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .cal-day-cell:hover {
-            border-color: var(--blue-300);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .cal-day-cell.today {
-            border-color: var(--blue-500);
-            background: var(--blue-50);
-        }
-
-        .cal-day-cell.other-month {
-            background: var(--gray-50);
-            opacity: 0.55;
-        }
-
-        .cal-day-number {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-600);
-            line-height: 1;
-        }
-
-        .cal-day-cell.today .cal-day-number {
-            width: 26px;
-            height: 26px;
-            background: var(--blue-500);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .cal-day-cell.other-month .cal-day-number {
-            color: var(--gray-400);
-        }
-
-        /* Evento / tarea en la celda del día */
-        .cal-event-chip {
-            display: block;
-            width: 100%;
-            height: 5px;
-            border-radius: 3px;
-            flex-shrink: 0;
-            /* El color se pone inline via JS */
-        }
-
-        .cal-event-chip .chip-color-bar,
-        .cal-event-chip .chip-label {
-            display: none;   /* no se usan en este diseño */
-        }
-
-        .cal-event-chip.overdue {
-            background: #FFEBEE;
-            color: #C62828;
-        }
-
-        .cal-event-chip.pending {
-            background: #FFF3E0;
-            color: #E65100;
-        }
-
-        /* ========== VISTA: DÍA ESPECÍFICO ========== */
-        .calendar-day-view {
-            display: none;
-            flex-direction: column;
-        }
-
-        .calendar-day-view.active {
-            display: flex;
-        }
-
-        .app-container.calendar-open .calendar-day-view {
-            /* Hereda el grid-column expandido del calendario */
-        }
-
-        .calendar-day-view-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-        }
-
-        .day-view-nav {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Caja de estado vacío del día */
-        .day-view-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 72px 0;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-        }
-
-        .day-view-empty-icon {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .day-view-empty-icon .material-icons-round {
-            font-size: 36px;
-            color: var(--gray-400);
-        }
-
-        .day-view-empty-text {
-            font-size: 15px;
-            color: var(--gray-400);
-            font-weight: 500;
-        }
-
-        /* Tabla de tareas del día */
-        .day-tasks-wrap {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .day-tasks-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .day-tasks-table thead tr {
-            background: var(--blue-700);
-        }
-
-        .day-tasks-table thead th {
-            padding: 14px 20px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--white);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .day-tasks-table tbody tr {
-            border-bottom: 1px solid var(--gray-100);
-            transition: background 0.15s ease;
-            animation: rowFadeIn 0.3s ease forwards;
-        }
-
-        .day-tasks-table tbody tr:last-child { border-bottom: none; }
-        .day-tasks-table tbody tr:hover { background: var(--gray-50); }
-
-        .day-tasks-table tbody td {
-            padding: 16px 20px;
-            font-size: 13px;
-            color: var(--gray-700);
-            vertical-align: middle;
-        }
-
-        /* Cursor pointer en las celdas del calendario */
-        .cal-day-cell {
-            cursor: pointer;
-        }
-
-        #calendar-widget-title .calendar-title-text {
-            text-decoration: none;
-            transition: text-decoration 0.15s ease;
-        }
-
-        #calendar-widget-title:hover .calendar-title-text {
-            text-decoration: underline;
-        }
-
         /* ===== FAB DROPDOWN MENU ===== */
         .fab-menu {
             position: absolute;
@@ -2486,11 +1604,303 @@
             background: var(--blue-50);
             color: var(--blue-600);
         }
+        /* ========== AUTHENTICATION STYLES ========== */
+        #auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-500) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--blue-500);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--white);
+            box-shadow: 0 8px 16px rgba(30, 136, 229, 0.3);
+        }
+
+        /* ========== AUTHENTICATION GLASSMORPHISM (#185) ========== */
+        #auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--blue-700) 0%, #1a237e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            width: 440px;
+            max-width: 90vw;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--blue-50);
+            color: var(--blue-600);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .auth-logo .material-icons-round { font-size: 32px; }
+
+        .auth-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        .auth-form { margin-top: 24px; text-align: left; }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(21, 101, 192, 0.5);
+        .auth-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .auth-form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-400);
+            box-shadow: 0 0 0 3px var(--blue-50);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--blue-600);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: var(--blue-700);
+            transform: translateY(-1px);
+        }
+
+        .auth-switch {
+            margin-top: 24px;
+            font-size: 14px;
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .auth-link {
+            color: var(--blue-600);
+            font-weight: 700;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .auth-link:hover { text-decoration: underline; }
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #E53935;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+        }
     </style>
 </head>
 
-<body>
-    <div class="app-container">
+<body onload="checkSession()">
+    
+    <!-- ========== AUTHENTICATION LAYER ========== -->
+    <div id="auth-container">
+        <!-- LOGIN VIEW (#186) -->
+        <div id="login-view" class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">school</span></div>
+                <h2 class="auth-title">Bienvenido a StudyHub</h2>
+                <p class="auth-subtitle">Ingresa tus credenciales para continuar</p>
+            </div>
+            <div id="login-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="login-pass" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">Iniciar Sesión</button>
+            </form>
+            <p class="auth-switch">¿No tienes cuenta? <span class="auth-link" onclick="toggleAuth('register')">Regístrate</span></p>
+        </div>
+
+        <!-- REGISTER VIEW (#187) -->
+        <div id="register-view" class="auth-card" style="display: none;">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">person_add</span></div>
+                <h2 class="auth-title">Crea tu cuenta</h2>
+                <p class="auth-subtitle">Únete a la plataforma universitaria StudyHub</p>
+            </div>
+            <div id="register-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" id="reg-nombre" class="form-input" placeholder="Juan" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" id="reg-nombre" class="form-input" placeholder="Juan Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="reg-email" class="form-input" placeholder="estudiante@universidad.edu" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Contraseña</label>
+                    <input type="password" id="reg-pass-confirm" class="form-input" placeholder="Repite tu contraseña" required>
+                </div>
+                <button type="submit" class="auth-btn">Crear Cuenta</button>
+            </form>
+            <p class="auth-switch">¿Ya tienes cuenta? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
+        </div>
+    </div>
+
+    <!-- ========== DASHBOARD LAYER (#189 Restricted) ========== -->
+    <div class="app-container" style="display: none;">
 
         <header class="header">
             <div class="header-logo">
@@ -2520,15 +1930,15 @@
                 </div>
 
                 <nav class="sidebar-nav">
-                    <div class="nav-item active" id="nav-dashboard" onclick="goToDashboard()">
+                    <div class="nav-item active">
                         <span class="material-icons-round">dashboard</span>
                         Dashboard
                     </div>
-                    <div class="nav-item" id="nav-mis-materias" onclick="openSubjectsListView()">
+                    <div class="nav-item">
                         <span class="material-icons-round">menu_book</span>
                         Mis Materias
                     </div>
-                    <div class="nav-item" id="nav-mis-tareas" onclick="openAllTasksView()">
+                    <div class="nav-item">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
                     </div>
@@ -2599,7 +2009,7 @@
                         <div class="subject-icon">
                             <span class="material-icons-round">code</span>
                         </div>
-                        <div class="subject-name" onclick="openGradesViewFromDashboard(this.closest('.subject-card'))" style="cursor:pointer;">Fundamentos de Ing. de Software</div>
+                        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Fundamentos de Ing. de Software</div>
                         <div class="subject-id">ID: ISIS-2603 · Sección 01</div>
                         <div class="subject-professor">
                             <span class="material-icons-round">person</span>
@@ -2632,7 +2042,7 @@
                         <div class="subject-icon">
                             <span class="material-icons-round">functions</span>
                         </div>
-                        <div class="subject-name" onclick="openGradesViewFromDashboard(this.closest('.subject-card'))" style="cursor:pointer;">Cálculo Diferencial</div>
+                        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Cálculo Diferencial</div>
                         <div class="subject-id">ID: MATE-1203 · Sección 03</div>
                         <div class="subject-professor">
                             <span class="material-icons-round">person</span>
@@ -2726,124 +2136,6 @@
                 </div>
             </div><!-- /.grades-view -->
 
-            <!-- Vista: Mis Materias -->
-            <div class="subjects-list-view" id="subjects-list-view">
-                <div class="subjects-list-header">
-                    <div class="subjects-list-header-left">
-                        <button class="back-btn" id="subjects-list-back-btn">
-                            <span class="material-icons-round">arrow_back</span>
-                        </button>
-                        <div class="subjects-list-title-wrap">
-                            <div class="subjects-list-title">
-                                Mis Materias
-                                <span class="subjects-count-badge" id="subjects-count-badge">0</span>
-                            </div>
-                            <div class="subjects-list-subtitle" id="subjects-list-subtitle">Semestre 2026-1</div>
-                        </div>
-                    </div>
-                </div>
-                <div id="subjects-list-content"></div>
-            </div><!-- /.subjects-list-view -->
-
-            <!-- Vista: Tareas de asignatura -->
-            <div class="tasks-view" id="tasks-view">
-                <div class="tasks-view-header">
-                    <button class="back-btn" id="tasks-back-btn">
-                        <span class="material-icons-round">arrow_back</span>
-                    </button>
-                    <div>
-                        <div class="tasks-view-title" id="tasks-view-title">Tareas</div>
-                        <div class="tasks-view-subtitle" id="tasks-view-subtitle"></div>
-                    </div>
-                </div>
-                <div id="tasks-list-content"></div>
-            </div><!-- /.tasks-view -->
-
-            <!-- Vista: Mis Tareas (global) -->
-            <div class="all-tasks-view" id="all-tasks-view">
-                <div class="all-tasks-header">
-                    <div class="all-tasks-header-left">
-                        <button class="back-btn" id="all-tasks-back-btn">
-                            <span class="material-icons-round">arrow_back</span>
-                        </button>
-                        <div>
-                            <div class="subjects-list-title">
-                                Mis Tareas
-                                <span class="subjects-count-badge" id="all-tasks-count-badge">0</span>
-                            </div>
-                            <div class="subjects-list-subtitle">Todas las tareas registradas</div>
-                        </div>
-                    </div>
-                    <button class="grades-add-inline-btn" onclick="openTaskModal()">
-                        <span class="material-icons-round">add</span>
-                        Nueva tarea
-                    </button>
-                </div>
-                <div id="all-tasks-content"></div>
-            </div><!-- /.all-tasks-view -->
-
-            <!-- Vista: Calendario expandido -->
-            <div class="calendar-expanded-view" id="calendar-expanded-view">
-                <div class="calendar-expanded-header">
-                    <div class="calendar-expanded-header-left">
-                        <button class="back-btn" id="calendar-back-btn">
-                            <span class="material-icons-round">arrow_back</span>
-                        </button>
-                        <div>
-                            <div class="subjects-list-title">Calendario</div>
-                            <div class="subjects-list-subtitle" id="calendar-expanded-subtitle">Febrero 2026</div>
-                        </div>
-                    </div>
-                    <div class="calendar-expanded-nav">
-                        <button class="calendar-nav-btn" id="cal-prev-btn">
-                            <span class="material-icons-round">chevron_left</span>
-                        </button>
-                        <span class="calendar-expanded-month" id="cal-expanded-month">Febrero 2026</span>
-                        <button class="calendar-nav-btn" id="cal-next-btn">
-                            <span class="material-icons-round">chevron_right</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cabecera días de la semana -->
-                <div class="calendar-expanded-week-header">
-                    <div>Lun</div>
-                    <div>Mar</div>
-                    <div>Mié</div>
-                    <div>Jue</div>
-                    <div>Vie</div>
-                    <div>Sáb</div>
-                    <div>Dom</div>
-                </div>
-
-                <!-- Grid de días (generado por JS) -->
-                <div class="calendar-expanded-grid" id="calendar-expanded-grid"></div>
-            </div><!-- /.calendar-expanded-view -->
-
-            <!-- Vista: Día específico -->
-            <div class="calendar-day-view" id="calendar-day-view">
-                <div class="calendar-day-view-header">
-                    <div class="calendar-expanded-header-left">
-                        <button class="back-btn" id="day-view-back-btn">
-                            <span class="material-icons-round">arrow_back</span>
-                        </button>
-                        <div>
-                            <div class="subjects-list-title" id="day-view-title">Lunes 13</div>
-                            <div class="subjects-list-subtitle" id="day-view-subtitle">Febrero 2026</div>
-                        </div>
-                    </div>
-                    <div class="day-view-nav">
-                        <button class="calendar-nav-btn" id="day-prev-btn" title="Día anterior">
-                            <span class="material-icons-round">chevron_left</span>
-                        </button>
-                        <button class="calendar-nav-btn" id="day-next-btn" title="Día siguiente">
-                            <span class="material-icons-round">chevron_right</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="day-view-content"></div>
-            </div><!-- /.calendar-day-view -->
-
         </main>
 
         <aside class="sidebar-right">
@@ -2917,9 +2209,9 @@
 
             <div class="widget">
                 <div class="widget-header">
-                    <div class="widget-title" onclick="openCalendarView()" style="cursor:pointer;" title="Ver calendario completo" id="calendar-widget-title">
+                    <div class="widget-title">
                         <span class="material-icons-round">calendar_month</span>
-                        <span class="calendar-title-text">Calendario</span>
+                        Calendario
                     </div>
                 </div>
                 <div class="calendar-widget">
@@ -3142,7 +2434,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="grade-score">
-                                Nota
+                                Nota <span class="required">*</span>
                             </label>
                             <input class="form-input" type="number" id="grade-score"
                                 placeholder="Ej: 4.5" min="0" max="5" step="0.1" required>
@@ -3242,21 +2534,15 @@
 
         /** Clase CSS del badge según la nota (escala 0-5) */
         function scoreClass(nota) {
-            if (nota === null) return 'mid';
             if (nota >= 3.5) return 'high';
             if (nota >= 3.0) return 'mid';
             return 'low';
         }
 
-        /** Texto del badge de nota */
-        function scoreLabel(nota) {
-            return nota === null ? '—' : nota.toFixed(1);
-        }
-
-        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100), ignora entradas sin nota */
+        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100) */
         function calcWeightedAverage(key) {
             const list = gradesStore[key] || [];
-            return list.reduce((sum, g) => g.nota !== null ? sum + g.nota * (g.porcentaje / 100) : sum, 0);
+            return list.reduce((sum, g) => sum + g.nota * (g.porcentaje / 100), 0);
         }
 
         /** Clase CSS del promedio final */
@@ -3295,7 +2581,7 @@
                 tr.innerHTML = `
                     <td class="cell-nombre">${g.nombre}</td>
                     <td class="cell-nota" style="text-align:center;">
-                        <span class="grade-score-badge ${scoreClass(g.nota)}">${scoreLabel(g.nota)}</span>
+                        <span class="grade-score-badge ${scoreClass(g.nota)}">${g.nota.toFixed(1)}</span>
                     </td>
                     <td class="cell-pct" style="text-align:center;">
                         <span class="grade-percent-pill">${g.porcentaje}%</span>
@@ -3356,7 +2642,7 @@
                 tr.classList.remove('editing');
                 tr.querySelector('.cell-nombre').textContent = newNombre;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<span class="grade-score-badge ${scoreClass(newNota)}">${scoreLabel(newNota)}</span>`;
+                    `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<span class="grade-percent-pill">${newPct}%</span>`;
 
@@ -3381,7 +2667,7 @@
                 tr.querySelector('.cell-nombre').innerHTML =
                     `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota !== null ? g.nota.toFixed(1) : ''}">`;
+                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
 
@@ -3430,20 +2716,8 @@
         //  VISTA DE CALIFICACIONES
         // ══════════════════════════════════════════════════════════════
 
-        // 'dashboard' | 'subjects-list'
-        let gradesPreviousView = 'dashboard';
-
-        // ── Calificaciones ─────────────────────────────────────────────
-
-        /** Abre la vista de calificaciones desde una tarjeta del dashboard */
-        function openGradesViewFromDashboard(card) {
-            gradesPreviousView = 'dashboard';
-            openGradesView(card);
-        }
-
         function openGradesView(card) {
             activeCardForView = card;
-            if (!gradesPreviousView) gradesPreviousView = 'dashboard';
 
             const nombre = card.querySelector('.subject-name').textContent;
             const subId  = card.querySelector('.subject-id')?.textContent || '';
@@ -3456,19 +2730,15 @@
             }
 
             renderGradesTable(card);
-            showView('grades');
+
+            dashboardView.classList.add('hidden');
+            gradesView.classList.add('active');
         }
 
         function closeGradesView() {
+            gradesView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
             activeCardForView = null;
-            if (gradesPreviousView === 'subjects-list') {
-                renderSubjectsList();
-                showView('subjects-list');
-                setNavActive('nav-mis-materias');
-            } else {
-                showView('dashboard');
-                setNavActive('nav-dashboard');
-            }
         }
 
         gradesBackBtn.addEventListener('click', closeGradesView);
@@ -3481,686 +2751,6 @@
         // Botón "+ Agregar calificación" del footer de la tabla
         gradesAddInlineBtn.addEventListener('click', () => {
             if (activeCardForView) openGradeModal(activeCardForView);
-        });
-
-        // ══════════════════════════════════════════════════════════════
-        //  VISTA: MIS MATERIAS
-        // ══════════════════════════════════════════════════════════════
-
-        const subjectsListView    = document.getElementById('subjects-list-view');
-        const subjectsListContent = document.getElementById('subjects-list-content');
-        const subjectsCountBadge  = document.getElementById('subjects-count-badge');
-        const subjectsListBackBtn = document.getElementById('subjects-list-back-btn');
-
-        // Paleta de colores para los puntos de acento (coincide con cardColors)
-        const dotColors = [
-            '#7C4DFF','#26A69A','#FF7043','#EC407A',
-            '#FFA726','#42A5F5','#66BB6A'
-        ];
-
-        /** Lee los datos de todas las tarjetas del DOM y renderiza la lista */
-        function renderSubjectsList() {
-            const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
-
-            // Actualizar badge del contador
-            subjectsCountBadge.textContent = cards.length;
-
-            if (cards.length === 0) {
-                subjectsListContent.innerHTML = `
-                    <div class="subjects-list-empty">
-                        <div class="subjects-list-empty-icon">
-                            <span class="material-icons-round">menu_book</span>
-                        </div>
-                        <p class="subjects-list-empty-text">Aún no hay materias registradas</p>
-                    </div>`;
-                return;
-            }
-
-            // Construir filas de la tabla
-            const rows = cards.map((card, i) => {
-                const nombre   = card.querySelector('.subject-name')?.textContent?.trim() || '—';
-                const idText   = card.querySelector('.subject-id')?.textContent?.trim()   || '—';
-                const profText = card.querySelector('.subject-professor')?.textContent?.trim().replace(/^person\s*/, '') || '—';
-
-                // Horario: puede estar en un div con ícono "schedule"
-                const scheduleEl = Array.from(card.querySelectorAll('div')).find(
-                    d => d.querySelector('.material-icons-round')?.textContent?.trim() === 'schedule'
-                );
-                const horario = scheduleEl
-                    ? scheduleEl.textContent.replace('schedule', '').trim()
-                    : '—';
-
-                // Extraer créditos y periodo del campo subject-id  (ej: "ID: ISIS-2603 · Sección 01")
-                // Para tarjetas dinámicas el formato es "ID: XXXX · N créditos · PERIODO"
-                let creditos = '—';
-                let periodo  = '—';
-                let codigo   = idText;
-
-                const creditMatch  = idText.match(/(\d+)\s*créditos/);
-                const periodoMatch = idText.match(/(\d{4}-\d)/);
-                if (creditMatch)  creditos = creditMatch[1];
-                if (periodoMatch) periodo  = periodoMatch[1];
-
-                // Código es la primera parte antes del primer ·
-                const parts = idText.split('·');
-                codigo = parts[0].replace('ID:', '').trim();
-
-                const dotColor = dotColors[i % dotColors.length];
-
-                return `
-                    <tr data-card-index="${i}">
-                        <td>
-                            <div class="subj-name-cell">
-                                <div class="subj-color-dot" style="background:${dotColor};"></div>
-                                <div>
-                                    <div class="subj-name-text">${nombre}</div>
-                                    <div class="subj-code-text">${codigo}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="subj-prof-cell">
-                                <span class="material-icons-round">person</span>
-                                ${profText}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="subj-schedule-cell">
-                                <span class="material-icons-round">schedule</span>
-                                ${horario}
-                            </div>
-                        </td>
-                        <td><span class="subj-credits-pill">${creditos === '—' ? '—' : creditos + ' cr.'}</span></td>
-                        <td><span class="subj-period-pill">${periodo}</span></td>
-                        <td>
-                            <div class="subj-actions-cell">
-                                <button class="subj-view-btn" onclick="openGradesViewFromList(${i})">
-                                    <span class="material-icons-round">grade</span>
-                                    Ver calificaciones
-                                </button>
-                                <button class="subj-view-btn tasks" onclick="openTasksViewFromList(${i})">
-                                    <span class="material-icons-round">assignment</span>
-                                    Ver tareas
-                                </button>
-                            </div>
-                        </td>
-                    </tr>`;
-            }).join('');
-
-            subjectsListContent.innerHTML = `
-                <div class="subjects-list-wrap">
-                    <table class="subjects-list-table">
-                        <thead>
-                            <tr>
-                                <th>Asignatura</th>
-                                <th>Profesor</th>
-                                <th>Horario</th>
-                                <th>Créditos</th>
-                                <th>Periodo</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        /** Abre la vista de Mis Materias */
-        function openSubjectsListView() {
-            renderSubjectsList();
-            showView('subjects-list');
-            setNavActive('nav-mis-materias');
-        }
-
-        /** Cierra la vista de Mis Materias y vuelve al dashboard */
-        function closeSubjectsListView() {
-            showView('dashboard');
-            setNavActive('nav-dashboard');
-        }
-
-        /** Desde la lista de materias, navega directo a las calificaciones de esa tarjeta */
-        function openGradesViewFromList(cardIndex) {
-            const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
-            if (!cards[cardIndex]) return;
-            gradesPreviousView = 'subjects-list';
-            showView('grades');
-            openGradesView(cards[cardIndex]);
-        }
-
-        subjectsListBackBtn.addEventListener('click', closeSubjectsListView);
-
-        // ══════════════════════════════════════════════════════════════
-        //  VISTA: TAREAS DE ASIGNATURA
-        // ══════════════════════════════════════════════════════════════
-
-        const tasksView        = document.getElementById('tasks-view');
-        const tasksViewTitle   = document.getElementById('tasks-view-title');
-        const tasksViewSubtitle= document.getElementById('tasks-view-subtitle');
-        const tasksListContent = document.getElementById('tasks-list-content');
-        const tasksBackBtn     = document.getElementById('tasks-back-btn');
-
-        // Store en memoria: subjectName → [{ titulo, fechaEntrega, horaEntrega, descripcion }]
-        const tasksStore = {};
-
-        /** Calcula el estado de una tarea según su fecha */
-        function taskStatus(fecha, hora) {
-            const now      = new Date();
-            const deadline = new Date(`${fecha}T${hora || '23:59'}`);
-            const diffDays = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
-            if (deadline < now)   return { key: 'overdue',  label: 'Vencida',    icon: 'cancel' };
-            if (diffDays <= 3)    return { key: 'pending',  label: 'Próxima',    icon: 'schedule' };
-            return               { key: 'upcoming', label: 'Pendiente',  icon: 'pending' };
-        }
-
-        /** Formatea una fecha "YYYY-MM-DD" a "DD/MM/YYYY" */
-        function formatDate(fecha) {
-            if (!fecha) return '—';
-            const [y, m, d] = fecha.split('-');
-            return `${d}/${m}/${y}`;
-        }
-
-        /** Renderiza la lista de tareas de una asignatura */
-        function renderTasksList(subjectName) {
-            const tasks = tasksStore[subjectName] || [];
-
-            if (tasks.length === 0) {
-                tasksListContent.innerHTML = `
-                    <div class="tasks-empty">
-                        <div class="tasks-empty-icon">
-                            <span class="material-icons-round">assignment</span>
-                        </div>
-                        <p class="tasks-empty-text">No hay tareas registradas para esta asignatura</p>
-                    </div>`;
-                return;
-            }
-
-            const rows = tasks.map((t, idx) => {
-                const st = taskStatus(t.fechaEntrega, t.horaEntrega);
-                return `
-                    <tr>
-                        <td class="task-title-cell">
-                            <div class="task-title-text">${t.titulo}</div>
-                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
-                        </td>
-                        <td class="task-date-cell">
-                            <div class="task-date-main">${formatDate(t.fechaEntrega)}</div>
-                            ${t.horaEntrega ? `<div class="task-time-text">${t.horaEntrega}</div>` : ''}
-                        </td>
-                        <td>
-                            <span class="task-status-badge ${st.key}">
-                                <span class="material-icons-round">${st.icon}</span>
-                                ${st.label}
-                            </span>
-                        </td>
-                    </tr>`;
-            }).join('');
-
-            tasksListContent.innerHTML = `
-                <div class="tasks-table-wrap">
-                    <table class="tasks-table">
-                        <thead>
-                            <tr>
-                                <th>Tarea</th>
-                                <th>Fecha de entrega</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        /** Abre la vista de tareas desde la lista de materias */
-        function openTasksViewFromList(cardIndex) {
-            const cards = Array.from(subjectsGrid.querySelectorAll('.subject-card'));
-            if (!cards[cardIndex]) return;
-            const nombre = cards[cardIndex].querySelector('.subject-name')?.textContent?.trim() || '';
-
-            tasksViewTitle.textContent    = nombre;
-            tasksViewSubtitle.textContent = 'Tareas registradas';
-            renderTasksList(nombre);
-            showView('tasks');
-        }
-
-        /** Cierra la vista de tareas y vuelve a la lista de materias */
-        function closeTasksView() {
-            tasksListContent.innerHTML = '';
-            renderSubjectsList();
-            showView('subjects-list');
-            setNavActive('nav-mis-materias');
-        }
-
-        tasksBackBtn.addEventListener('click', closeTasksView);
-
-        /** Cierra todas las vistas y vuelve al dashboard */
-        function goToDashboard() {
-            showView('dashboard');
-            setNavActive('nav-dashboard');
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        //  VISTA: MIS TAREAS (GLOBAL)
-        // ══════════════════════════════════════════════════════════════
-
-        const allTasksView      = document.getElementById('all-tasks-view');
-        const allTasksContent   = document.getElementById('all-tasks-content');
-        const allTasksCountBadge= document.getElementById('all-tasks-count-badge');
-        const allTasksBackBtn   = document.getElementById('all-tasks-back-btn');
-
-        // ══════════════════════════════════════════════════════════════
-        //  NAVEGACIÓN CENTRALIZADA — definida aquí para que todas las
-        //  constantes de vistas ya estén inicializadas.
-        // ══════════════════════════════════════════════════════════════
-
-        /** Muestra exactamente UNA vista y oculta todas las demás. */
-        function showView(view) {
-            if (view === 'dashboard') {
-                dashboardView.classList.remove('hidden');
-            } else {
-                dashboardView.classList.add('hidden');
-            }
-            gradesView.classList.toggle('active',             view === 'grades');
-            subjectsListView.classList.toggle('active',       view === 'subjects-list');
-            tasksView.classList.toggle('active',              view === 'tasks');
-            allTasksView.classList.toggle('active',           view === 'all-tasks');
-            // calendarExpandedView se inicializa más abajo, usamos getElementById como fallback seguro
-            const calView = document.getElementById('calendar-expanded-view');
-            if (calView) calView.classList.toggle('active',   view === 'calendar');
-            const calDayView = document.getElementById('calendar-day-view');
-            if (calDayView) calDayView.classList.remove('active'); // siempre se cierra con showView
-            // Quitar la clase del grid al salir del calendario
-            if (view !== 'calendar') {
-                document.querySelector('.app-container').classList.remove('calendar-open');
-            }
-        }
-
-        /** Actualiza el ítem activo del sidebar */
-        function setNavActive(navId) {
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const el = document.getElementById(navId);
-            if (el) el.classList.add('active');
-        }
-
-        /** Recopila TODAS las tareas del store, añadiendo el nombre de la asignatura */
-        function getAllTasks() {
-            const all = [];
-            Object.entries(tasksStore).forEach(([subjectName, tasks]) => {
-                tasks.forEach(t => all.push({ ...t, asignatura: subjectName }));
-            });
-            // Ordenar: próximas primero (por fecha)
-            all.sort((a, b) => {
-                const da = new Date(`${a.fechaEntrega}T${a.horaEntrega || '23:59'}`);
-                const db = new Date(`${b.fechaEntrega}T${b.horaEntrega || '23:59'}`);
-                return da - db;
-            });
-            return all;
-        }
-
-        /** Renderiza la tabla global de todas las tareas */
-        function renderAllTasksList() {
-            const all = getAllTasks();
-            allTasksCountBadge.textContent = all.length;
-
-            if (all.length === 0) {
-                allTasksContent.innerHTML = `
-                    <div class="all-tasks-empty">
-                        <div class="all-tasks-empty-icon">
-                            <span class="material-icons-round">assignment</span>
-                        </div>
-                        <p class="all-tasks-empty-text">Aún no hay tareas registradas</p>
-                    </div>`;
-                return;
-            }
-
-            const rows = all.map((t, i) => {
-                const st       = taskStatus(t.fechaEntrega, t.horaEntrega);
-                const dotColor = dotColors[
-                    Array.from(subjectsGrid.querySelectorAll('.subject-card'))
-                        .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === t.asignatura)
-                    % dotColors.length
-                ] || dotColors[0];
-
-                return `
-                    <tr>
-                        <td class="task-title-cell">
-                            <div class="task-title-text">${t.titulo}</div>
-                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
-                        </td>
-                        <td>
-                            <span class="task-subject-pill">
-                                <span class="subj-color-dot" style="background:${dotColor};"></span>
-                                ${t.asignatura}
-                            </span>
-                        </td>
-                        <td class="task-date-cell">
-                            <div class="task-date-main">${formatDate(t.fechaEntrega)}</div>
-                            ${t.horaEntrega ? `<div class="task-time-text">${t.horaEntrega}</div>` : ''}
-                        </td>
-                        <td>
-                            <span class="task-status-badge ${st.key}">
-                                <span class="material-icons-round">${st.icon}</span>
-                                ${st.label}
-                            </span>
-                        </td>
-                    </tr>`;
-            }).join('');
-
-            allTasksContent.innerHTML = `
-                <div class="all-tasks-wrap">
-                    <table class="all-tasks-table">
-                        <thead>
-                            <tr>
-                                <th>Tarea</th>
-                                <th>Asignatura</th>
-                                <th>Fecha de entrega</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        /** Abre la vista global de Mis Tareas */
-        function openAllTasksView() {
-            renderAllTasksList();
-            showView('all-tasks');
-            setNavActive('nav-mis-tareas');
-        }
-
-        /** Cierra la vista global de Mis Tareas y vuelve al dashboard */
-        function closeAllTasksView() {
-            showView('dashboard');
-            setNavActive('nav-dashboard');
-        }
-
-        allTasksBackBtn.addEventListener('click', closeAllTasksView);
-
-        // ══════════════════════════════════════════════════════════════
-        //  VISTA: CALENDARIO EXPANDIDO
-        // ══════════════════════════════════════════════════════════════
-
-        const calendarExpandedView = document.getElementById('calendar-expanded-view');
-        const calExpandedGrid      = document.getElementById('calendar-expanded-grid');
-        const calExpandedMonth     = document.getElementById('cal-expanded-month');
-        const calendarSubtitle     = document.getElementById('calendar-expanded-subtitle');
-        const calPrevBtn           = document.getElementById('cal-prev-btn');
-        const calNextBtn           = document.getElementById('cal-next-btn');
-        const calBackBtn           = document.getElementById('calendar-back-btn');
-        const appContainer         = document.querySelector('.app-container');
-
-        // Estado del mes visible en el calendario expandido
-        let calYear  = 2026;
-        let calMonth = 1;   // 0 = enero
-
-        const MONTH_NAMES = [
-            'Enero','Febrero','Marzo','Abril','Mayo','Junio',
-            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
-        ];
-
-
-        async function fetchTareasPorFecha(fecha) {
-            try {
-                const res = await fetch(`${API}/tareas/fecha=${fecha}`);
-                if (!res.ok) throw new Error("Error al traer tareas");
-
-                return await res.json();
-            } catch (error) {
-            console.error(error);
-        return [];
-            }
-        }
-        /** Devuelve todas las tareas que caen en un día concreto */
-        async function getTasksForDay(year, month, day) {
-            const fecha = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-
-            const tareas = await fetchTareasPorFecha(fecha);
-
-            return tareas;
-        }
-
-        /** Renderiza el grid del mes actual */
-        function renderExpandedCalendar() {
-            const label = `${MONTH_NAMES[calMonth]} ${calYear}`;
-            calExpandedMonth.textContent = label;
-            calendarSubtitle.textContent = label;
-
-            const today     = new Date();
-            const firstDay  = new Date(calYear, calMonth, 1);
-            // Lunes = 0 … Domingo = 6
-            let startOffset = (firstDay.getDay() + 6) % 7;
-            const daysInMonth   = new Date(calYear, calMonth + 1, 0).getDate();
-            const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate();
-
-            calExpandedGrid.innerHTML = '';
-
-            const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
-
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'cal-day-cell';
-
-                let day, month, year, isCurrentMonth;
-
-                if (i < startOffset) {
-                    // Días del mes anterior
-                    day = daysInPrevMonth - startOffset + i + 1;
-                    month = calMonth - 1;
-                    year = calYear;
-                    if (month < 0) { month = 11; year--; }
-                    isCurrentMonth = false;
-                    cell.classList.add('other-month');
-                } else if (i >= startOffset + daysInMonth) {
-                    // Días del mes siguiente
-                    day = i - startOffset - daysInMonth + 1;
-                    month = calMonth + 1;
-                    year = calYear;
-                    if (month > 11) { month = 0; year++; }
-                    isCurrentMonth = false;
-                    cell.classList.add('other-month');
-                } else {
-                    day = i - startOffset + 1;
-                    month = calMonth;
-                    year = calYear;
-                    isCurrentMonth = true;
-                }
-
-                const isToday = isCurrentMonth
-                    && day === today.getDate()
-                    && calMonth === today.getMonth()
-                    && calYear === today.getFullYear();
-
-                if (isToday) cell.classList.add('today');
-
-                // Número del día
-                const numEl = document.createElement('div');
-                numEl.className = 'cal-day-number';
-                numEl.textContent = day;
-                cell.appendChild(numEl);
-
-                // Barras de color por tarea (estilo iOS Calendar)
-                const dayTasks = getTasksForDay(year, month, day);
-                if (dayTasks.length > 0) {
-                    const barsContainer = document.createElement('div');
-                    barsContainer.className = 'cal-bars';
-
-                    dayTasks.forEach(t => {
-                        // Color según la asignatura
-                        const asignatura = Object.entries(tasksStore)
-                            .find(([, arr]) => arr.includes(t))?.[0] || '';
-                        const subjIdx  = Array.from(subjectsGrid.querySelectorAll('.subject-card'))
-                            .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === asignatura);
-                        const barColor = dotColors[subjIdx >= 0 ? subjIdx % dotColors.length : 0];
-
-                        const bar = document.createElement('div');
-                        bar.className = 'cal-event-chip';
-                        bar.style.background = barColor;
-                        bar.title = `${t.titulo}${asignatura ? ' · ' + asignatura : ''}`;
-                        barsContainer.appendChild(bar);
-                    });
-
-                    cell.appendChild(barsContainer);
-                }
-
-                calExpandedGrid.appendChild(cell);
-
-                // Clic en celda → vista diaria
-                const cellYear = year, cellMonth = month, cellDay = day;
-                cell.addEventListener('click', () => openDayView(cellYear, cellMonth, cellDay));
-            }
-        }
-
-        /** Abre la vista de calendario expandido */
-        function openCalendarView() {
-            renderExpandedCalendar();
-            appContainer.classList.add('calendar-open');
-            showView('calendar');
-            setNavActive('nav-dashboard'); // no hay nav dedicado al calendario
-        }
-
-        /** Cierra el calendario expandido y vuelve al dashboard */
-        function closeCalendarView() {
-            appContainer.classList.remove('calendar-open');
-            showView('dashboard');
-            setNavActive('nav-dashboard');
-        }
-
-        calBackBtn.addEventListener('click', closeCalendarView);
-
-        calPrevBtn.addEventListener('click', () => {
-            calMonth--;
-            if (calMonth < 0) { calMonth = 11; calYear--; }
-            renderExpandedCalendar();
-        });
-
-        calNextBtn.addEventListener('click', () => {
-            calMonth++;
-            if (calMonth > 11) { calMonth = 0; calYear++; }
-            renderExpandedCalendar();
-        });
-
-        // ══════════════════════════════════════════════════════════════
-        //  VISTA: DÍA ESPECÍFICO
-        // ══════════════════════════════════════════════════════════════
-
-        const dayView        = document.getElementById('calendar-day-view');
-        const dayViewTitle   = document.getElementById('day-view-title');
-        const dayViewSubtitle= document.getElementById('day-view-subtitle');
-        const dayViewContent = document.getElementById('day-view-content');
-        const dayPrevBtn     = document.getElementById('day-prev-btn');
-        const dayNextBtn     = document.getElementById('day-next-btn');
-        const dayBackBtn     = document.getElementById('day-view-back-btn');
-
-        // Fecha activa en la vista diaria
-        let activeDayDate = null;   // objeto Date
-
-        const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-
-        /** Renderiza la vista de un día concreto */
-        async function renderDayView(date) {
-            activeDayDate = date;
-
-            const dayName  = DAY_NAMES[date.getDay()];
-            const dayNum   = date.getDate();
-            const monthName= MONTH_NAMES[date.getMonth()];
-            const year     = date.getFullYear();
-
-            dayViewTitle.textContent    = `${dayName} ${dayNum}`;
-            dayViewSubtitle.textContent = `${monthName} ${year}`;
-
-            const tasks = await getTasksForDay(year, date.getMonth(), dayNum);
-
-            if (tasks.length === 0) {
-                dayViewContent.innerHTML = `
-                    <div class="day-view-empty">
-                        <div class="day-view-empty-icon">
-                            <span class="material-icons-round">event_available</span>
-                        </div>
-                        <p class="day-view-empty-text">No hay tareas para este día</p>
-                    </div>`;
-                return;
-            }
-
-            const rows = tasks.map(t => {
-                const st = taskStatus(t.fechaEntrega, t.horaEntrega);
-                // Buscar asignatura
-                const asignatura = Object.entries(tasksStore)
-                    .find(([, arr]) => arr.includes(t))?.[0] || '—';
-                const dotIdx  = Array.from(subjectsGrid.querySelectorAll('.subject-card'))
-                    .findIndex(c => c.querySelector('.subject-name')?.textContent?.trim() === asignatura);
-                const dotColor = dotColors[dotIdx % dotColors.length] || dotColors[0];
-
-                return `
-                    <tr>
-                        <td class="task-title-cell">
-                            <div class="task-title-text">${t.titulo}</div>
-                            ${t.descripcion ? `<div class="task-desc-text">${t.descripcion}</div>` : ''}
-                        </td>
-                        <td>
-                            <span class="task-subject-pill">
-                                <span class="subj-color-dot" style="background:${dotColor};"></span>
-                                ${asignatura}
-                            </span>
-                        </td>
-                        <td class="task-date-cell">
-                            ${t.horaEntrega ? `<div class="task-date-main">${t.horaEntrega}</div>` : '<span style="color:var(--gray-400)">—</span>'}
-                        </td>
-                        <td>
-                            <span class="task-status-badge ${st.key}">
-                                <span class="material-icons-round">${st.icon}</span>
-                                ${st.label}
-                            </span>
-                        </td>
-                    </tr>`;
-            }).join('');
-
-            dayViewContent.innerHTML = `
-                <div class="day-tasks-wrap">
-                    <table class="day-tasks-table">
-                        <thead>
-                            <tr>
-                                <th>Tarea</th>
-                                <th>Asignatura</th>
-                                <th>Hora</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        /** Abre la vista de un día */
-        async function openDayView(year, month, day) {
-            const date = new Date(year, month, day);
-            await renderDayView(date);
-            // La sidebar ya está oculta (venimos del calendario expandido)
-            // Solo cambiamos qué vista del main-content es visible
-            calendarExpandedView.classList.remove('active');
-            dayView.classList.add('active');
-        }
-
-        /** Cierra la vista diaria y vuelve al calendario expandido */
-        function closeDayView() {
-            dayView.classList.remove('active');
-            calendarExpandedView.classList.add('active');
-        }
-
-        dayBackBtn.addEventListener('click', closeDayView);
-
-        // Navegar al día anterior / siguiente
-        dayPrevBtn.addEventListener('click', () => {
-            if (!activeDayDate) return;
-            const prev = new Date(activeDayDate);
-            prev.setDate(prev.getDate() - 1);
-            renderDayView(prev);
-        });
-
-        dayNextBtn.addEventListener('click', () => {
-            if (!activeDayDate) return;
-            const next = new Date(activeDayDate);
-            next.setDate(next.getDate() + 1);
-            renderDayView(next);
         });
 
         // ══════════════════════════════════════════════════════════════
@@ -4375,7 +2965,7 @@
                 <div class="subject-icon" style="background:${color.bg};color:${color.text}">
                     <span class="material-icons-round">${icon}</span>
                 </div>
-                <div class="subject-name" onclick="openGradesViewFromDashboard(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
+                <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
                 <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
                 <div class="subject-professor">
                     <span class="material-icons-round">person</span>
@@ -4471,33 +3061,11 @@
                 });
                 if (!res.ok) throw new Error('Error al guardar');
                 const json = await res.json();
-
-                // Guardar también en tasksStore para la vista frontend
-                const selectedOption = taskSubjectSelect.options[taskSubjectSelect.selectedIndex];
-                const subjName = selectedOption ? selectedOption.textContent : '';
-                if (subjName) {
-                    if (!tasksStore[subjName]) tasksStore[subjName] = [];
-                    tasksStore[subjName].push({ titulo, fechaEntrega, horaEntrega, descripcion: descripcion || null });
-                }
-
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
-                if (allTasksView.classList.contains('active')) renderAllTasksList();
-                if(activeDayDate){
-                    await renderDayView(activeDayDate);
-                }
             } catch (err) {
                 console.error(err);
-                // Guardar en tasksStore igualmente para poder usar la vista sin backend
-                const selectedOption = taskSubjectSelect.options[taskSubjectSelect.selectedIndex];
-                const subjName = selectedOption ? selectedOption.textContent : '';
-                if (subjName) {
-                    if (!tasksStore[subjName]) tasksStore[subjName] = [];
-                    tasksStore[subjName].push({ titulo, fechaEntrega, horaEntrega, descripcion: descripcion || null });
-                }
-                closeTaskModal();
-                showToast(`"${titulo}" guardada exitosamente`);
-                if (allTasksView.classList.contains('active')) renderAllTasksList();
+                showToast('Error al conectar con el servidor');
             }
         });
 
@@ -4530,7 +3098,7 @@
             }
 
             const nota = parseFloat(notaRaw);
-            if (notaRaw !== '' && (isNaN(nota) || nota < 0 || nota > 5)) {
+            if (notaRaw === '' || isNaN(nota) || nota < 0 || nota > 5) {
                 inputNota.classList.add('error');
                 errNota.textContent   = 'Ingresa un valor entre 0.0 y 5.0';
                 errNota.style.display = 'block';
@@ -4560,7 +3128,7 @@
             if (activeCardForGrade) {
                 const key = activeCardForGrade.dataset.gradeKey;
                 if (!gradesStore[key]) gradesStore[key] = [];
-                gradesStore[key].push({ nombre, nota: notaRaw === '' ? null : nota, porcentaje: pct });
+                gradesStore[key].push({ nombre, nota, porcentaje: pct });
             }
 
             closeGradeModal();
@@ -4600,6 +3168,269 @@
                 showToast(`"${name}" eliminada`);
             });
         }
+        // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
+        /**
+         * Singleton para gestionar el estado de la sesión de forma centralizada.
+         */
+        const SessionManager = (function() {
+            let instance;
+
+            function init() {
+                return {
+                    getUser: function() {
+                        return JSON.parse(localStorage.getItem('studyhub_user'));
+                    },
+                    setUser: function(user) {
+                        localStorage.setItem('studyhub_user', JSON.stringify(user));
+                    },
+                    clear: function() {
+                        localStorage.removeItem('studyhub_user');
+                    },
+                    isLoggedIn: function() {
+                        return this.getUser() !== null;
+                    }
+                };
+            }
+
+            return {
+                getInstance: function() {
+                    if (!instance) instance = init();
+                    return instance;
+                }
+            };
+        })();
+
+        // ── GOF PATTERN: STATE (NavigationSystem) ──────────────────────────
+        /**
+         * Contexto que maneja el estado de la navegación de la UI.
+         */
+        class NavigationSystem {
+            constructor() {
+                this.states = {
+                    login: new LoginState(this),
+                    register: new RegisterState(this),
+                    dashboard: new DashboardState(this)
+                };
+                this.currentState = null;
+            }
+
+            transitionTo(stateName, data = null) {
+                if (this.states[stateName]) {
+                    this.currentState = this.states[stateName];
+                    this.currentState.render(data);
+                }
+            }
+        }
+
+        class LoginState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('login-error').style.display = 'none';
+            }
+        }
+
+        class RegisterState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'block';
+                document.getElementById('register-error').style.display = 'none';
+            }
+        }
+
+        class DashboardState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                updateSubjectCount();
+            }
+        }
+
+        const navSystem = new NavigationSystem();
+
+        // ── GOF PATTERN: PROXY (AccessProxy) ──────────────────────────────
+        /**
+         * Interceptor que valida el acceso a las vistas.
+         */
+        const AccessProxy = {
+            goTo: function(view, data = null) {
+                const session = SessionManager.getInstance();
+                console.log(`Petición de acceso a: ${view}`);
+
+                if (view === 'dashboard' && !session.isLoggedIn()) {
+                    console.warn("Acceso denegado al Dashboard. Redirigiendo a Login...");
+                    navSystem.transitionTo('login');
+                    return;
+                }
+
+                navSystem.transitionTo(view, data);
+            }
+        };
+
+        // ── Manejadores de Eventos Refactorizados ───────────────────────
+
+        function checkSession() {
+            const session = SessionManager.getInstance();
+            if (session.isLoggedIn()) {
+                AccessProxy.goTo('dashboard', session.getUser());
+            } else {
+                AccessProxy.goTo('login');
+        // ── AUTHENTICATION LOGIC ──────────────────────────────────────
+        const API_BASE = "http://localhost:8080/api/usuarios";
+
+        function checkSession() {
+            const user = JSON.parse(localStorage.getItem('studyhub_user'));
+            if (user) {
+                showDashboard(user);
+            } else {
+                showAuth();
+            }
+        }
+
+        function toggleAuth(view) {
+            AccessProxy.goTo(view);
+            document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
+            document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('register-error').style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const correo = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            const session = SessionManager.getInstance();
+
+            try {
+                const response = await fetch(`${API}/api/usuarios/login`, {
+            const correo = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+            const errorDiv = document.getElementById('login-error');
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.exito) {
+                    session.setUser(result.datos);
+                    AccessProxy.goTo('dashboard', result.datos);
+                    showToast('¡Bienvenido de nuevo!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Credenciales incorrectas";
+                if (response.ok) {
+                    const user = await response.json();
+                    localStorage.setItem('studyhub_user', JSON.stringify(user));
+                    showDashboard(user);
+                } else {
+                    const msg = await response.text();
+                    errorDiv.textContent = msg || "Credenciales incorrectas";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const apellido = document.getElementById('reg-apellido').value.trim();
+            const correo = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            const confirm = document.getElementById('reg-pass-confirm').value.trim();
+            const nombre = document.getElementById('reg-nombre').value;
+            const correo = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+            const confirm = document.getElementById('reg-pass-confirm').value;
+            const errorDiv = document.getElementById('register-error');
+
+            if (password !== confirm) {
+                errorDiv.textContent = "Las contraseñas no coinciden";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API}/api/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.exito) {
+                    AccessProxy.goTo('login');
+                    showToast('Registro exitoso. ¡Inicia sesión!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Error en el registro";
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido: "", correo, password, rol: "ESTUDIANTE" })
+                });
+
+                if (response.ok) {
+                    toggleAuth('login');
+                    showToast('Registro exitoso. ¡Inicia sesión!');
+                } else {
+                    const msg = await response.text();
+                    errorDiv.textContent = msg || "Error en el registro";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            SessionManager.getInstance().clear();
+            AccessProxy.goTo('login');
+            showToast('Sesión cerrada');
+        }
+
+        // Acceso rápido al logout desde el avatar
+        document.querySelector('.profile-avatar').style.cursor = 'pointer';
+        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
+        function showDashboard(user) {
+            document.getElementById('auth-container').style.display = 'none';
+            document.querySelector('.app-container').style.display = 'grid';
+            document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido}`;
+            document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+        }
+
+        function showAuth() {
+            document.getElementById('auth-container').style.display = 'flex';
+            document.querySelector('.app-container').style.display = 'none';
+            localStorage.removeItem('studyhub_user');
+        }
+
+        function logout() {
+            showAuth();
+            showToast('Sesión cerrada');
+        }
+
+        // Agregar EventListener al avatar para cerrar sesión
+        document.querySelector('.profile-avatar').style.cursor = 'pointer';
+        document.querySelector('.profile-avatar').onclick = logout;
+
     </script>
 </body>
 </html>
