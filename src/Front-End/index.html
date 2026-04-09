@@ -218,9 +218,9 @@
             font-size: 20px;
         }
 
-        /*  Acción Boton Flotante */
         .fab-container {
             padding: 8px;
+            position: relative;
         }
 
         .fab-button {
@@ -304,7 +304,6 @@
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
-        /* Opción de Cartas*/
         .card-menu {
             position: absolute;
             top: 16px;
@@ -343,7 +342,7 @@
             border-radius: var(--radius-sm);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--gray-200);
-            min-width: 160px;
+            min-width: 180px;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-8px) scale(0.95);
@@ -390,7 +389,12 @@
             font-size: 18px;
         }
 
-        /*Animación de eliminacion de carta  */
+        .card-dropdown-divider {
+            height: 1px;
+            background: var(--gray-100);
+            margin: 4px 0;
+        }
+
         @keyframes cardFadeOut {
             to {
                 opacity: 0;
@@ -575,7 +579,6 @@
             font-weight: 500;
         }
 
-        /* Notificaciones */
         .notification-item {
             display: flex;
             gap: 12px;
@@ -622,7 +625,6 @@
             margin-top: 4px;
         }
 
-        /* Horario*/
         .schedule-container {
             position: relative;
         }
@@ -690,7 +692,6 @@
             white-space: nowrap;
         }
 
-        /* Calendario */
         .calendar-widget {
             background: var(--gray-50);
             border-radius: var(--radius-md);
@@ -1039,7 +1040,6 @@
             font-size: 18px;
         }
 
-        /* notificaciones Toast  */
         .toast {
             position: fixed;
             bottom: 32px;
@@ -1071,7 +1071,6 @@
             color: #4CAF50;
         }
 
-        /* ========== Barra Scroll ========== */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -1089,12 +1088,488 @@
             background: var(--gray-400);
         }
 
-        /* ===== FAB DROPDOWN MENU ===== */
-
-        .fab-container {
-            position: relative;
+        /* ========== VISTA DE CALIFICACIONES ========== */
+        .grades-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
         }
 
+        .grades-view.active {
+            display: flex;
+        }
+
+        .dashboard-view {
+            display: block;
+        }
+
+        .dashboard-view.hidden {
+            display: none;
+        }
+
+        .grades-view-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            background: var(--blue-50);
+            border-color: var(--blue-200);
+            color: var(--blue-600);
+        }
+
+        .back-btn .material-icons-round {
+            font-size: 20px;
+        }
+
+        .grades-view-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        .grades-view-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        /* Estado vacío */
+        .grades-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 60px 0;
+        }
+
+        .grades-empty-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grades-empty-icon .material-icons-round {
+            font-size: 36px;
+            color: var(--gray-400);
+        }
+
+        .grades-empty-text {
+            font-size: 15px;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        .grades-add-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
+            margin-top: 8px;
+        }
+
+        .grades-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+        }
+
+        .grades-add-btn .material-icons-round {
+            font-size: 20px;
+        }
+
+        /* ========== TABLA DE CALIFICACIONES ========== */
+        .grades-table-container {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeInUp 0.3s ease forwards;
+        }
+
+        .grades-table-container.visible {
+            display: flex;
+        }
+
+        .grades-table-wrap {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .grades-table thead tr {
+            background: var(--blue-700);
+        }
+
+        .grades-table thead th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.02em;
+        }
+
+        .grades-table thead th:nth-child(2),
+        .grades-table thead th:nth-child(3) {
+            text-align: center;
+        }
+
+        /* Columna del ícono de eliminar */
+        .grades-table thead th:last-child {
+            width: 80px;
+            text-align: center;
+        }
+
+        .grades-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s ease;
+        }
+
+        .grades-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .grades-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .grades-table tbody td {
+            padding: 14px 20px;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .grades-table tbody td:nth-child(2) {
+            text-align: center;
+            font-weight: 600;
+            color: var(--blue-600);
+        }
+
+        .grades-table tbody td:nth-child(3) {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Celda del botón eliminar */
+        .grades-table tbody td:last-child {
+            text-align: center;
+            padding: 8px;
+        }
+
+        /* Botones de acción de fila (lápiz y caneca) */
+        .grade-row-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .grade-edit-btn,
+        .grade-delete-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: var(--gray-400);
+            flex-shrink: 0;
+        }
+
+        .grade-edit-btn:hover {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .grade-delete-btn:hover {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+
+        .grade-edit-btn .material-icons-round,
+        .grade-delete-btn .material-icons-round {
+            font-size: 18px;
+        }
+
+        /* Fila en modo edición */
+        .grades-table tbody tr.editing {
+            background: var(--blue-50);
+        }
+
+        .grades-table tbody tr.editing td {
+            padding: 8px 20px;
+        }
+
+        /* Inputs dentro de la tabla al editar */
+        .grade-inline-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1.5px solid var(--blue-300);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--gray-700);
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+        }
+
+        .grade-inline-input:focus {
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+        }
+
+        .grade-inline-input.error {
+            border-color: #E53935;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+        }
+
+        /* El input de nombre es text-align left */
+        .grade-inline-input.name-input {
+            text-align: left;
+            min-width: 140px;
+        }
+
+        .grade-inline-input.number-input {
+            max-width: 80px;
+        }
+
+        /* Nota con badge de color */
+        .grade-score-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .grade-score-badge.high {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .grade-score-badge.mid {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .grade-score-badge.low {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Porcentaje pill */
+        .grade-percent-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        /* Fila de animación al eliminar */
+        @keyframes rowFadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(16px);
+            }
+        }
+
+        .grades-table tbody tr.removing {
+            animation: rowFadeOut 0.28s ease forwards;
+            pointer-events: none;
+        }
+
+        /* ── Footer de la tabla: botón + promedio ── */
+        .grades-table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .grades-add-inline-btn {
+            padding: 11px 22px;
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+        }
+
+        .grades-add-inline-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(21, 101, 192, 0.42);
+        }
+
+        .grades-add-inline-btn .material-icons-round {
+            font-size: 18px;
+        }
+
+        .grades-average-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .grades-average-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-500);
+            line-height: 1;
+        }
+
+        .grades-average-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--blue-700);
+            line-height: 1;
+        }
+
+        .grades-average-value.good  { color: #2E7D32; }
+        .grades-average-value.warn  { color: #E65100; }
+        .grades-average-value.bad   { color: #C62828; }
+
+        /* ========== MODAL CALIFICACIÓN - Resumen porcentaje ========== */
+        .grade-percent-summary {
+            background: var(--gray-50);
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .grade-percent-summary.warning {
+            background: #FFF8E1;
+            border-color: #FFD54F;
+        }
+
+        .grade-percent-summary.danger {
+            background: #FFF5F5;
+            border-color: #EF9A9A;
+        }
+
+        .grade-percent-info {
+            font-size: 13px;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grade-percent-info .material-icons-round {
+            font-size: 18px;
+            color: var(--blue-500);
+        }
+
+        .grade-percent-summary.warning .grade-percent-info .material-icons-round {
+            color: #F9A825;
+        }
+
+        .grade-percent-summary.danger .grade-percent-info .material-icons-round {
+            color: #E53935;
+        }
+
+        .grade-percent-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+            max-width: 120px;
+        }
+
+        .grade-percent-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+            transition: width 0.4s ease;
+        }
+
+        .grade-percent-summary.warning .grade-percent-bar {
+            background: linear-gradient(90deg, #FFD54F, #F9A825);
+        }
+
+        .grade-percent-summary.danger .grade-percent-bar {
+            background: linear-gradient(90deg, #EF9A9A, #E53935);
+        }
+
+        .grade-percent-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--blue-600);
+            white-space: nowrap;
+        }
+
+        .grade-percent-summary.warning .grade-percent-value { color: #F9A825; }
+        .grade-percent-summary.danger  .grade-percent-value { color: #E53935; }
+
+        /* ===== FAB DROPDOWN MENU ===== */
         .fab-menu {
             position: absolute;
             bottom: 70px;
@@ -1129,11 +1604,230 @@
             background: var(--blue-50);
             color: var(--blue-600);
         }
+        /* ========== AUTHENTICATION STYLES ========== */
+        #auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-500) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--blue-500);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--white);
+            box-shadow: 0 8px 16px rgba(30, 136, 229, 0.3);
+        }
+
+        /* ========== AUTHENTICATION GLASSMORPHISM (#185) ========== */
+        #auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--blue-700) 0%, #1a237e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            width: 440px;
+            max-width: 90vw;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--blue-50);
+            color: var(--blue-600);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .auth-logo .material-icons-round { font-size: 32px; }
+
+        .auth-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        .auth-form { margin-top: 24px; text-align: left; }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(21, 101, 192, 0.5);
+        }
+
+        .auth-switch {
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .auth-link {
+            color: var(--blue-600);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .auth-link:hover { text-decoration: underline; }
+
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #E53935;
+        }
     </style>
 </head>
 
-<body>
-    <div class="app-container">
+<body onload="checkSession()">
+    
+    <!-- ========== AUTHENTICATION LAYER ========== -->
+    <div id="auth-container">
+        <!-- LOGIN VIEW (#186) -->
+        <div id="login-view" class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">school</span></div>
+                <h2 class="auth-title">Bienvenido a StudyHub</h2>
+                <p class="auth-subtitle">Ingresa tus credenciales para continuar</p>
+            </div>
+            <div id="login-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="login-pass" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">Iniciar Sesión</button>
+            </form>
+            <p class="auth-switch">¿No tienes cuenta? <span class="auth-link" onclick="toggleAuth('register')">Regístrate</span></p>
+        </div>
+
+        <!-- REGISTER VIEW (#187) -->
+        <div id="register-view" class="auth-card" style="display: none;">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">person_add</span></div>
+                <h2 class="auth-title">Crea tu cuenta</h2>
+                <p class="auth-subtitle">Únete a la plataforma universitaria StudyHub</p>
+            </div>
+            <div id="register-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" id="reg-nombre" class="form-input" placeholder="Juan" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="reg-email" class="form-input" placeholder="estudiante@universidad.edu" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Contraseña</label>
+                    <input type="password" id="reg-pass-confirm" class="form-input" placeholder="Repite tu contraseña" required>
+                </div>
+                <button type="submit" class="auth-btn">Crear Cuenta</button>
+            </form>
+            <p class="auth-switch">¿Ya tienes cuenta? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
+        </div>
+    </div>
+
+    <!-- ========== DASHBOARD LAYER (#189 Restricted) ========== -->
+    <div class="app-container" style="display: none;">
 
         <header class="header">
             <div class="header-logo">
@@ -1142,17 +1836,14 @@
             </div>
         </header>
 
-
         <aside class="sidebar-left">
             <div>
-                <!-- Profile -->
                 <div class="profile-section">
                     <div class="profile-avatar">
                         <span class="material-icons-round">person</span>
                     </div>
                     <div class="profile-name">Juan Pérez García</div>
                     <div class="profile-id">ID: 20241089032</div>
-
                     <div class="profile-stats">
                         <div class="stat-item">
                             <div class="stat-value">6</div>
@@ -1165,7 +1856,6 @@
                     </div>
                 </div>
 
-                <!-- Navegacion -->
                 <nav class="sidebar-nav">
                     <div class="nav-item active">
                         <span class="material-icons-round">dashboard</span>
@@ -1194,19 +1884,16 @@
                 </nav>
             </div>
 
-            <!-- FAB Boton -->
             <div class="fab-container">
                 <button class="fab-button" id="fab-add">
                     <span class="material-icons-round">add</span>
                     Agregar
                 </button>
-
                 <div class="fab-menu" id="fab-menu">
                     <button class="fab-option" id="add-subject">
                         <span class="material-icons-round">menu_book</span>
                         Agregar Materia
                     </button>
-
                     <button class="fab-option" id="add-task">
                         <span class="material-icons-round">assignment</span>
                         Agregar Tarea
@@ -1217,99 +1904,168 @@
 
         <!-- ===== MAIN CONTENT ===== -->
         <main class="main-content">
-            <div class="section-header">
-                <div>
-                    <h2 class="section-title">Mis Materias Actuales</h2>
-                    <p class="section-subtitle">Semestre 2026-1 · 6 materias inscritas</p>
-                </div>
-            </div>
 
-            <!-- Carta Materias -->
-            <div class="subjects-grid">
-                <div class="subject-card">
-                    <div class="card-menu">
-                        <button class="card-menu-btn" onclick="toggleCardMenu(this)">
-                            <span class="material-icons-round">more_vert</span>
-                        </button>
-                        <div class="card-dropdown">
-                            <button class="card-dropdown-item delete" onclick="deleteCard(this)">
-                                <span class="material-icons-round">delete_outline</span>
-                                Eliminar
-                            </button>
-                        </div>
-                    </div>
-                    <div class="subject-icon">
-                        <span class="material-icons-round">code</span>
-                    </div>
-                    <div class="subject-name">Fundamentos de Ing. de Software</div>
-                    <div class="subject-id">ID: ISIS-2603 · Sección 01</div>
-                    <div class="subject-professor">
-                        <span class="material-icons-round">person</span>
-                        Prof. Carlos Ramírez
-                    </div>
-                    <div class="subject-progress">
-                        <div class="subject-progress-bar"></div>
-                    </div>
-                    <div class="subject-progress-label">65% del curso completado</div>
-                </div>
-
-                <div class="subject-card">
-                    <div class="card-menu">
-                        <button class="card-menu-btn" onclick="toggleCardMenu(this)">
-                            <span class="material-icons-round">more_vert</span>
-                        </button>
-                        <div class="card-dropdown">
-                            <button class="card-dropdown-item delete" onclick="deleteCard(this)">
-                                <span class="material-icons-round">delete_outline</span>
-                                Eliminar
-                            </button>
-                        </div>
-                    </div>
-                    <div class="subject-icon">
-                        <span class="material-icons-round">functions</span>
-                    </div>
-                    <div class="subject-name">Cálculo Diferencial</div>
-                    <div class="subject-id">ID: MATE-1203 · Sección 03</div>
-                    <div class="subject-professor">
-                        <span class="material-icons-round">person</span>
-                        Prof. María López
-                    </div>
-                    <div class="subject-progress">
-                        <div class="subject-progress-bar"></div>
-                    </div>
-                    <div class="subject-progress-label">40% del curso completado</div>
-                </div>
-            </div>
-
-            <!-- Acciones Rapidas -->
-            <div class="quick-actions">
+            <!-- Vista: Dashboard (por defecto) -->
+            <div class="dashboard-view" id="dashboard-view">
                 <div class="section-header">
-                    <h2 class="section-title">Acciones Rápidas</h2>
+                    <div>
+                        <h2 class="section-title">Mis Materias Actuales</h2>
+                        <p class="section-subtitle">Semestre 2026-1 · 6 materias inscritas</p>
+                    </div>
                 </div>
-                <div class="actions-row">
-                    <button class="action-chip">
-                        <span class="material-icons-round">note_add</span>
-                        Nueva Nota
+
+                <div class="subjects-grid">
+                    <!-- Tarjeta 1 -->
+                    <div class="subject-card">
+                        <div class="card-menu">
+                            <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                                <span class="material-icons-round">more_vert</span>
+                            </button>
+                            <div class="card-dropdown">
+                                <button class="card-dropdown-item" onclick="openGradeModal(this.closest('.subject-card'))">
+                                    <span class="material-icons-round">grade</span>
+                                    Agregar Calificación
+                                </button>
+                                <div class="card-dropdown-divider"></div>
+                                <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                                    <span class="material-icons-round">delete_outline</span>
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="subject-icon">
+                            <span class="material-icons-round">code</span>
+                        </div>
+                        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Fundamentos de Ing. de Software</div>
+                        <div class="subject-id">ID: ISIS-2603 · Sección 01</div>
+                        <div class="subject-professor">
+                            <span class="material-icons-round">person</span>
+                            Prof. Carlos Ramírez
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-progress-bar"></div>
+                        </div>
+                        <div class="subject-progress-label">65% del curso completado</div>
+                    </div>
+
+                    <!-- Tarjeta 2 -->
+                    <div class="subject-card">
+                        <div class="card-menu">
+                            <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                                <span class="material-icons-round">more_vert</span>
+                            </button>
+                            <div class="card-dropdown">
+                                <button class="card-dropdown-item" onclick="openGradeModal(this.closest('.subject-card'))">
+                                    <span class="material-icons-round">grade</span>
+                                    Agregar Calificación
+                                </button>
+                                <div class="card-dropdown-divider"></div>
+                                <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                                    <span class="material-icons-round">delete_outline</span>
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="subject-icon">
+                            <span class="material-icons-round">functions</span>
+                        </div>
+                        <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">Cálculo Diferencial</div>
+                        <div class="subject-id">ID: MATE-1203 · Sección 03</div>
+                        <div class="subject-professor">
+                            <span class="material-icons-round">person</span>
+                            Prof. María López
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-progress-bar"></div>
+                        </div>
+                        <div class="subject-progress-label">40% del curso completado</div>
+                    </div>
+                </div>
+
+                <!-- Acciones Rapidas -->
+                <div class="quick-actions">
+                    <div class="section-header">
+                        <h2 class="section-title">Acciones Rápidas</h2>
+                    </div>
+                    <div class="actions-row">
+                        <button class="action-chip">
+                            <span class="material-icons-round">note_add</span>
+                            Nueva Nota
+                        </button>
+                        <button class="action-chip">
+                            <span class="material-icons-round">event</span>
+                            Nuevo Evento
+                        </button>
+                        <button class="action-chip">
+                            <span class="material-icons-round">book</span>
+                            Agregar Materia
+                        </button>
+                        <button class="action-chip">
+                            <span class="material-icons-round">star</span>
+                            Escribir Reseña
+                        </button>
+                    </div>
+                </div>
+            </div><!-- /.dashboard-view -->
+
+            <!-- Vista: Calificaciones de asignatura -->
+            <div class="grades-view" id="grades-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" id="grades-back-btn">
+                        <span class="material-icons-round">arrow_back</span>
                     </button>
-                    <button class="action-chip">
-                        <span class="material-icons-round">event</span>
-                        Nuevo Evento
-                    </button>
-                    <button class="action-chip">
-                        <span class="material-icons-round">book</span>
-                        Agregar Materia
-                    </button>
-                    <button class="action-chip">
-                        <span class="material-icons-round">star</span>
-                        Escribir Reseña
+                    <div>
+                        <div class="grades-view-title" id="grades-view-title">Calificaciones</div>
+                        <div class="grades-view-subtitle" id="grades-view-subtitle"></div>
+                    </div>
+                </div>
+
+                <!-- Estado vacío -->
+                <div class="grades-empty" id="grades-empty">
+                    <div class="grades-empty-icon">
+                        <span class="material-icons-round">grade</span>
+                    </div>
+                    <p class="grades-empty-text">Aún no hay calificaciones registradas</p>
+                    <button class="grades-add-btn" id="grades-add-btn">
+                        <span class="material-icons-round">add</span>
+                        Agregar
                     </button>
                 </div>
-            </div>
+
+                <!-- Tabla de calificaciones (se muestra cuando hay datos) -->
+                <div class="grades-table-container" id="grades-table-container">
+                    <div class="grades-table-wrap">
+                        <table class="grades-table">
+                            <thead>
+                                <tr>
+                                    <th>Ítem</th>
+                                    <th>Nota</th>
+                                    <th>Porcentaje</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="grades-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer: botón agregar + promedio -->
+                    <div class="grades-table-footer">
+                        <button class="grades-add-inline-btn" id="grades-add-inline-btn">
+                            <span class="material-icons-round">add</span>
+                            Agregar calificación
+                        </button>
+                        <div class="grades-average-box">
+                            <span class="grades-average-label">Promedio final</span>
+                            <span class="grades-average-value" id="grades-average-value">0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.grades-view -->
+
         </main>
 
-
         <aside class="sidebar-right">
-
             <div class="widget">
                 <div class="widget-header">
                     <div class="widget-title">
@@ -1321,29 +2077,25 @@
                 <div class="notification-item">
                     <div class="notification-dot blue"></div>
                     <div>
-                        <div class="notification-text">Nueva tarea publicada en <strong>Fundamentos de Ing. de
-                                Software</strong></div>
+                        <div class="notification-text">Nueva tarea publicada en <strong>Fundamentos de Ing. de Software</strong></div>
                         <div class="notification-time">Hace 2 horas</div>
                     </div>
                 </div>
                 <div class="notification-item">
                     <div class="notification-dot blue"></div>
                     <div>
-                        <div class="notification-text">Recordatorio: Parcial de <strong>Cálculo Diferencial</strong> el
-                            viernes</div>
+                        <div class="notification-text">Recordatorio: Parcial de <strong>Cálculo Diferencial</strong> el viernes</div>
                         <div class="notification-time">Hace 5 horas</div>
                     </div>
                 </div>
                 <div class="notification-item">
                     <div class="notification-dot light"></div>
                     <div>
-                        <div class="notification-text">Tu reseña de <strong>Prof. Carlos Ramírez</strong> fue publicada
-                        </div>
+                        <div class="notification-text">Tu reseña de <strong>Prof. Carlos Ramírez</strong> fue publicada</div>
                         <div class="notification-time">Ayer</div>
                     </div>
                 </div>
             </div>
-
 
             <div class="widget">
                 <div class="widget-header">
@@ -1369,75 +2121,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="time-col">7:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">8:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">9:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">10:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">11:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">12:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">13:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">14:00</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                                <td>—</td>
-                            </tr>
+                            <tr><td class="time-col">7:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">8:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">9:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">10:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">11:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">12:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">13:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td class="time-col">14:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
 
             <div class="widget">
                 <div class="widget-header">
@@ -1448,16 +2143,11 @@
                 </div>
                 <div class="calendar-widget">
                     <div class="calendar-nav">
-                        <button class="calendar-nav-btn">
-                            <span class="material-icons-round">chevron_left</span>
-                        </button>
+                        <button class="calendar-nav-btn"><span class="material-icons-round">chevron_left</span></button>
                         <span class="calendar-month">Febrero 2026</span>
-                        <button class="calendar-nav-btn">
-                            <span class="material-icons-round">chevron_right</span>
-                        </button>
+                        <button class="calendar-nav-btn"><span class="material-icons-round">chevron_right</span></button>
                     </div>
                     <div class="calendar-grid">
-
                         <div class="calendar-day-name">Lu</div>
                         <div class="calendar-day-name">Ma</div>
                         <div class="calendar-day-name">Mi</div>
@@ -1465,7 +2155,6 @@
                         <div class="calendar-day-name">Vi</div>
                         <div class="calendar-day-name">Sa</div>
                         <div class="calendar-day-name">Do</div>
-
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
@@ -1473,7 +2162,6 @@
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day other-month"></div>
                         <div class="calendar-day">1</div>
-
                         <div class="calendar-day">2</div>
                         <div class="calendar-day">3</div>
                         <div class="calendar-day">4</div>
@@ -1481,7 +2169,6 @@
                         <div class="calendar-day has-event">6</div>
                         <div class="calendar-day">7</div>
                         <div class="calendar-day">8</div>
-
                         <div class="calendar-day">9</div>
                         <div class="calendar-day">10</div>
                         <div class="calendar-day">11</div>
@@ -1489,7 +2176,6 @@
                         <div class="calendar-day today">13</div>
                         <div class="calendar-day">14</div>
                         <div class="calendar-day">15</div>
-
                         <div class="calendar-day">16</div>
                         <div class="calendar-day">17</div>
                         <div class="calendar-day">18</div>
@@ -1497,7 +2183,6 @@
                         <div class="calendar-day">20</div>
                         <div class="calendar-day">21</div>
                         <div class="calendar-day">22</div>
-
                         <div class="calendar-day">23</div>
                         <div class="calendar-day">24</div>
                         <div class="calendar-day">25</div>
@@ -1532,44 +2217,34 @@
             <form id="subject-form" novalidate>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="form-label" for="subject-name">Nombre de la Asignatura <span
-                                class="required">*</span></label>
-                        <input class="form-input" type="text" id="subject-name" placeholder="Ej: Cálculo Diferencial"
-                            required>
+                        <label class="form-label" for="subject-name">Nombre de la Asignatura <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-name" placeholder="Ej: Cálculo Diferencial" required>
                         <div class="form-error" id="error-name">Este campo es obligatorio</div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label" for="subject-code">Código de la Asignatura <span
-                                    class="required">*</span></label>
-                            <input class="form-input" type="text" id="subject-code" placeholder="Ej: MATE-1203"
-                                required>
+                            <label class="form-label" for="subject-code">Código de la Asignatura <span class="required">*</span></label>
+                            <input class="form-input" type="text" id="subject-code" placeholder="Ej: MATE-1203" required>
                             <div class="form-error" id="error-code">Este campo es obligatorio</div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="subject-credits">Créditos <span
-                                    class="required">*</span></label>
-                            <input class="form-input" type="number" id="subject-credits" placeholder="Ej: 3" min="1"
-                                max="10" required>
+                            <label class="form-label" for="subject-credits">Créditos <span class="required">*</span></label>
+                            <input class="form-input" type="number" id="subject-credits" placeholder="Ej: 3" min="1" max="10" required>
                             <div class="form-error" id="error-credits">Ingresa un número válido</div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="subject-professor">Profesor <span
-                                class="required">*</span></label>
-                        <input class="form-input" type="text" id="subject-professor" placeholder="Ej: Prof. María López"
-                            required>
+                        <label class="form-label" for="subject-professor">Profesor <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="subject-professor" placeholder="Ej: Prof. María López" required>
                         <div class="form-error" id="error-professor">Este campo es obligatorio</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="subject-schedule">Horario <span class="required">*</span></label>
-                        <input class="form-input" type="text" id="subject-schedule"
-                            placeholder="Ej: Lun y Mié 10:00 - 12:00" required>
+                        <input class="form-input" type="text" id="subject-schedule" placeholder="Ej: Lun y Mié 10:00 - 12:00" required>
                         <div class="form-error" id="error-schedule">Este campo es obligatorio</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="subject-semester">Periodo / Semestre <span
-                                class="required">*</span></label>
+                        <label class="form-label" for="subject-semester">Periodo / Semestre <span class="required">*</span></label>
                         <select class="form-select" id="subject-semester" required>
                             <option value="" disabled selected>Selecciona un periodo</option>
                             <option value="2025-1">2025-1</option>
@@ -1592,87 +2267,124 @@
     </div>
 
     <!-- ===== MODAL: AGREGAR TAREA ===== -->
-
     <div class="modal-overlay" id="task-modal-overlay">
         <div class="modal">
-
             <div class="modal-header">
                 <div class="modal-header-left">
-
                     <div class="modal-header-icon">
                         <span class="material-icons-round">assignment</span>
                     </div>
-
                     <div>
                         <div class="modal-title">Agregar Nueva Tarea</div>
                         <div class="modal-subtitle">Registra una tarea o parcial</div>
                     </div>
-
                 </div>
-
                 <button class="modal-close" id="task-modal-close">
                     <span class="material-icons-round">close</span>
                 </button>
-
             </div>
-
-
             <form id="task-form">
-
                 <div class="modal-body">
-
                     <div class="form-group">
                         <label class="form-label">Título de la Tarea</label>
                         <input class="form-input" id="task-title" placeholder="Ej: Taller Derivadas">
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Asignatura</label>
-
                         <select class="form-select" id="task-subject" required>
                             <option value="">Selecciona una materia</option>
                         </select>
-
                     </div>
-
-
                     <div class="form-row">
-
                         <div class="form-group">
                             <label class="form-label">Fecha de entrega</label>
                             <input class="form-input" type="date" id="task-date" required>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label">Hora</label>
                             <input class="form-input" type="time" id="task-time" required>
                         </div>
-
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Descripción</label>
                         <input class="form-input" id="task-description" placeholder="Detalles de la tarea">
                     </div>
-
                 </div>
-
-
                 <div class="modal-footer">
-
-                    <button type="button" class="btn-cancel" id="task-btn-cancel">
-                        Cancelar
-                    </button>
-
+                    <button type="button" class="btn-cancel" id="task-btn-cancel">Cancelar</button>
                     <button type="submit" class="btn-save">
                         <span class="material-icons-round">save</span>
                         Guardar Tarea
                     </button>
-
                 </div>
-
             </form>
+        </div>
+    </div>
 
+    <!-- ===== MODAL: AGREGAR CALIFICACIÓN ===== -->
+    <div class="modal-overlay" id="grade-modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <span class="material-icons-round">grade</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Agregar Calificación</div>
+                        <div class="modal-subtitle" id="grade-modal-subject-name">Asignatura</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="grade-modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="grade-form" novalidate>
+                <div class="modal-body">
+                    <div class="grade-percent-summary" id="grade-percent-summary">
+                        <div class="grade-percent-info">
+                            <span class="material-icons-round">pie_chart</span>
+                            <span>Porcentaje acumulado</span>
+                        </div>
+                        <div class="grade-percent-bar-wrap">
+                            <div class="grade-percent-bar" id="grade-percent-bar" style="width:0%"></div>
+                        </div>
+                        <span class="grade-percent-value" id="grade-percent-value">0%</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="grade-name">
+                            Nombre de la calificación <span class="required">*</span>
+                        </label>
+                        <input class="form-input" type="text" id="grade-name"
+                            placeholder="Ej: Parcial 1, Taller 3, Proyecto Final" required>
+                        <div class="form-error" id="error-grade-name">Este campo es obligatorio</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="grade-score">
+                                Nota <span class="required">*</span>
+                            </label>
+                            <input class="form-input" type="number" id="grade-score"
+                                placeholder="Ej: 4.5" min="0" max="5" step="0.1" required>
+                            <div class="form-error" id="error-grade-score">Ingresa un valor entre 0.0 y 5.0</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="grade-percent">
+                                Porcentaje (%) <span class="required">*</span>
+                            </label>
+                            <input class="form-input" type="number" id="grade-percent"
+                                placeholder="Ej: 30" min="1" max="100" step="1" required>
+                            <div class="form-error" id="error-grade-percent">Porcentaje inválido o supera el 100%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="grade-btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">
+                        <span class="material-icons-round">save</span>
+                        Guardar Calificación
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1682,40 +2394,296 @@
     </div>
 
     <script>
-
         const API = 'http://localhost:8080';
 
         // ── Referencias al DOM ──────────────────────────────────────────
-        const modalOverlay = document.getElementById('modal-overlay');
-        const modalClose = document.getElementById('modal-close');
-        const btnCancel = document.getElementById('btn-cancel');
-        const fabAdd = document.getElementById('fab-add');
-        const fabMenu = document.getElementById('fab-menu');
-        const addSubjectBtn = document.getElementById('add-subject');
-        const addTaskBtn = document.getElementById('add-task');
-        const subjectForm = document.getElementById('subject-form');
-        const subjectsGrid = document.querySelector('.subjects-grid');
-        const toast = document.getElementById('toast');
-        const taskModal = document.getElementById('task-modal-overlay');
-        const taskModalClose = document.getElementById('task-modal-close');
-        const taskBtnCancel = document.getElementById('task-btn-cancel');
-        const taskForm = document.getElementById('task-form');
+        const modalOverlay      = document.getElementById('modal-overlay');
+        const modalClose        = document.getElementById('modal-close');
+        const btnCancel         = document.getElementById('btn-cancel');
+        const fabAdd            = document.getElementById('fab-add');
+        const fabMenu           = document.getElementById('fab-menu');
+        const addSubjectBtn     = document.getElementById('add-subject');
+        const addTaskBtn        = document.getElementById('add-task');
+        const subjectForm       = document.getElementById('subject-form');
+        const subjectsGrid      = document.querySelector('.subjects-grid');
+        const toast             = document.getElementById('toast');
+        const taskModal         = document.getElementById('task-modal-overlay');
+        const taskModalClose    = document.getElementById('task-modal-close');
+        const taskBtnCancel     = document.getElementById('task-btn-cancel');
+        const taskForm          = document.getElementById('task-form');
         const taskSubjectSelect = document.getElementById('task-subject');
+
+        // ── Referencias: Modal Calificación ────────────────────────────
+        const gradeModal          = document.getElementById('grade-modal-overlay');
+        const gradeModalClose     = document.getElementById('grade-modal-close');
+        const gradeBtnCancel      = document.getElementById('grade-btn-cancel');
+        const gradeForm           = document.getElementById('grade-form');
+        const gradeModalSubjName  = document.getElementById('grade-modal-subject-name');
+        const gradePercentSummary = document.getElementById('grade-percent-summary');
+        const gradePercentBar     = document.getElementById('grade-percent-bar');
+        const gradePercentValue   = document.getElementById('grade-percent-value');
+
+        // ── Referencias: Vista de calificaciones ───────────────────────
+        const dashboardView          = document.getElementById('dashboard-view');
+        const gradesView             = document.getElementById('grades-view');
+        const gradesViewTitle        = document.getElementById('grades-view-title');
+        const gradesViewSubtitle     = document.getElementById('grades-view-subtitle');
+        const gradesEmpty            = document.getElementById('grades-empty');
+        const gradesTableContainer   = document.getElementById('grades-table-container');
+        const gradesTableBody        = document.getElementById('grades-table-body');
+        const gradesAverageValue     = document.getElementById('grades-average-value');
+        const gradesAddBtn           = document.getElementById('grades-add-btn');
+        const gradesAddInlineBtn     = document.getElementById('grades-add-inline-btn');
+        const gradesBackBtn          = document.getElementById('grades-back-btn');
+
+        // ── Estado ─────────────────────────────────────────────────────
+        let activeCardForGrade = null;
+        let activeCardForView  = null;
+        const gradesStore      = {};   // gradeKey → [{ nombre, nota, porcentaje }]
+        let gradeKeyCounter    = 0;
 
         // ── Colores e iconos para tarjetas ─────────────────────────────
         const cardColors = [
-            { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1' },
-            { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C' },
-            { gradient: 'linear-gradient(90deg, #FF7043, #F4511E)', bg: '#FBE9E7', text: '#D84315' },
-            { gradient: 'linear-gradient(90deg, #EC407A, #D81B60)', bg: '#FCE4EC', text: '#AD1457' },
-            { gradient: 'linear-gradient(90deg, #FFA726, #FB8C00)', bg: '#FFF3E0', text: '#E65100' },
-            { gradient: 'linear-gradient(90deg, #42A5F5, #1E88E5)', bg: '#E3F2FD', text: '#1565C0' },
-            { gradient: 'linear-gradient(90deg, #66BB6A, #43A047)', bg: '#E8F5E9', text: '#2E7D32' },
+            { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
+            { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
+            { gradient: 'linear-gradient(90deg, #FF7043, #F4511E)', bg: '#FBE9E7', text: '#D84315', icon: '#FF7043' },
+            { gradient: 'linear-gradient(90deg, #EC407A, #D81B60)', bg: '#FCE4EC', text: '#AD1457', icon: '#EC407A' },
+            { gradient: 'linear-gradient(90deg, #FFA726, #FB8C00)', bg: '#FFF3E0', text: '#E65100', icon: '#FFA726' },
+            { gradient: 'linear-gradient(90deg, #42A5F5, #1E88E5)', bg: '#E3F2FD', text: '#1565C0', icon: '#42A5F5' },
+            { gradient: 'linear-gradient(90deg, #66BB6A, #43A047)', bg: '#E8F5E9', text: '#2E7D32', icon: '#66BB6A' },
         ];
-        const cardIcons = ['science', 'psychology', 'engineering', 'architecture', 'biotech', 'hub', 'auto_stories', 'analytics', 'memory', 'data_object', 'terminal', 'dns'];
+        const cardIcons = ['science','psychology','engineering','architecture','biotech','hub','auto_stories','analytics','memory','data_object','terminal','dns'];
         let colorIndex = 0;
 
-        // ── Modal Asignatura ───────────────────────────────────────────
+        // ══════════════════════════════════════════════════════════════
+        //  TABLA DE CALIFICACIONES
+        // ══════════════════════════════════════════════════════════════
+
+        /** Clase CSS del badge según la nota (escala 0-5) */
+        function scoreClass(nota) {
+            if (nota >= 3.5) return 'high';
+            if (nota >= 3.0) return 'mid';
+            return 'low';
+        }
+
+        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100) */
+        function calcWeightedAverage(key) {
+            const list = gradesStore[key] || [];
+            return list.reduce((sum, g) => sum + g.nota * (g.porcentaje / 100), 0);
+        }
+
+        /** Clase CSS del promedio final */
+        function avgClass(avg) {
+            if (avg >= 3.0) return 'good';
+            return 'bad';
+        }
+
+        /** Actualiza solo el promedio en pantalla */
+        function refreshAverage(key) {
+            const avg = calcWeightedAverage(key);
+            gradesAverageValue.textContent = avg.toFixed(2);
+            gradesAverageValue.className   = 'grades-average-value ' + avgClass(avg);
+        }
+
+        /** Renderiza (o actualiza) la tabla de calificaciones de la tarjeta activa */
+        function renderGradesTable(card) {
+            if (!card) return;
+            const key    = card.dataset.gradeKey || '';
+            const grades = gradesStore[key] || [];
+
+            if (grades.length === 0) {
+                gradesEmpty.style.display = 'flex';
+                gradesTableContainer.classList.remove('visible');
+                return;
+            }
+
+            gradesEmpty.style.display = 'none';
+            gradesTableContainer.classList.add('visible');
+            gradesTableBody.innerHTML = '';
+
+            grades.forEach((g, idx) => {
+                const tr = document.createElement('tr');
+                tr.dataset.gradeIndex = idx;
+                tr.dataset.gradeKey   = key;
+                tr.innerHTML = `
+                    <td class="cell-nombre">${g.nombre}</td>
+                    <td class="cell-nota" style="text-align:center;">
+                        <span class="grade-score-badge ${scoreClass(g.nota)}">${g.nota.toFixed(1)}</span>
+                    </td>
+                    <td class="cell-pct" style="text-align:center;">
+                        <span class="grade-percent-pill">${g.porcentaje}%</span>
+                    </td>
+                    <td style="text-align:center; padding:8px; white-space:nowrap;">
+                        <div class="grade-row-actions">
+                            <button class="grade-edit-btn" title="Editar" onclick="toggleEditRow(this)">
+                                <span class="material-icons-round">edit</span>
+                            </button>
+                            <button class="grade-delete-btn" title="Eliminar" onclick="deleteGradeRow(this)">
+                                <span class="material-icons-round">delete_outline</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                gradesTableBody.appendChild(tr);
+            });
+
+            refreshAverage(key);
+        }
+
+        /** Activa / desactiva el modo edición inline de una fila */
+        function toggleEditRow(btn) {
+            const tr  = btn.closest('tr');
+            const key = tr.dataset.gradeKey;
+            const idx = parseInt(tr.dataset.gradeIndex, 10);
+
+            if (tr.classList.contains('editing')) {
+                // ── Guardar cambios ──────────────────────────────────
+                const inputNombre = tr.querySelector('.grade-inline-input.name-input');
+                const inputNota   = tr.querySelector('.grade-inline-input.nota-input');
+                const inputPct    = tr.querySelector('.grade-inline-input.pct-input');
+
+                const newNombre = inputNombre.value.trim();
+                const newNota   = parseFloat(inputNota.value);
+                const newPct    = parseInt(inputPct.value, 10);
+
+                // Validación rápida
+                let valid = true;
+                if (!newNombre) { inputNombre.classList.add('error'); valid = false; }
+                else inputNombre.classList.remove('error');
+
+                if (isNaN(newNota) || newNota < 0 || newNota > 5) { inputNota.classList.add('error'); valid = false; }
+                else inputNota.classList.remove('error');
+
+                // Verificar que el porcentaje no exceda 100 considerando el resto de filas
+                const otherPct = (gradesStore[key] || []).reduce((s, g, i) => i !== idx ? s + g.porcentaje : s, 0);
+                if (isNaN(newPct) || newPct < 1 || newPct > 100 || otherPct + newPct > 100) {
+                    inputPct.classList.add('error'); valid = false;
+                } else inputPct.classList.remove('error');
+
+                if (!valid) return;
+
+                // Persistir en el store
+                gradesStore[key][idx] = { nombre: newNombre, nota: newNota, porcentaje: newPct };
+
+                // Volver a modo vista
+                tr.classList.remove('editing');
+                tr.querySelector('.cell-nombre').textContent = newNombre;
+                tr.querySelector('.cell-nota').innerHTML =
+                    `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
+                tr.querySelector('.cell-pct').innerHTML =
+                    `<span class="grade-percent-pill">${newPct}%</span>`;
+
+                btn.querySelector('.material-icons-round').textContent = 'edit';
+                btn.title = 'Editar';
+
+                refreshAverage(key);
+
+            } else {
+                // ── Activar modo edición ─────────────────────────────
+                // Cerrar cualquier otra fila que esté en modo edición
+                gradesTableBody.querySelectorAll('tr.editing').forEach(row => {
+                    if (row !== tr) {
+                        const editBtn = row.querySelector('.grade-edit-btn');
+                        if (editBtn) toggleEditRow(editBtn);   // guardar cambios de la otra fila
+                    }
+                });
+
+                const g = gradesStore[key][idx];
+                tr.classList.add('editing');
+
+                tr.querySelector('.cell-nombre').innerHTML =
+                    `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
+                tr.querySelector('.cell-nota').innerHTML =
+                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
+                tr.querySelector('.cell-pct').innerHTML =
+                    `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
+
+                // Actualizar promedio en tiempo real mientras el usuario escribe
+                tr.querySelectorAll('.grade-inline-input').forEach(input => {
+                    input.addEventListener('input', () => {
+                        const tmpNota = parseFloat(tr.querySelector('.nota-input').value);
+                        const tmpPct  = parseInt(tr.querySelector('.pct-input').value, 10);
+                        if (!isNaN(tmpNota) && !isNaN(tmpPct) && tmpNota >= 0 && tmpNota <= 5 && tmpPct >= 1 && tmpPct <= 100) {
+                            // Calcular promedio provisional sin tocar el store
+                            const provisional = (gradesStore[key] || []).reduce((sum, gr, i) => {
+                                if (i === idx) return sum + tmpNota * (tmpPct / 100);
+                                return sum + gr.nota * (gr.porcentaje / 100);
+                            }, 0);
+                            gradesAverageValue.textContent = provisional.toFixed(2);
+                            gradesAverageValue.className   = 'grades-average-value ' + avgClass(provisional);
+                        }
+                    });
+                });
+
+                btn.querySelector('.material-icons-round').textContent = 'check';
+                btn.title = 'Guardar';
+
+                // Foco en el campo nombre
+                tr.querySelector('.name-input').focus();
+            }
+        }
+
+        /** Elimina una calificación individual de la tabla */
+        function deleteGradeRow(btn) {
+            const tr  = btn.closest('tr');
+            const key = tr.dataset.gradeKey;
+            const idx = parseInt(tr.dataset.gradeIndex, 10);
+
+            tr.classList.add('removing');
+            tr.addEventListener('animationend', () => {
+                gradesStore[key].splice(idx, 1);
+                renderGradesTable(activeCardForView);
+                if (activeCardForGrade && activeCardForGrade.dataset.gradeKey === key) {
+                    updatePercentSummary(key);
+                }
+            }, { once: true });
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA DE CALIFICACIONES
+        // ══════════════════════════════════════════════════════════════
+
+        function openGradesView(card) {
+            activeCardForView = card;
+
+            const nombre = card.querySelector('.subject-name').textContent;
+            const subId  = card.querySelector('.subject-id')?.textContent || '';
+
+            gradesViewTitle.textContent    = nombre;
+            gradesViewSubtitle.textContent = subId;
+
+            if (!card.dataset.gradeKey) {
+                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
+            }
+
+            renderGradesTable(card);
+
+            dashboardView.classList.add('hidden');
+            gradesView.classList.add('active');
+        }
+
+        function closeGradesView() {
+            gradesView.classList.remove('active');
+            dashboardView.classList.remove('hidden');
+            activeCardForView = null;
+        }
+
+        gradesBackBtn.addEventListener('click', closeGradesView);
+
+        // Botón "+ Agregar" del estado vacío
+        gradesAddBtn.addEventListener('click', () => {
+            if (activeCardForView) openGradeModal(activeCardForView);
+        });
+
+        // Botón "+ Agregar calificación" del footer de la tabla
+        gradesAddInlineBtn.addEventListener('click', () => {
+            if (activeCardForView) openGradeModal(activeCardForView);
+        });
+
+        // ══════════════════════════════════════════════════════════════
+        //  MODAL ASIGNATURA
+        // ══════════════════════════════════════════════════════════════
+
         function openModal() {
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1729,20 +2697,21 @@
             clearErrors();
         }
 
-        // ── Modal Tarea ────────────────────────────────────────────────
+        // ══════════════════════════════════════════════════════════════
+        //  MODAL TAREA
+        // ══════════════════════════════════════════════════════════════
+
         function openTaskModal() {
-            // Poblar el select con las tarjetas actuales, usando data-id como value
             taskSubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
             document.querySelectorAll('.subject-card').forEach(card => {
-                const id = card.dataset.id;           // ID guardado desde el backend
+                const id   = card.dataset.id;
                 const name = card.querySelector('.subject-name').textContent;
-                if (!id) return;                        // tarjetas sin ID de BD se omiten
-                const option = document.createElement('option');
-                option.value = id;
+                if (!id) return;
+                const option       = document.createElement('option');
+                option.value       = id;
                 option.textContent = name;
                 taskSubjectSelect.appendChild(option);
             });
-
             taskModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -1753,13 +2722,71 @@
             taskForm.reset();
         }
 
+        // ══════════════════════════════════════════════════════════════
+        //  MODAL CALIFICACIÓN
+        // ══════════════════════════════════════════════════════════════
+
+        function getUsedPercent(gradeKey) {
+            return (gradesStore[gradeKey] || []).reduce((sum, g) => sum + g.porcentaje, 0);
+        }
+
+        function updatePercentSummary(gradeKey) {
+            const used = getUsedPercent(gradeKey);
+            const pct  = Math.min(used, 100);
+            gradePercentBar.style.width    = pct + '%';
+            gradePercentValue.textContent  = used + '%';
+
+            gradePercentSummary.classList.remove('warning', 'danger');
+            const icon = gradePercentSummary.querySelector('.material-icons-round');
+
+            if (used >= 100) {
+                gradePercentSummary.classList.add('danger');
+                icon.textContent = 'error';
+            } else if (used >= 75) {
+                gradePercentSummary.classList.add('warning');
+                icon.textContent = 'warning';
+            } else {
+                icon.textContent = 'pie_chart';
+            }
+        }
+
+        function openGradeModal(card) {
+            activeCardForGrade = card;
+
+            if (!card.dataset.gradeKey) {
+                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
+            }
+
+            gradeModalSubjName.textContent = card.querySelector('.subject-name').textContent;
+
+            gradeForm.reset();
+            ['error-grade-name','error-grade-score','error-grade-percent'].forEach(id => {
+                document.getElementById(id).classList.remove('visible');
+                document.getElementById(id).style.display = 'none';
+            });
+            ['grade-name','grade-score','grade-percent'].forEach(id => {
+                document.getElementById(id).classList.remove('error');
+            });
+
+            updatePercentSummary(card.dataset.gradeKey);
+            gradeModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('grade-name').focus(), 350);
+        }
+
+        function closeGradeModal() {
+            gradeModal.classList.remove('active');
+            document.body.style.overflow = '';
+            activeCardForGrade = null;
+        }
+
         // ── FAB ────────────────────────────────────────────────────────
         fabAdd.addEventListener('click', (e) => {
             e.stopPropagation();
             fabMenu.classList.toggle('active');
         });
         addSubjectBtn.addEventListener('click', () => { fabMenu.classList.remove('active'); openModal(); });
-        addTaskBtn.addEventListener('click', () => { fabMenu.classList.remove('active'); openTaskModal(); });
+        addTaskBtn.addEventListener('click',    () => { fabMenu.classList.remove('active'); openTaskModal(); });
 
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.fab-container')) fabMenu.classList.remove('active');
@@ -1773,10 +2800,15 @@
         taskModalClose.addEventListener('click', closeTaskModal);
         taskBtnCancel.addEventListener('click', closeTaskModal);
 
+        gradeModalClose.addEventListener('click', closeGradeModal);
+        gradeBtnCancel.addEventListener('click', closeGradeModal);
+        gradeModal.addEventListener('click', (e) => { if (e.target === gradeModal) closeGradeModal(); });
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (modalOverlay.classList.contains('active')) closeModal();
-                if (taskModal.classList.contains('active')) closeTaskModal();
+                if (taskModal.classList.contains('active'))    closeTaskModal();
+                if (gradeModal.classList.contains('active'))   closeGradeModal();
             }
         });
 
@@ -1805,12 +2837,12 @@
             clearErrors();
             let isValid = true;
             const fields = [
-                { id: 'subject-name', errorId: 'error-name' },
-                { id: 'subject-code', errorId: 'error-code' },
-                { id: 'subject-credits', errorId: 'error-credits' },
+                { id: 'subject-name',      errorId: 'error-name' },
+                { id: 'subject-code',      errorId: 'error-code' },
+                { id: 'subject-credits',   errorId: 'error-credits' },
                 { id: 'subject-professor', errorId: 'error-professor' },
-                { id: 'subject-schedule', errorId: 'error-schedule' },
-                { id: 'subject-semester', errorId: 'error-semester' },
+                { id: 'subject-schedule',  errorId: 'error-schedule' },
+                { id: 'subject-semester',  errorId: 'error-semester' },
             ];
             fields.forEach(({ id, errorId }) => {
                 const input = document.getElementById(id);
@@ -1832,45 +2864,49 @@
         // ── Crear tarjeta en el DOM ────────────────────────────────────
         function createSubjectCard(data, dbId) {
             const color = cardColors[colorIndex % cardColors.length];
-            const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
+            const icon  = cardIcons[Math.floor(Math.random() * cardIcons.length)];
             colorIndex++;
 
             const card = document.createElement('div');
-            card.className = 'subject-card';
-            card.dataset.id = dbId;          // ← guardamos el ID del backend aquí
+            card.className  = 'subject-card';
+            card.dataset.id = dbId;
 
             card.innerHTML = `
-        <div class="card-menu">
-            <button class="card-menu-btn" onclick="toggleCardMenu(this)">
-                <span class="material-icons-round">more_vert</span>
-            </button>
-            <div class="card-dropdown">
-                <button class="card-dropdown-item delete" onclick="deleteCard(this)">
-                    <span class="material-icons-round">delete_outline</span>
-                    Eliminar
-                </button>
-            </div>
-        </div>
-        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
-        <div class="subject-icon" style="background:${color.bg};color:${color.text}">
-            <span class="material-icons-round">${icon}</span>
-        </div>
-        <div class="subject-name">${data.nombre}</div>
-        <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
-        <div class="subject-professor">
-            <span class="material-icons-round">person</span>
-            ${data.profesor}
-        </div>
-        <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
-            <span class="material-icons-round" style="font-size:16px">schedule</span>
-            ${data.horario}
-        </div>
-        <div class="subject-progress">
-            <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
-        </div>
-        <div class="subject-progress-label">0% del curso completado</div>
-    `;
-
+                <div class="card-menu">
+                    <button class="card-menu-btn" onclick="toggleCardMenu(this)">
+                        <span class="material-icons-round">more_vert</span>
+                    </button>
+                    <div class="card-dropdown">
+                        <button class="card-dropdown-item" onclick="openGradeModal(this.closest('.subject-card'))">
+                            <span class="material-icons-round">grade</span>
+                            Agregar Calificación
+                        </button>
+                        <div class="card-dropdown-divider"></div>
+                        <button class="card-dropdown-item delete" onclick="deleteCard(this)">
+                            <span class="material-icons-round">delete_outline</span>
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
+                <div class="subject-icon" style="background:${color.bg};color:${color.text}">
+                    <span class="material-icons-round">${icon}</span>
+                </div>
+                <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
+                <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
+                <div class="subject-professor">
+                    <span class="material-icons-round">person</span>
+                    ${data.profesor}
+                </div>
+                <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
+                    <span class="material-icons-round" style="font-size:16px">schedule</span>
+                    ${data.horario}
+                </div>
+                <div class="subject-progress">
+                    <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
+                </div>
+                <div class="subject-progress-label">0% del curso completado</div>
+            `;
             subjectsGrid.appendChild(card);
         }
 
@@ -1883,7 +2919,8 @@
 
         function updateSubjectCount() {
             const count = subjectsGrid.children.length;
-            document.querySelector('.section-subtitle').textContent = `Semestre 2026-1 · ${count} materias inscritas`;
+            document.querySelector('.section-subtitle').textContent =
+                `Semestre 2026-1 · ${count} materias inscritas`;
             const statValues = document.querySelectorAll('.stat-value');
             if (statValues.length > 0) statValues[0].textContent = count;
         }
@@ -1894,12 +2931,12 @@
             if (!validateSubjectForm()) return;
 
             const payload = {
-                nombre: document.getElementById('subject-name').value.trim(),
-                codigo: document.getElementById('subject-code').value.trim().toUpperCase(),
+                nombre:   document.getElementById('subject-name').value.trim(),
+                codigo:   document.getElementById('subject-code').value.trim().toUpperCase(),
                 creditos: parseInt(document.getElementById('subject-credits').value),
                 profesor: document.getElementById('subject-professor').value.trim(),
-                horario: document.getElementById('subject-schedule').value.trim(),
-                periodo: document.getElementById('subject-semester').value,
+                horario:  document.getElementById('subject-schedule').value.trim(),
+                periodo:  document.getElementById('subject-semester').value,
             };
 
             try {
@@ -1908,15 +2945,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-
                 if (!res.ok) throw new Error('Error al guardar');
-
-                const json = await res.json();          // { mensaje, asignatura: { id, nombre, ... } }
+                const json = await res.json();
                 createSubjectCard(json.asignatura, json.asignatura.id);
                 closeModal();
                 showToast(`"${json.asignatura.nombre}" agregada exitosamente`);
                 updateSubjectCount();
-
             } catch (err) {
                 console.error(err);
                 showToast('Error al conectar con el servidor');
@@ -1927,13 +2961,12 @@
         taskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const titulo = document.getElementById('task-title').value.trim();
+            const titulo       = document.getElementById('task-title').value.trim();
             const asignaturaId = document.getElementById('task-subject').value;
             const fechaEntrega = document.getElementById('task-date').value;
-            const horaEntrega = document.getElementById('task-time').value;
-            const descripcion = document.getElementById('task-description').value.trim();
+            const horaEntrega  = document.getElementById('task-time').value;
+            const descripcion  = document.getElementById('task-description').value.trim();
 
-            // Validación básica de campos obligatorios
             if (!titulo || !asignaturaId || !fechaEntrega || !horaEntrega) {
                 showToast('Completa los campos obligatorios');
                 return;
@@ -1942,8 +2975,8 @@
             const payload = {
                 titulo,
                 asignaturaId: parseInt(asignaturaId),
-                fechaEntrega,       // "2026-06-15"  → LocalDate en Spring
-                horaEntrega,        // "23:59"       → LocalTime en Spring
+                fechaEntrega,
+                horaEntrega,
                 descripcion: descripcion || null,
             };
 
@@ -1953,16 +2986,88 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-
                 if (!res.ok) throw new Error('Error al guardar');
-
-                const json = await res.json();          // { mensaje, tarea: { id, titulo, ... } }
+                const json = await res.json();
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
-
             } catch (err) {
                 console.error(err);
                 showToast('Error al conectar con el servidor');
+            }
+        });
+
+        // ── Submit: Guardar Calificación ───────────────────────────────
+        gradeForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const inputNombre = document.getElementById('grade-name');
+            const inputNota   = document.getElementById('grade-score');
+            const inputPct    = document.getElementById('grade-percent');
+            const errNombre   = document.getElementById('error-grade-name');
+            const errNota     = document.getElementById('error-grade-score');
+            const errPct      = document.getElementById('error-grade-percent');
+
+            // Limpiar
+            [inputNombre, inputNota, inputPct].forEach(el => el.classList.remove('error'));
+            [errNombre, errNota, errPct].forEach(el => { el.style.display = 'none'; });
+
+            const nombre  = inputNombre.value.trim();
+            const notaRaw = inputNota.value;
+            const pctRaw  = inputPct.value;
+            let valid     = true;
+
+            if (!nombre) {
+                inputNombre.classList.add('error');
+                errNombre.textContent   = 'Este campo es obligatorio';
+                errNombre.style.display = 'block';
+                valid = false;
+            }
+
+            const nota = parseFloat(notaRaw);
+            if (notaRaw === '' || isNaN(nota) || nota < 0 || nota > 5) {
+                inputNota.classList.add('error');
+                errNota.textContent   = 'Ingresa un valor entre 0.0 y 5.0';
+                errNota.style.display = 'block';
+                valid = false;
+            }
+
+            const pct = parseInt(pctRaw, 10);
+            if (pctRaw === '' || isNaN(pct) || pct < 1 || pct > 100) {
+                inputPct.classList.add('error');
+                errPct.textContent   = 'Ingresa un valor entre 1% y 100%';
+                errPct.style.display = 'block';
+                valid = false;
+            } else if (activeCardForGrade) {
+                const key  = activeCardForGrade.dataset.gradeKey || '';
+                const used = getUsedPercent(key);
+                if (used + pct > 100) {
+                    inputPct.classList.add('error');
+                    errPct.textContent   = `El porcentaje acumulado (${used}% + ${pct}%) supera el 100%`;
+                    errPct.style.display = 'block';
+                    valid = false;
+                }
+            }
+
+            if (!valid) return;
+
+            // Guardar en el store
+            if (activeCardForGrade) {
+                const key = activeCardForGrade.dataset.gradeKey;
+                if (!gradesStore[key]) gradesStore[key] = [];
+                gradesStore[key].push({ nombre, nota, porcentaje: pct });
+            }
+
+            closeGradeModal();
+            showToast('Calificación guardada con éxito');
+
+            // Si la vista de calificaciones está abierta para esta tarjeta, actualizar tabla
+            if (activeCardForView && activeCardForView === activeCardForGrade) {
+                // activeCardForGrade ya fue limpiado, usamos la tarjeta de la vista
+            }
+            // Re-renderizar si hay una vista de calificaciones activa
+            if (gradesView.classList.contains('active') && activeCardForView) {
+                renderGradesTable(activeCardForView);
             }
         });
 
@@ -1990,7 +3095,207 @@
                 showToast(`"${name}" eliminada`);
             });
         }
+        // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
+        /**
+         * Singleton para gestionar el estado de la sesión de forma centralizada.
+         */
+        const SessionManager = (function() {
+            let instance;
+
+            function init() {
+                return {
+                    getUser: function() {
+                        return JSON.parse(localStorage.getItem('studyhub_user'));
+                    },
+                    setUser: function(user) {
+                        localStorage.setItem('studyhub_user', JSON.stringify(user));
+                    },
+                    clear: function() {
+                        localStorage.removeItem('studyhub_user');
+                    },
+                    isLoggedIn: function() {
+                        return this.getUser() !== null;
+                    }
+                };
+            }
+
+            return {
+                getInstance: function() {
+                    if (!instance) instance = init();
+                    return instance;
+                }
+            };
+        })();
+
+        // ── GOF PATTERN: STATE (NavigationSystem) ──────────────────────────
+        /**
+         * Contexto que maneja el estado de la navegación de la UI.
+         */
+        class NavigationSystem {
+            constructor() {
+                this.states = {
+                    login: new LoginState(this),
+                    register: new RegisterState(this),
+                    dashboard: new DashboardState(this)
+                };
+                this.currentState = null;
+            }
+
+            transitionTo(stateName, data = null) {
+                if (this.states[stateName]) {
+                    this.currentState = this.states[stateName];
+                    this.currentState.render(data);
+                }
+            }
+        }
+
+        class LoginState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('login-error').style.display = 'none';
+            }
+        }
+
+        class RegisterState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'block';
+                document.getElementById('register-error').style.display = 'none';
+            }
+        }
+
+        class DashboardState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                updateSubjectCount();
+            }
+        }
+
+        const navSystem = new NavigationSystem();
+
+        // ── GOF PATTERN: PROXY (AccessProxy) ──────────────────────────────
+        /**
+         * Interceptor que valida el acceso a las vistas.
+         */
+        const AccessProxy = {
+            goTo: function(view, data = null) {
+                const session = SessionManager.getInstance();
+                console.log(`Petición de acceso a: ${view}`);
+
+                if (view === 'dashboard' && !session.isLoggedIn()) {
+                    console.warn("Acceso denegado al Dashboard. Redirigiendo a Login...");
+                    navSystem.transitionTo('login');
+                    return;
+                }
+
+                navSystem.transitionTo(view, data);
+            }
+        };
+
+        // ── Manejadores de Eventos Refactorizados ───────────────────────
+
+        function checkSession() {
+            const session = SessionManager.getInstance();
+            if (session.isLoggedIn()) {
+                AccessProxy.goTo('dashboard', session.getUser());
+            } else {
+                AccessProxy.goTo('login');
+            }
+        }
+
+        function toggleAuth(view) {
+            AccessProxy.goTo(view);
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const correo = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            const session = SessionManager.getInstance();
+
+            try {
+                const response = await fetch(`${API}/api/usuarios/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.exito) {
+                    session.setUser(result.datos);
+                    AccessProxy.goTo('dashboard', result.datos);
+                    showToast('¡Bienvenido de nuevo!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Credenciales incorrectas";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const apellido = document.getElementById('reg-apellido').value.trim();
+            const correo = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            const confirm = document.getElementById('reg-pass-confirm').value.trim();
+            const errorDiv = document.getElementById('register-error');
+
+            if (password !== confirm) {
+                errorDiv.textContent = "Las contraseñas no coinciden";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API}/api/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.exito) {
+                    AccessProxy.goTo('login');
+                    showToast('Registro exitoso. ¡Inicia sesión!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Error en el registro";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            SessionManager.getInstance().clear();
+            AccessProxy.goTo('login');
+            showToast('Sesión cerrada');
+        }
+
+        // Acceso rápido al logout desde el avatar
+        document.querySelector('.profile-avatar').style.cursor = 'pointer';
+        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
+        document.querySelector('.profile-avatar').onclick = logout;
+
     </script>
 </body>
-
 </html>
