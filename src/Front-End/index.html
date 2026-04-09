@@ -1648,6 +1648,92 @@
             box-shadow: 0 8px 16px rgba(30, 136, 229, 0.3);
         }
 
+        /* ========== AUTHENTICATION GLASSMORPHISM (#185) ========== */
+        #auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--blue-700) 0%, #1a237e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            width: 440px;
+            max-width: 90vw;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .auth-header {
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--blue-50);
+            color: var(--blue-600);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .auth-logo .material-icons-round { font-size: 32px; }
+
+        .auth-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        .auth-form { margin-top: 24px; text-align: left; }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-700) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(21, 101, 192, 0.5);
         .auth-title {
             font-size: 24px;
             font-weight: 800;
@@ -1713,17 +1799,20 @@
 
         .auth-switch {
             margin-top: 24px;
+            font-size: 14px;
             font-size: 13px;
             color: var(--gray-500);
         }
 
         .auth-link {
             color: var(--blue-600);
+            font-weight: 700;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
         }
 
+        .auth-link:hover { text-decoration: underline; }
         .auth-link:hover {
             text-decoration: underline;
         }
@@ -1731,6 +1820,13 @@
         .error-message {
             background: #FFEBEE;
             color: #C62828;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #E53935;
             padding: 12px;
             border-radius: var(--radius-sm);
             font-size: 13px;
@@ -1776,6 +1872,12 @@
             <div id="register-error" class="error-message"></div>
             <form class="auth-form" onsubmit="handleRegister(event)">
                 <div class="form-group">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" id="reg-nombre" class="form-input" placeholder="Juan" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido</label>
+                    <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
                     <label class="form-label">Nombre Completo</label>
                     <input type="text" id="reg-nombre" class="form-input" placeholder="Juan Pérez" required>
                 </div>
@@ -3066,6 +3168,122 @@
                 showToast(`"${name}" eliminada`);
             });
         }
+        // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
+        /**
+         * Singleton para gestionar el estado de la sesión de forma centralizada.
+         */
+        const SessionManager = (function() {
+            let instance;
+
+            function init() {
+                return {
+                    getUser: function() {
+                        return JSON.parse(localStorage.getItem('studyhub_user'));
+                    },
+                    setUser: function(user) {
+                        localStorage.setItem('studyhub_user', JSON.stringify(user));
+                    },
+                    clear: function() {
+                        localStorage.removeItem('studyhub_user');
+                    },
+                    isLoggedIn: function() {
+                        return this.getUser() !== null;
+                    }
+                };
+            }
+
+            return {
+                getInstance: function() {
+                    if (!instance) instance = init();
+                    return instance;
+                }
+            };
+        })();
+
+        // ── GOF PATTERN: STATE (NavigationSystem) ──────────────────────────
+        /**
+         * Contexto que maneja el estado de la navegación de la UI.
+         */
+        class NavigationSystem {
+            constructor() {
+                this.states = {
+                    login: new LoginState(this),
+                    register: new RegisterState(this),
+                    dashboard: new DashboardState(this)
+                };
+                this.currentState = null;
+            }
+
+            transitionTo(stateName, data = null) {
+                if (this.states[stateName]) {
+                    this.currentState = this.states[stateName];
+                    this.currentState.render(data);
+                }
+            }
+        }
+
+        class LoginState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('login-error').style.display = 'none';
+            }
+        }
+
+        class RegisterState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'block';
+                document.getElementById('register-error').style.display = 'none';
+            }
+        }
+
+        class DashboardState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                updateSubjectCount();
+            }
+        }
+
+        const navSystem = new NavigationSystem();
+
+        // ── GOF PATTERN: PROXY (AccessProxy) ──────────────────────────────
+        /**
+         * Interceptor que valida el acceso a las vistas.
+         */
+        const AccessProxy = {
+            goTo: function(view, data = null) {
+                const session = SessionManager.getInstance();
+                console.log(`Petición de acceso a: ${view}`);
+
+                if (view === 'dashboard' && !session.isLoggedIn()) {
+                    console.warn("Acceso denegado al Dashboard. Redirigiendo a Login...");
+                    navSystem.transitionTo('login');
+                    return;
+                }
+
+                navSystem.transitionTo(view, data);
+            }
+        };
+
+        // ── Manejadores de Eventos Refactorizados ───────────────────────
+
+        function checkSession() {
+            const session = SessionManager.getInstance();
+            if (session.isLoggedIn()) {
+                AccessProxy.goTo('dashboard', session.getUser());
+            } else {
+                AccessProxy.goTo('login');
         // ── AUTHENTICATION LOGIC ──────────────────────────────────────
         const API_BASE = "http://localhost:8080/api/usuarios";
 
@@ -3079,6 +3297,7 @@
         }
 
         function toggleAuth(view) {
+            AccessProxy.goTo(view);
             document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
             document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
             document.getElementById('login-error').style.display = 'none';
@@ -3087,6 +3306,13 @@
 
         async function handleLogin(e) {
             e.preventDefault();
+            const correo = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            const session = SessionManager.getInstance();
+
+            try {
+                const response = await fetch(`${API}/api/usuarios/login`, {
             const correo = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
             const errorDiv = document.getElementById('login-error');
@@ -3098,6 +3324,14 @@
                     body: JSON.stringify({ correo, password })
                 });
 
+                const result = await response.json();
+
+                if (response.ok && result.exito) {
+                    session.setUser(result.datos);
+                    AccessProxy.goTo('dashboard', result.datos);
+                    showToast('¡Bienvenido de nuevo!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Credenciales incorrectas";
                 if (response.ok) {
                     const user = await response.json();
                     localStorage.setItem('studyhub_user', JSON.stringify(user));
@@ -3115,6 +3349,11 @@
 
         async function handleRegister(e) {
             e.preventDefault();
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const apellido = document.getElementById('reg-apellido').value.trim();
+            const correo = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            const confirm = document.getElementById('reg-pass-confirm').value.trim();
             const nombre = document.getElementById('reg-nombre').value;
             const correo = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
@@ -3128,6 +3367,19 @@
             }
 
             try {
+                const response = await fetch(`${API}/api/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.exito) {
+                    AccessProxy.goTo('login');
+                    showToast('Registro exitoso. ¡Inicia sesión!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Error en el registro";
                 const response = await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -3148,6 +3400,15 @@
             }
         }
 
+        function logout() {
+            SessionManager.getInstance().clear();
+            AccessProxy.goTo('login');
+            showToast('Sesión cerrada');
+        }
+
+        // Acceso rápido al logout desde el avatar
+        document.querySelector('.profile-avatar').style.cursor = 'pointer';
+        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
         function showDashboard(user) {
             document.getElementById('auth-container').style.display = 'none';
             document.querySelector('.app-container').style.display = 'grid';
