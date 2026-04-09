@@ -1,11 +1,13 @@
 package com.studyhub.service.builder;
+
 import com.studyhub.dto.horarioDTO;
 
 public class HorarioBuilder {
     private horarioDTO dto = new horarioDTO();
 
     public HorarioBuilder conAsignatura(String nombre) {
-        dto.setNombreNombreAsignatura(nombre);
+        // CORREGIDO: se llama setNombreAsignatura() (antes era setNombreNombreAsignatura())
+        dto.setNombreAsignatura(nombre);
         return this;
     }
 
@@ -16,6 +18,16 @@ public class HorarioBuilder {
 
     public HorarioBuilder conFranja(String inicio, String fin) {
         dto.setHoras(inicio, fin);
+        return this;
+    }
+
+    public HorarioBuilder conAula(String aula) {
+        dto.setAula(aula);
+        return this;
+    }
+
+    public HorarioBuilder conProfesor(String profesor) {
+        dto.setProfesor(profesor);
         return this;
     }
 

@@ -9,32 +9,31 @@ public class horarioDTO {
     private String aula;
     private String profesor;
 
-    // Constructor vacío (importante para Builder)
     public horarioDTO() {}
 
-    // Getters y Setters
-    
-    public String getPorfesor() {
-    	return profesor;
+    // CORREGIDO: getter renombrado de getPorfesor() a getProfesor()
+    public String getProfesor() {
+        return profesor;
     }
-    
+
     public void setProfesor(String profesor) {
-    	this.profesor = profesor;
+        this.profesor = profesor;
     }
-    
+
     public String getAula() {
-    	return aula;
+        return aula;
     }
-    
+
     public void setAula(String aula) {
-    	this.aula = aula;
+        this.aula = aula;
     }
 
     public String getNombreAsignatura() {
         return nombreAsignatura;
     }
 
-    public void setNombreNombreAsignatura(String nombreAsignatura) {
+    // CORREGIDO: setter renombrado de setNombreNombreAsignatura() a setNombreAsignatura()
+    public void setNombreAsignatura(String nombreAsignatura) {
         this.nombreAsignatura = nombreAsignatura;
     }
 

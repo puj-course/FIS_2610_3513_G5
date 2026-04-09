@@ -1,4 +1,6 @@
-package com.studyhub.config;
+// CORREGIDO: el paquete era "com.studyhub.config" pero el archivo estaba en "com/studyhub/".
+// Se corrige la declaración para que coincida con la ubicación real del archivo.
+package com.studyhub;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +25,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/usuarios/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .anyRequest().permitAll() // Permitimos todo por ahora para facilitar desarrollo
+                .anyRequest().permitAll()
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())); // Para H2 Console
-            
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+
         return http.build();
     }
 
@@ -34,7 +36,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
