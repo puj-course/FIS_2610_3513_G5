@@ -1,6 +1,7 @@
 package com.studyhub.controller;
 
 import com.studyhub.model.Asignatura;
+import com.studyhub.service.NotaService;
 import com.studyhub.repository.AsignaturaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.Map;
 public class AsignaturaController {
 
     private final AsignaturaRepository asignaturaRepository;
+    private final NotaService notaService;
 
-    public AsignaturaController(AsignaturaRepository asignaturaRepository) {
+    public AsignaturaController(AsignaturaRepository asignaturaRepository, NotaService notaService) {
         this.asignaturaRepository = asignaturaRepository;
+        this.notaService = notaService;
     }
 
     @PostMapping
@@ -51,6 +54,26 @@ public class AsignaturaController {
 
         Map<String, String> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Asignatura eliminada exitosamente");
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
+    
+    @GetMapping("/{id}/promedio")
+    public ResponseEntity<Map<String, Object>> obtenerPromedioAsignatura(@PathVariable Long id) {
+
+        Asignatura asignatura = asignaturaRepository.findById(id).orElse(null);
+
+        if (asignatura == null) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("mensaje", "Asignatura no encontrada");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        double promedio = notaService.calcularPromedio(id);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("asignatura", asignatura.getNombre());
+        respuesta.put("promedio", promedio);
+
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 }
