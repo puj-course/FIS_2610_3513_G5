@@ -17,9 +17,6 @@ public class Usuario {
     @NotBlank
     private String nombre;
 
-    @NotBlank
-    private String apellido;
-
     @Email
     @NotBlank
     private String correo;
@@ -47,10 +44,6 @@ public class Usuario {
         return nombre;
     }
 
-    public String getApellido() {
-        return apellido;
-    }
-
     public String getCorreo() {
         return correo;
     }
@@ -75,10 +68,6 @@ public class Usuario {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
     }
 
     public void setCorreo(String correo) {
