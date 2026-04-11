@@ -14,8 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// CORREGIDO: se agrega el prefijo /api para ser consistente con los demás controladores
 @RestController
-@RequestMapping("/tareas")
+@RequestMapping("/api/tareas")
 @CrossOrigin(origins = "*")
 public class TareaController {
 
@@ -31,7 +32,6 @@ public class TareaController {
     public ResponseEntity<Map<String, Object>> crearTarea(@RequestBody Map<String, Object> body) {
         Map<String, Object> respuesta = new HashMap<>();
 
-        // Validar y obtener asignatura
         Long asignaturaId = Long.valueOf(body.get("asignaturaId").toString());
         Asignatura asignatura = asignaturaRepository.findById(asignaturaId).orElse(null);
         if (asignatura == null) {
@@ -51,11 +51,9 @@ public class TareaController {
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         tarea.setDescripcion(body.containsKey("descripcion") ? body.get("descripcion").toString() : null);
-        tarea.setEstado(true); // toda tarea nueva nace como pendiente
+        tarea.setEstado(true);
 
         Tarea tareaGuardada = tareaRepository.save(tarea);
-        System.out.println("Tarea guardada en BD: " + tareaGuardada);
-
         respuesta.put("mensaje", "Tarea guardada exitosamente");
         respuesta.put("tarea", tareaGuardada);
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
@@ -63,8 +61,7 @@ public class TareaController {
 
     @GetMapping
     public ResponseEntity<List<Tarea>> listarTareas() {
-        List<Tarea> tareas = tareaRepository.findAll();
-        return new ResponseEntity<>(tareas, HttpStatus.OK);
+        return new ResponseEntity<>(tareaRepository.findAll(), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/estado")
@@ -73,9 +70,7 @@ public class TareaController {
                 .map(tarea -> {
                     tarea.setEstado(!tarea.isEstado());
                     tareaRepository.save(tarea);
-
                     String mensaje = tarea.isEstado() ? "Tarea marcada como pendiente" : "Tarea marcada como terminada";
-
                     Map<String, Object> respuesta = new HashMap<>();
                     respuesta.put("mensaje", mensaje);
                     respuesta.put("tarea", tarea);
@@ -95,27 +90,19 @@ public class TareaController {
             error.put("mensaje", "Tarea no encontrada");
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
-
         tareaRepository.deleteById(id);
-
         Map<String, String> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Tarea eliminada exitosamente");
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
-    
+
     @GetMapping("/fecha/{fecha}")
     public ResponseEntity<List<Tarea>> obtenerTareasPorFecha(@PathVariable String fecha) {
-
-        LocalDate fechaParsed;
-
         try {
-            fechaParsed = LocalDate.parse(fecha);
+            LocalDate fechaParsed = LocalDate.parse(fecha);
+            return new ResponseEntity<>(tareaRepository.findByFechaEntrega(fechaParsed), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        List<Tarea> tareas = tareaRepository.findByFechaEntrega(fechaParsed);
-
-        return new ResponseEntity<>(tareas, HttpStatus.OK);
     }
 }
