@@ -1,0 +1,233 @@
+name: Sprint Report
+
+on:
+  schedule:
+    - cron: '0 5 * * 6'  # Cada sábado a media noche (5am UTC = medianoche Colombia)
+  workflow_dispatch:      # Permite lanzarlo manualmente si es necesario
+
+jobs:
+  generate-sprint-report:
+    name: Generar Reporte de Sprint
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      # 1. Checkout del repositorio
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Obtiene el historial completo de commits
+
+      # 2. Configurar Java y Maven
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # 3. Build y pruebas del proyecto
+      - name: Build con Maven
+        id: maven_build
+        run: |
+          mvn clean verify --batch-mode --no-transfer-progress 2>&1 | tee maven_output.txt
+          echo "build_status=$?" >> $GITHUB_OUTPUT
+
+      - name: Extraer resultados de pruebas
+        id: test_results
+        if: always()
+        run: |
+          SUREFIRE_DIR="target/surefire-reports"
+          TESTS_RUN=0
+          TESTS_FAILED=0
+          TESTS_SKIPPED=0
+
+          if [ -d "$SUREFIRE_DIR" ]; then
+            for xml in $SUREFIRE_DIR/*.xml; do
+              [ -f "$xml" ] || continue
+              run=$(grep -oP 'tests="\K[0-9]+' "$xml" | head -1)
+              fail=$(grep -oP 'failures="\K[0-9]+' "$xml" | head -1)
+              skip=$(grep -oP 'skipped="\K[0-9]+' "$xml" | head -1)
+              TESTS_RUN=$((TESTS_RUN + ${run:-0}))
+              TESTS_FAILED=$((TESTS_FAILED + ${fail:-0}))
+              TESTS_SKIPPED=$((TESTS_SKIPPED + ${skip:-0}))
+            done
+          fi
+
+          TESTS_PASSED=$((TESTS_RUN - TESTS_FAILED - TESTS_SKIPPED))
+          echo "tests_run=$TESTS_RUN"         >> $GITHUB_OUTPUT
+          echo "tests_passed=$TESTS_PASSED"   >> $GITHUB_OUTPUT
+          echo "tests_failed=$TESTS_FAILED"   >> $GITHUB_OUTPUT
+          echo "tests_skipped=$TESTS_SKIPPED" >> $GITHUB_OUTPUT
+
+      # 4. Recopilar commits del sprint
+      - name: Recopilar commits del período
+        id: commits
+        run: |
+          SPRINT_END=$(date +%Y-%m-%d)
+          SPRINT_START=$(date -d "6 days ago" +%Y-%m-%d)
+
+          BASE_DATE="2026-04-05"
+          DAYS=$(( ( $(date -d "$SPRINT_END" +%s) - $(date -d "$BASE_DATE" +%s) ) / 86400 ))
+          SPRINT_NUM=$(( DAYS / 6 + 7 ))
+          SPRINT_NAME="Sprint $SPRINT_NUM"
+
+          echo "sprint_start=$SPRINT_START" >> $GITHUB_OUTPUT
+          echo "sprint_end=$SPRINT_END"     >> $GITHUB_OUTPUT
+          echo "sprint_name=$SPRINT_NAME"   >> $GITHUB_OUTPUT
+
+          COMMIT_COUNT=$(git log \
+            --after="${SPRINT_START}T00:00:00" \
+            --before="${SPRINT_END}T23:59:59" \
+            --oneline | wc -l)
+
+          AUTHORS=$(git log \
+            --after="${SPRINT_START}T00:00:00" \
+            --before="${SPRINT_END}T23:59:59" \
+            --format="%an" | sort -u | tr '\n' ', ' | sed 's/,$//')
+
+          git log \
+            --after="${SPRINT_START}T00:00:00" \
+            --before="${SPRINT_END}T23:59:59" \
+            --pretty=format:"- \`%h\` %s (%an, %ad)" \
+            --date=short \
+            --max-count=20 > commits_list.txt
+
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          echo "authors=$AUTHORS"           >> $GITHUB_OUTPUT
+      # 5. Recopilar issues cerrados (via GitHub API)
+      - name: Obtener issues cerrados del sprint
+        id: issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPRINT_START="${{ steps.commits.outputs.sprint_start }}"
+          SPRINT_END="${{ steps.commits.outputs.sprint_end }}"
+
+          gh issue list \
+            --state closed \
+            --json number,title,labels,closedAt,assignees \
+            --limit 100 \
+            > issues_raw.json
+
+          python3 - <<'EOF'
+          import json
+          from datetime import datetime, timezone
+
+          with open("issues_raw.json") as f:
+              issues = json.load(f)
+
+          start = datetime.fromisoformat("$SPRINT_START").replace(tzinfo=timezone.utc)
+          end   = datetime.fromisoformat("$SPRINT_END").replace(tzinfo=timezone.utc)
+
+          sprint_issues = []
+          for issue in issues:
+              closed = datetime.fromisoformat(issue["closedAt"].replace("Z", "+00:00"))
+              if start <= closed <= end:
+                  labels = ", ".join(l["name"] for l in issue.get("labels", []))
+                  assignees = ", ".join(a["login"] for a in issue.get("assignees", []))
+                  sprint_issues.append(
+                      f"- #{issue['number']} {issue['title']}"
+                      + (f" {labels}" if labels else "")
+                      + (f" — @{assignees}" if assignees else "")
+                  )
+
+          with open("issues_list.txt", "w") as f:
+              f.write("\n".join(sprint_issues) if sprint_issues else "Sin issues cerrados en este período.")
+
+          with open("issue_count.txt", "w") as f:
+              f.write(str(len(sprint_issues)))
+          EOF
+
+          ISSUE_COUNT=$(cat issue_count.txt)
+          echo "issue_count=$ISSUE_COUNT" >> $GITHUB_OUTPUT
+
+      # 6. Construir el cuerpo del issue de reporte
+      - name: Construir reporte markdown
+        id: build_report
+        run: |
+          SPRINT_NAME="${{ steps.commits.outputs.sprint_name }}"
+          START="${{ steps.commits.outputs.sprint_start }}"
+          END="${{ steps.commits.outputs.sprint_end }}"
+          BUILD_OK="${{ steps.maven_build.outputs.build_status }}"
+
+          BUILD_BADGE="Exitoso"
+          [ "$BUILD_OK" != "0" ] && BUILD_BADGE="Fallido"
+
+          TESTS_RUN="${{ steps.test_results.outputs.tests_run }}"
+          TESTS_PASSED="${{ steps.test_results.outputs.tests_passed }}"
+          TESTS_FAILED="${{ steps.test_results.outputs.tests_failed }}"
+          TESTS_SKIPPED="${{ steps.test_results.outputs.tests_skipped }}"
+
+          COMMITS_LIST=$(cat commits_list.txt || echo "Sin commits en el período.")
+          ISSUES_LIST=$(cat issues_list.txt   || echo "Sin issues cerrados.")
+
+          cat > report_body.md <<REPORT
+          ## Reporte de Avance — ${SPRINT_NAME}
+          *Período:* ${START} → ${END}
+          *Generado:* $(date -u '+%Y-%m-%d %H:%M UTC')
+          *Pipeline:* [Ver ejecución](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          ---
+
+          ### Build
+          | Estado | Rama |
+          |--------|------|
+          | ${BUILD_BADGE} | \${{ github.ref_name }}\ |
+
+          ---
+
+          ### Pruebas
+          | Total | Pasadas | Fallidas | Omitidas |
+          |-------|---------|----------|----------|
+          | ${TESTS_RUN} | ${TESTS_PASSED} | ${TESTS_FAILED} | ${TESTS_SKIPPED} |
+
+          ---
+
+          ### Commits (${{ steps.commits.outputs.commit_count }} en total)
+          *Contribuidores:* ${{ steps.commits.outputs.authors }}
+
+          ${COMMITS_LIST}
+
+          ---
+
+          ### Issues Cerrados (${{ steps.issues.outputs.issue_count }})
+
+          ${ISSUES_LIST}
+
+          ---
+          > Reporte generado automáticamente por GitHub Actions
+          REPORT
+
+          echo "report_ready=true" >> $GITHUB_OUTPUT
+
+      # 7. Publicar como Issue en el repositorio
+      - name: Crear issue con el reporte
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SPRINT_NAME="${{ steps.commits.outputs.sprint_name }}"
+          START="${{ steps.commits.outputs.sprint_start }}"
+          END="${{ steps.commits.outputs.sprint_end }}"
+
+          gh issue create \
+            --title "Reporte de Sprint: ${SPRINT_NAME} (${START} / ${END})" \
+            --body-file report_body.md \
+            --label "sprint-report" \
+            --assignee "${{ github.actor }}"
+
+      # 8. Guardar artefactos del reporte
+      - name: Subir artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sprint-report-${{ steps.commits.outputs.sprint_name }}
+          path: |
+            report_body.md
+            commits_list.txt
+            issues_list.txt
+            maven_output.txt
+          retention-days: 30

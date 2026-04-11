@@ -1734,6 +1734,9 @@
         .auth-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(21, 101, 192, 0.5);
+            background: var(--blue-700);
+        }
+
         .auth-title {
             font-size: 24px;
             font-weight: 800;
@@ -1778,41 +1781,19 @@
             box-shadow: 0 0 0 3px var(--blue-50);
         }
 
-        .auth-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--blue-600);
-            color: var(--white);
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .auth-btn:hover {
-            background: var(--blue-700);
-            transform: translateY(-1px);
-        }
-
         .auth-switch {
             margin-top: 24px;
-            font-size: 14px;
             font-size: 13px;
             color: var(--gray-500);
         }
 
         .auth-link {
             color: var(--blue-600);
-            font-weight: 700;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
         }
 
-        .auth-link:hover { text-decoration: underline; }
         .auth-link:hover {
             text-decoration: underline;
         }
@@ -1820,18 +1801,13 @@
         .error-message {
             background: #FFEBEE;
             color: #C62828;
-            padding: 14px;
+            padding: 12px;
             border-radius: var(--radius-sm);
             font-size: 13px;
             font-weight: 500;
             margin-bottom: 20px;
             display: none;
             border-left: 4px solid #E53935;
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            margin-bottom: 20px;
-            display: none;
         }
     </style>
 </head>
@@ -1878,8 +1854,6 @@
                 <div class="form-group">
                     <label class="form-label">Apellido</label>
                     <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
-                    <label class="form-label">Nombre Completo</label>
-                    <input type="text" id="reg-nombre" class="form-input" placeholder="Juan Pérez" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Correo Electrónico</label>
@@ -3277,6 +3251,7 @@
         };
 
         // ── Manejadores de Eventos Refactorizados ───────────────────────
+        const API_BASE = "http://localhost:8080/api/usuarios";
 
         function checkSession() {
             const session = SessionManager.getInstance();
@@ -3284,15 +3259,6 @@
                 AccessProxy.goTo('dashboard', session.getUser());
             } else {
                 AccessProxy.goTo('login');
-        // ── AUTHENTICATION LOGIC ──────────────────────────────────────
-        const API_BASE = "http://localhost:8080/api/usuarios";
-
-        function checkSession() {
-            const user = JSON.parse(localStorage.getItem('studyhub_user'));
-            if (user) {
-                showDashboard(user);
-            } else {
-                showAuth();
             }
         }
 
@@ -3312,12 +3278,6 @@
             const session = SessionManager.getInstance();
 
             try {
-                const response = await fetch(`${API}/api/usuarios/login`, {
-            const correo = document.getElementById('login-email').value;
-            const password = document.getElementById('login-pass').value;
-            const errorDiv = document.getElementById('login-error');
-
-            try {
                 const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -3332,13 +3292,6 @@
                     showToast('¡Bienvenido de nuevo!');
                 } else {
                     errorDiv.textContent = result.mensaje || "Credenciales incorrectas";
-                if (response.ok) {
-                    const user = await response.json();
-                    localStorage.setItem('studyhub_user', JSON.stringify(user));
-                    showDashboard(user);
-                } else {
-                    const msg = await response.text();
-                    errorDiv.textContent = msg || "Credenciales incorrectas";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
@@ -3354,10 +3307,6 @@
             const correo = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-pass').value.trim();
             const confirm = document.getElementById('reg-pass-confirm').value.trim();
-            const nombre = document.getElementById('reg-nombre').value;
-            const correo = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-pass').value;
-            const confirm = document.getElementById('reg-pass-confirm').value;
             const errorDiv = document.getElementById('register-error');
 
             if (password !== confirm) {
@@ -3367,7 +3316,7 @@
             }
 
             try {
-                const response = await fetch(`${API}/api/usuarios`, {
+                const response = await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
@@ -3380,18 +3329,6 @@
                     showToast('Registro exitoso. ¡Inicia sesión!');
                 } else {
                     errorDiv.textContent = result.mensaje || "Error en el registro";
-                const response = await fetch(API_BASE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, apellido: "", correo, password, rol: "ESTUDIANTE" })
-                });
-
-                if (response.ok) {
-                    toggleAuth('login');
-                    showToast('Registro exitoso. ¡Inicia sesión!');
-                } else {
-                    const msg = await response.text();
-                    errorDiv.textContent = msg || "Error en el registro";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
@@ -3400,15 +3337,6 @@
             }
         }
 
-        function logout() {
-            SessionManager.getInstance().clear();
-            AccessProxy.goTo('login');
-            showToast('Sesión cerrada');
-        }
-
-        // Acceso rápido al logout desde el avatar
-        document.querySelector('.profile-avatar').style.cursor = 'pointer';
-        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
         function showDashboard(user) {
             document.getElementById('auth-container').style.display = 'none';
             document.querySelector('.app-container').style.display = 'grid';
@@ -3419,16 +3347,17 @@
         function showAuth() {
             document.getElementById('auth-container').style.display = 'flex';
             document.querySelector('.app-container').style.display = 'none';
-            localStorage.removeItem('studyhub_user');
         }
 
         function logout() {
-            showAuth();
+            SessionManager.getInstance().clear();
+            AccessProxy.goTo('login');
             showToast('Sesión cerrada');
         }
 
         // Agregar EventListener al avatar para cerrar sesión
         document.querySelector('.profile-avatar').style.cursor = 'pointer';
+        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
         document.querySelector('.profile-avatar').onclick = logout;
 
     </script>
