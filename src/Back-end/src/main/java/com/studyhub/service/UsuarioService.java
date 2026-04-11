@@ -1,6 +1,8 @@
 package com.studyhub.service;
 
 import com.studyhub.model.Usuario;
+import com.studyhub.model.Asignatura;
+import com.studyhub.dto.UsuarioResumenDTO;
 import com.studyhub.repository.UsuarioRepository;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,17 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    private final AsignaturaService asignaturaService;
+    private final NotaService notaService;
+
     // CORREGIDO: PasswordEncryptionStrategy ahora existe (ver BCryptEncryptionStrategy)
     private final PasswordEncryptionStrategy encryptionStrategy;
 
     @Autowired
-    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy) {
+    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy, AsignaturaService asignaturaService, NotaService notaService) {
         this.encryptionStrategy = encryptionStrategy;
+        this.asignaturaService = asignaturaService;
+        this.notaService = notaService;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -39,5 +46,37 @@ public class UsuarioService {
     // NUEVO: método requerido por UsuarioController
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
+    }
+
+    public UsuarioResumenDTO obtenerResumenUsuario(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+
+        // Obtener asignaturas registradas
+        List<Asignatura> asignaturas = asignaturaService.findByUserId(id);
+        int totalAsignaturas = asignaturas.size();
+
+        double sumaPromedios = 0.0;
+        
+        // El promedio ponderado global será el promedio simple de los promedios individuales por requerimiento.
+        for (Asignatura asignatura : asignaturas) {
+            double promedioAsignatura = notaService.calcularPromedio(asignatura.getId());
+            sumaPromedios += promedioAsignatura;
+        }
+
+        double promedioGlobal = 0.0;
+        if (totalAsignaturas > 0) {
+            promedioGlobal = sumaPromedios / totalAsignaturas;
+        }
+        
+        // Redondear a 2 decimales
+        promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
+
+        return new UsuarioResumenDTO(
+                usuario.getId(),
+                usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
+                totalAsignaturas,
+                promedioGlobal
+        );
     }
 }
