@@ -1,6 +1,7 @@
 package com.studyhub.controller;
 
 import com.studyhub.model.Usuario;
+import com.studyhub.dto.UsuarioResumenDTO;
 import com.studyhub.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,5 +50,15 @@ public class UsuarioController {
     @GetMapping
     public List<Usuario> obtenerUsuarios() {
         return usuarioService.obtenerTodos();
+    }
+
+    @GetMapping("/{id}/resumen")
+    public ResponseEntity<UsuarioResumenDTO> obtenerResumenUsuario(@PathVariable Long id) {
+        try {
+            UsuarioResumenDTO resumen = usuarioService.obtenerResumenUsuario(id);
+            return ResponseEntity.ok(resumen);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
