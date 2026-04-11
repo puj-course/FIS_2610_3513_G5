@@ -50,7 +50,7 @@ public class TareaController {
             error.put("mensaje", "Formato de fecha u hora inválido");
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
-        tarea.setDescripcion(body.containsKey("descripcion") ? body.get("descripcion").toString() : null);
+        tarea.setDescripcion(body.get("descripcion") != null ? body.get("descripcion").toString() : null);
         tarea.setEstado(true);
 
         Tarea tareaGuardada = tareaRepository.save(tarea);
