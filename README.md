@@ -49,53 +49,28 @@ El sistema se concibe bajo una arquitectura cliente-servidor (Monolito MVC), don
 
 ## Estructura del Proyecto
 ```text
-project-name/
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   ├── feature_request.md
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   └── workflows/
-│       ├── ci.yml
-│       └── cd.yml
-├── conf/
-│   ├── config.yaml
-│   └── settings.json
-├── docs/
-│   ├── api/
-│   ├── architecture/
-│   └── user_guide/
-├── jupyter/
-│   ├── notebooks/
-│   │   ├── exploration.ipynb
-│   │   └── analysis.ipynb
-│   └── datasets/
-│       ├── data1.csv
-│       └── data2.csv
-├── scripts/
-│   ├── setup.sh
-│   ├── deploy.sh
-│   └── test.sh
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   └── resources/
-│   ├── test/
-│   │   ├── java/
-│   │   └── resources/
-├── temp/
-│   ├── temp_file.txt
-│   └── temp_data/
-│       ├── temp1.tmp
-│       └── temp2.tmp
-├── .gitignore
-├── README.md
-├── LICENSE
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── Dockerfile
-├── docker-compose.yml
-└── Makefile
+FIS_2610_3513_G5/
+├── .github/                # Configuración de GitHub (Workflows e Issue Templates)
+├── conf/                   # Archivos de configuración general
+├── docs/                   # Documentación, API y guías de usuario
+├── jupyter/                # Notebooks de Jupyter y datasets de análisis
+├── scripts/                # Scripts de utilidad (setup, deploy, test)
+├── src/                    # Código fuente del proyecto
+│   ├── Back-end/           # Servidor API REST (Spring Boot)
+│   │   ├── src/            # Código fuente Java (MVC)
+│   │   ├── target/         # Archivos compilados
+│   │   └── pom.xml         # Configuración de Maven y dependencias
+│   └── Front-End/          # Interfaz de usuario (Cliente)
+│       ├── index.html      # Aplicación principal (SPA)
+│       └── js/             # Lógica de JavaScript (Observers/Servicios)
+├── .gitignore              # Archivos ignorados por Git
+├── CHANGELOG.md            # Registro de cambios del proyecto
+├── CONTRIBUTING.md         # Guía para contribuir al repositorio
+├── Dockerfile              # Configuración de Docker
+├── docker-compose.yml      # Configuración de Docker Compose
+├── LICENSE                 # Licencia del proyecto
+├── Makefile                # Comandos de automatización
+└── README.md               # Este archivo
 ```
 
 ---

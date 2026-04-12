@@ -1893,11 +1893,11 @@
                     <div class="profile-id">ID: 20241089032</div>
                     <div class="profile-stats">
                         <div class="stat-item">
-                            <div class="stat-value">6</div>
+                            <div class="stat-value" id="sidebar-total-materias">0</div>
                             <div class="stat-label">Materias</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">4.2</div>
+                            <div class="stat-value" id="sidebar-promedio">-</div>
                             <div class="stat-label">Promedio</div>
                         </div>
                     </div>
@@ -2535,7 +2535,7 @@
         /** Renderiza (o actualiza) la tabla de calificaciones de la tarjeta activa */
         function renderGradesTable(card) {
             if (!card) return;
-            const key    = card.dataset.gradeKey || '';
+            const key    = card.dataset.id || '';
             const grades = gradesStore[key] || [];
 
             if (grades.length === 0) {
@@ -2552,6 +2552,7 @@
                 const tr = document.createElement('tr');
                 tr.dataset.gradeIndex = idx;
                 tr.dataset.gradeKey   = key;
+                tr.dataset.gradeId    = g.id;
                 tr.innerHTML = `
                     <td class="cell-nombre">${g.nombre}</td>
                     <td class="cell-nota" style="text-align:center;">
@@ -2610,7 +2611,7 @@
                 if (!valid) return;
 
                 // Persistir en el store
-                gradesStore[key][idx] = { nombre: newNombre, nota: newNota, porcentaje: newPct };
+                gradesStore[key][idx] = { ...gradesStore[key][idx], nombre: newNombre, nota: newNota, porcentaje: newPct };
 
                 // Volver a modo vista
                 tr.classList.remove('editing');
@@ -2671,26 +2672,41 @@
         }
 
         /** Elimina una calificación individual de la tabla */
-        function deleteGradeRow(btn) {
+        async function deleteGradeRow(btn) {
             const tr  = btn.closest('tr');
             const key = tr.dataset.gradeKey;
             const idx = parseInt(tr.dataset.gradeIndex, 10);
+            const gradeId = tr.dataset.gradeId;
 
-            tr.classList.add('removing');
-            tr.addEventListener('animationend', () => {
-                gradesStore[key].splice(idx, 1);
-                renderGradesTable(activeCardForView);
-                if (activeCardForGrade && activeCardForGrade.dataset.gradeKey === key) {
-                    updatePercentSummary(key);
+            try {
+                // Solo intentar borrar del servidor si tiene un ID
+                if (gradeId && gradeId !== "undefined") {
+                    const res = await fetch(`http://localhost:8080/notas/${gradeId}`, {
+                        method: 'DELETE'
+                    });
+                    if (!res.ok) throw new Error("Error al eliminar nota en el servidor");
                 }
-            }, { once: true });
+
+                tr.classList.add('removing');
+                tr.addEventListener('animationend', () => {
+                    gradesStore[key].splice(idx, 1);
+                    fetchResumenUsuario(); // Refrescar promedio dinámicamente
+                    renderGradesTable(activeCardForView);
+                    if (activeCardForGrade && activeCardForGrade.dataset.id === key) {
+                        updatePercentSummary(key);
+                    }
+                }, { once: true });
+            } catch (err) {
+                console.error(err);
+                showToast("Error al eliminar la calificación del servidor");
+            }
         }
 
         // ══════════════════════════════════════════════════════════════
         //  VISTA DE CALIFICACIONES
         // ══════════════════════════════════════════════════════════════
 
-        function openGradesView(card) {
+        async function openGradesView(card) {
             activeCardForView = card;
 
             const nombre = card.querySelector('.subject-name').textContent;
@@ -2699,8 +2715,10 @@
             gradesViewTitle.textContent    = nombre;
             gradesViewSubtitle.textContent = subId;
 
-            if (!card.dataset.gradeKey) {
-                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
+            // Usar el ID de la base de datos como llave si existe
+            const dbId = card.dataset.id;
+            if (dbId) {
+                await fetchNotasBackend(dbId);
             }
 
             renderGradesTable(card);
@@ -2799,10 +2817,7 @@
 
         function openGradeModal(card) {
             activeCardForGrade = card;
-
-            if (!card.dataset.gradeKey) {
-                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
-            }
+            const gradeKey = card.dataset.id;
 
             gradeModalSubjName.textContent = card.querySelector('.subject-name').textContent;
 
@@ -2815,7 +2830,7 @@
                 document.getElementById(id).classList.remove('error');
             });
 
-            updatePercentSummary(card.dataset.gradeKey);
+            updatePercentSummary(gradeKey);
             gradeModal.classList.add('active');
             document.body.style.overflow = 'hidden';
             setTimeout(() => document.getElementById('grade-name').focus(), 350);
@@ -2968,8 +2983,78 @@
             const count = subjectsGrid.children.length;
             document.querySelector('.section-subtitle').textContent =
                 `Semestre 2026-1 · ${count} materias inscritas`;
-            const statValues = document.querySelectorAll('.stat-value');
-            if (statValues.length > 0) statValues[0].textContent = count;
+            fetchResumenUsuario();
+        }
+
+        function fetchResumenUsuario() {
+            const profileIdEl = document.querySelector('.profile-id');
+            if (!profileIdEl || !profileIdEl.dataset.userId) return;
+            const userId = profileIdEl.dataset.userId;
+
+            fetch(`http://localhost:8080/api/usuarios/${userId}/resumen`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Resumen no encontrado');
+                    return res.json();
+                })
+                .then(data => {
+                    const totalMateriasEl = document.getElementById('sidebar-total-materias');
+                    const promedioEl = document.getElementById('sidebar-promedio');
+                    
+                    if (totalMateriasEl) {
+                        totalMateriasEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        totalMateriasEl.style.opacity = 0;
+                        totalMateriasEl.style.transform = 'translateY(-5px)';
+                        setTimeout(() => {
+                           totalMateriasEl.textContent = data.totalAsignaturas;
+                           totalMateriasEl.style.opacity = 1;
+                           totalMateriasEl.style.transform = 'translateY(0)';
+                        }, 300);
+                    }
+                    if (promedioEl) {
+                        promedioEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        promedioEl.style.opacity = 0;
+                        promedioEl.style.transform = 'translateY(-5px)';
+                        setTimeout(() => {
+                           promedioEl.textContent = (data.totalAsignaturas === 0) ? "-" : data.promedioGlobal;
+                           promedioEl.style.opacity = 1;
+                           promedioEl.style.transform = 'translateY(0)';
+                        }, 300);
+                    }
+                })
+                .catch(err => console.error("Error fetching user resumen:", err));
+        }
+
+        async function fetchAsignaturasBackend() {
+            try {
+                const res = await fetch(`http://localhost:8080/asignaturas`);
+                if (!res.ok) throw new Error("No se pudieron cargar materias");
+                const asignaturas = await res.json();
+                subjectsGrid.innerHTML = '';
+                asignaturas.forEach(a => {
+                    createSubjectCard(a, a.id);
+                });
+                updateSubjectCount();
+            } catch (err) {
+                console.error("Error fetching asignaturas:", err);
+            }
+        }
+
+        async function fetchNotasBackend(asignaturaId) {
+            try {
+                const res = await fetch(`http://localhost:8080/notas/asignatura/${asignaturaId}`);
+                if (!res.ok) throw new Error("No se pudieron cargar notas");
+                const notas = await res.json();
+                
+                // Actualizar el store local con los datos del servidor
+                gradesStore[asignaturaId] = notas.map(n => ({
+                    id: n.id,
+                    nombre: n.nombre,
+                    nota: n.calificacion,
+                    porcentaje: n.porcentaje
+                }));
+            } catch (err) {
+                console.error("Error fetching notas:", err);
+            }
         }
 
         // ── Submit: Guardar Asignatura ─────────────────────────────────
@@ -3027,24 +3112,30 @@
                 descripcion: descripcion || null,
             };
 
+            console.log('Enviando tarea:', JSON.stringify(payload), 'a:', `${API}/api/tareas`);
             try {
-                const res = await fetch(`${API}/tareas`, {
+                const res = await fetch(`${API}/api/tareas`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-                if (!res.ok) throw new Error('Error al guardar');
+                console.log('Respuesta tarea:', res.status, res.statusText);
+                if (!res.ok) {
+                    const errorBody = await res.text();
+                    console.error('Error body:', errorBody);
+                    throw new Error('Error al guardar');
+                }
                 const json = await res.json();
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
             } catch (err) {
-                console.error(err);
+                console.error('Error completo:', err);
                 showToast('Error al conectar con el servidor');
             }
         });
 
         // ── Submit: Guardar Calificación ───────────────────────────────
-        gradeForm.addEventListener('submit', function (e) {
+        gradeForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -3098,20 +3189,44 @@
 
             if (!valid) return;
 
-            // Guardar en el store
+            // Guardar en el store y en el servidor
             if (activeCardForGrade) {
-                const key = activeCardForGrade.dataset.gradeKey;
-                if (!gradesStore[key]) gradesStore[key] = [];
-                gradesStore[key].push({ nombre, nota, porcentaje: pct });
+                const key = activeCardForGrade.dataset.id;
+                const dbAsignaturaId = activeCardForGrade.dataset.id;
+
+                const payload = {
+                    nombre: nombre,
+                    calificacion: nota,
+                    porcentaje: pct,
+                    asignatura: { id: parseInt(dbAsignaturaId) }
+                };
+
+                try {
+                    const res = await fetch(`http://localhost:8080/notas`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!res.ok) throw new Error("Error al guardar nota en el servidor");
+                    const savedNota = await res.json();
+
+                    if (!gradesStore[key]) gradesStore[key] = [];
+                    gradesStore[key].push({ 
+                        id: savedNota.nota.id, 
+                        nombre: savedNota.nota.nombre, 
+                        nota: savedNota.nota.calificacion, 
+                        porcentaje: savedNota.nota.porcentaje 
+                    });
+                    
+                    fetchResumenUsuario(); // Refrescar resumen
+                    closeGradeModal();
+                    showToast('Calificación guardada con éxito');
+                } catch (err) {
+                    console.error(err);
+                    showToast("Error al conectar con el servidor para guardar la nota");
+                }
             }
 
-            closeGradeModal();
-            showToast('Calificación guardada con éxito');
-
-            // Si la vista de calificaciones está abierta para esta tarjeta, actualizar tabla
-            if (activeCardForView && activeCardForView === activeCardForGrade) {
-                // activeCardForGrade ya fue limpiado, usamos la tarjeta de la vista
-            }
             // Re-renderizar si hay una vista de calificaciones activa
             if (gradesView.classList.contains('active') && activeCardForView) {
                 renderGradesTable(activeCardForView);
@@ -3132,15 +3247,27 @@
         });
 
         // ── Eliminar tarjeta ───────────────────────────────────────────
-        function deleteCard(btn) {
+        async function deleteCard(btn) {
             const card = btn.closest('.subject-card');
+            const dbId = card.dataset.id;
             const name = card.querySelector('.subject-name')?.textContent || 'Materia';
-            card.classList.add('removing');
-            card.addEventListener('animationend', () => {
-                card.remove();
-                updateSubjectCount();
-                showToast(`"${name}" eliminada`);
-            });
+
+            try {
+                const res = await fetch(`http://localhost:8080/asignaturas/${dbId}`, {
+                    method: 'DELETE'
+                });
+                if (!res.ok) throw new Error('Error al eliminar en el servidor');
+
+                card.classList.add('removing');
+                card.addEventListener('animationend', () => {
+                    card.remove();
+                    updateSubjectCount();
+                    showToast(`"${name}" eliminada`);
+                });
+            } catch (err) {
+                console.error(err);
+                showToast('Error al eliminar la materia del servidor');
+            }
         }
         // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
         /**
@@ -3225,7 +3352,8 @@
                 document.querySelector('.app-container').style.display = 'grid';
                 document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
                 document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
-                updateSubjectCount();
+                document.querySelector('.profile-id').dataset.userId = user.id;
+                fetchAsignaturasBackend();
             }
         }
 
@@ -3286,9 +3414,9 @@
 
                 const result = await response.json();
 
-                if (response.ok && result.exito) {
-                    session.setUser(result.datos);
-                    AccessProxy.goTo('dashboard', result.datos);
+                if (response.ok) {
+                    session.setUser(result);
+                    AccessProxy.goTo('dashboard', result);
                     showToast('¡Bienvenido de nuevo!');
                 } else {
                     errorDiv.textContent = result.mensaje || "Credenciales incorrectas";
@@ -3324,7 +3452,7 @@
 
                 const result = await response.json();
 
-                if (response.ok && result.exito) {
+                if (response.ok) {
                     AccessProxy.goTo('login');
                     showToast('Registro exitoso. ¡Inicia sesión!');
                 } else {
@@ -3342,6 +3470,7 @@
             document.querySelector('.app-container').style.display = 'grid';
             document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido}`;
             document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+            document.querySelector('.profile-id').dataset.userId = user.id;
         }
 
         function showAuth() {
