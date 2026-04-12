@@ -15,9 +15,7 @@ public class AsignaturaService {
         this.asignaturaRepository = asignaturaRepository;
     }
 
-    // Obtener todas las asignaturas (por ahora)
     public List<Asignatura> findByUserId(Long userId) {
-        // Como aún no tenemos usuario asociado, devolvemos todas
-        return asignaturaRepository.findAll();
+        return asignaturaRepository.findByUsuarioId(userId);
     }
 }

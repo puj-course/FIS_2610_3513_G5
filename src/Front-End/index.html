@@ -2328,11 +2328,23 @@
 
                 <!-- Acciones -->
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-                    <button id="calc-edit-link"
-                        style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--blue-600);cursor:pointer;border:1.5px solid var(--blue-100);background:var(--blue-50);border-radius:var(--radius-md);padding:10px 18px;font-family:'Inter',sans-serif;">
-                        <span class="material-icons-round" style="font-size:16px;">edit</span>
-                        Editar calificaciones de esta materia
-                    </button>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button id="calc-edit-link"
+                            style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--blue-600);cursor:pointer;border:1.5px solid var(--blue-100);background:var(--blue-50);border-radius:var(--radius-md);padding:10px 18px;font-family:'Inter',sans-serif;">
+                            <span class="material-icons-round" style="font-size:16px;">add</span>
+                            Agregar calificación
+                        </button>
+                        <button id="calc-inline-edit-btn"
+                            style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--gray-600);cursor:pointer;border:1.5px solid var(--gray-200);background:var(--white);border-radius:var(--radius-md);padding:10px 18px;font-family:'Inter',sans-serif;">
+                            <span class="material-icons-round" style="font-size:16px;">edit</span>
+                            Editar calificaciones
+                        </button>
+                        <button id="calc-save-btn"
+                            style="display:none;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--white);cursor:pointer;border:none;background:linear-gradient(135deg,var(--blue-500),var(--blue-600));border-radius:var(--radius-md);padding:10px 18px;font-family:'Inter',sans-serif;box-shadow:0 4px 12px rgba(21,101,192,.35);">
+                            <span class="material-icons-round" style="font-size:16px;">save</span>
+                            Guardar cambios
+                        </button>
+                    </div>
                     <button id="calc-btn" class="fab-button" style="width:auto;padding:13px 28px;">
                         <span class="material-icons-round">calculate</span>
                         Calcular nota mínima
@@ -2725,6 +2737,8 @@
         const calcTableBody       = document.getElementById('calc-table-body');
         const calcBtn             = document.getElementById('calc-btn');
         const calcEditLink        = document.getElementById('calc-edit-link');
+        const calcInlineEditBtn   = document.getElementById('calc-inline-edit-btn');
+        const calcSaveBtn         = document.getElementById('calc-save-btn');
 
         const META_APROBACION  = 3.0;
 
@@ -2733,6 +2747,9 @@
         let activeCardForView  = null;
         const gradesStore      = {};   // gradeKey → [{ nombre, nota, porcentaje }]
         let gradeKeyCounter    = 0;
+        // 'grades' = se abrió desde vista de calificaciones
+        // 'calc'   = se abrió desde la calculadora
+        let gradeModalOrigin   = 'grades';
 
         // ── Colores e iconos para tarjetas ─────────────────────────────
         const cardColors = [
@@ -2971,13 +2988,24 @@
 
         // ══════════════════════════════════════════════════════════════
         //  SELECTOR DE MATERIA PARA CALCULADORA
+        //  Muestra una lista de materias del usuario para que elija
+        //  cuál quiere analizar antes de abrir la calculadora.
         // ══════════════════════════════════════════════════════════════
 
+        /**
+         * Abre la vista de selección de materia.
+         * Lee las asignaturas del usuario desde el backend y las muestra
+         * como tarjetas clicables.
+         */
         async function openCalcSelector() {
-            // Leer materias desde el backend
+            // Leer materias desde el backend filtradas por usuario
             let asignaturas = [];
             try {
-                const res = await fetch(`${API}/asignaturas`);
+                const userId = document.querySelector('.profile-id')?.dataset.userId;
+                const url = userId
+                    ? `${API}/asignaturas?usuarioId=${userId}`
+                    : `${API}/asignaturas`;
+                const res = await fetch(url);
                 if (res.ok) asignaturas = await res.json();
             } catch (e) {
                 console.error('Error cargando materias:', e);
@@ -3018,12 +3046,14 @@
             }
 
             dashboardView.classList.add('hidden');
-            if (gradesView.classList.contains('active')) closeGradesView();
+            gradesView.classList.remove('active');
+            calcView.classList.remove('active');
             calcSelectorView.classList.add('active');
             document.querySelector('.sidebar-right').style.display = 'none';
             document.querySelector('.app-container').style.gridTemplateColumns = '240px 1fr';
         }
 
+        /** Cierra el selector de materia y vuelve al dashboard. */
         function closeCalcSelector() {
             calcSelectorView.classList.remove('active');
             dashboardView.classList.remove('hidden');
@@ -3035,8 +3065,16 @@
 
         // ══════════════════════════════════════════════════════════════
         //  VISTA CALCULADORA
+        //  Muestra la tabla de calificaciones de una asignatura en modo
+        //  solo lectura y permite calcular la nota mínima requerida.
         // ══════════════════════════════════════════════════════════════
 
+        /**
+         * Abre la calculadora para una tarjeta de asignatura específica.
+         * Carga las calificaciones desde el backend y renderiza la tabla.
+         * Oculta el sidebar derecho y expande el contenido principal.
+         * @param {HTMLElement} card - Tarjeta de la asignatura seleccionada
+         */
         async function openCalcView(card) {
             activeCardForView = card;
 
@@ -3055,17 +3093,33 @@
             document.querySelector('.app-container').style.gridTemplateColumns = '240px 1fr';
         }
 
+        /**
+         * Cierra la calculadora y vuelve al selector de materias.
+         * Resetea los valores de la tarjeta de resultado.
+         */
         function closeCalcView() {
             calcView.classList.remove('active');
             activeCardForView = null;
             document.getElementById('calc-min-value').textContent = '—';
             document.getElementById('calc-min-bar').style.width   = '0%';
-            // Volver al selector
+            // Resetear modo edición inline
+            calcEditingMode = false;
+            calcInlineEditBtn.style.display = 'flex';
+            calcSaveBtn.style.display       = 'none';
+            // Volver al selector sin pasar por el dashboard
             openCalcSelector();
         }
 
         calcBackBtn.addEventListener('click', closeCalcView);
 
+        /**
+         * Renderiza la tabla de calificaciones en modo solo lectura.
+         * Separa las calificaciones en dos grupos:
+         *  - Registradas: muestran su nota con badge de color.
+         *  - Pendientes: muestran "—" y esperan el cálculo.
+         * También actualiza el footer de porcentajes y la tarjeta de promedio actual.
+         * @param {HTMLElement} card - Tarjeta de la asignatura activa
+         */
         function renderCalcTable(card) {
             const key    = card.dataset.id;
             const grades = gradesStore[key] || [];
@@ -3158,49 +3212,111 @@
                 Math.min((currentAvg / 5) * 100, 100) + '%';
         }
 
+        /**
+         * Calcula la nota mínima que el estudiante necesita obtener en cada
+         * calificación pendiente para alcanzar el promedio de aprobación (3.0).
+         *
+         * Casos contemplados:
+         *  1. Sin pendientes: no hay nada que calcular.
+         *  2. Promedio ya asegurado: aunque saque 0 en todo lo pendiente, ya aprueba.
+         *  3. Imposible: aunque saque 5.0 en todo lo pendiente, no puede llegar a 3.0.
+         *  4. Normal: muestra la nota mínima uniforme requerida en cada pendiente.
+         *
+         * Fórmula: notaMínima = (meta - promedioActual) / (pctPendiente / 100)
+         */
         function calcularNotaMinima() {
             const key    = activeCardForView?.dataset.id;
             const grades = gradesStore[key] || [];
 
+            // Separar ítems con nota registrada de los pendientes
             const registradas    = grades.filter(g => g.nota != null);
             const pendientes     = grades.filter(g => g.nota == null);
-            const promedioActual = registradas.reduce((s, g) => s + g.nota * (g.porcentaje / 100), 0);
-            const pctPending     = pendientes.reduce((s, g) => s + g.porcentaje, 0);
-            const pctRegistered  = registradas.reduce((s, g) => s + g.porcentaje, 0);
 
+            // Promedio ponderado acumulado con las notas ya registradas
+            const promedioActual = registradas.reduce((s, g) => s + g.nota * (g.porcentaje / 100), 0);
+
+            // Porcentaje total que aún no tiene nota
+            const pctPending    = pendientes.reduce((s, g) => s + g.porcentaje, 0);
+
+            const minEl  = document.getElementById('calc-min-value');
+            const subEl  = document.getElementById('calc-min-sub');
+            const barEl  = document.getElementById('calc-min-bar');
+
+            // ── Caso 1: no hay cortes pendientes ──────────────────────────
             if (pctPending <= 0) {
                 showToast('No hay cortes pendientes por evaluar.');
                 return;
             }
 
-            // Nota mínima uniforme: la misma en todos los pendientes
+            // ── Caso 2: promedio ya asegurado ─────────────────────────────
+            // Si incluso sacando 0 en todo lo pendiente el promedio supera la meta,
+            // el estudiante ya tiene el promedio asegurado.
+            if (promedioActual >= META_APROBACION) {
+                minEl.textContent  = '✓ Asegurado';
+                minEl.style.color  = '#2E7D32';
+                subEl.textContent  = `Con tus notas actuales ya superas ${META_APROBACION.toFixed(1)}, sin importar lo pendiente.`;
+                barEl.style.width  = '100%';
+                barEl.style.background = 'linear-gradient(90deg,#66BB6A,#2E7D32)';
+
+                // Mostrar badge verde en todos los pendientes
+                document.querySelectorAll('.calc-min-badge-cell').forEach(cell => {
+                    cell.innerHTML = `
+                        <span class="badge-min ok">
+                            <span class="material-icons-round" style="font-size:12px;">check_circle</span>
+                            Asegurado
+                        </span>
+                    `;
+                });
+                return;
+            }
+
+            // ── Casos 3 y 4: calcular nota mínima requerida ───────────────
+            // Nota mínima uniforme que debe sacarse en cada corte pendiente
             const notaMin        = (META_APROBACION - promedioActual) / (pctPending / 100);
             const notaMinRounded = Math.max(0, notaMin);
 
-            // Actualizar tarjeta resumen
-            const minEl = document.getElementById('calc-min-value');
-            minEl.textContent = notaMinRounded > 5 ? 'Imposible' : notaMinRounded.toFixed(2);
-            if (notaMinRounded > 5)       minEl.style.color = '#C62828';
-            else if (notaMinRounded >= 4) minEl.style.color = '#E65100';
-            else                          minEl.style.color = '#2E7D32';
+            // ── Caso 3: matemáticamente imposible ────────────────────────
+            if (notaMinRounded > 5) {
+                minEl.textContent  = 'Imposible';
+                minEl.style.color  = '#C62828';
+                subEl.textContent  = `Aunque saques 5.0 en todo lo pendiente, no puedes llegar a ${META_APROBACION.toFixed(1)}.`;
+                barEl.style.width  = '100%';
+                barEl.style.background = 'linear-gradient(90deg,#EF9A9A,#C62828)';
 
-            document.getElementById('calc-min-sub').textContent =
-                `En el ${pctPending}% restante para aprobar con ${META_APROBACION.toFixed(1)}`;
-            document.getElementById('calc-min-bar').style.width =
-                Math.min((notaMinRounded / 5) * 100, 100) + '%';
+                document.querySelectorAll('.calc-min-badge-cell').forEach(cell => {
+                    cell.innerHTML = `
+                        <span class="badge-min danger">
+                            <span class="material-icons-round" style="font-size:12px;">cancel</span>
+                            Imposible
+                        </span>
+                    `;
+                });
+                return;
+            }
 
-            // Badge por ítem en cada fila pendiente de la tabla
-            let badgeCls = 'ok';
-            let icon     = 'check_circle';
-            if (notaMinRounded > 5)       { badgeCls = 'danger'; icon = 'cancel'; }
-            else if (notaMinRounded >= 4) { badgeCls = 'warn';   icon = 'warning'; }
-            const display = notaMinRounded > 5 ? 'Imposible' : `≥ ${notaMinRounded.toFixed(2)}`;
+            // ── Caso 4: cálculo normal ────────────────────────────────────
+            // Colorear según dificultad de la nota requerida
+            if (notaMinRounded >= 4) {
+                minEl.style.color  = '#E65100';
+                barEl.style.background = 'linear-gradient(90deg,#FFA726,#E65100)';
+            } else {
+                minEl.style.color  = '#2E7D32';
+                barEl.style.background = 'linear-gradient(90deg,var(--blue-400),var(--blue-600))';
+            }
+
+            minEl.textContent = notaMinRounded.toFixed(2);
+            subEl.textContent = `En el ${pctPending}% restante para aprobar con ${META_APROBACION.toFixed(1)}`;
+            barEl.style.width = Math.min((notaMinRounded / 5) * 100, 100) + '%';
+
+            // Actualizar badge en cada fila pendiente de la tabla
+            const badgeCls = notaMinRounded >= 4 ? 'warn' : 'ok';
+            const icon     = notaMinRounded >= 4 ? 'warning' : 'check_circle';
 
             document.querySelectorAll('.calc-min-badge-cell').forEach(cell => {
                 cell.innerHTML = `
                     <span class="badge-min ${badgeCls}">
                         <span class="material-icons-round" style="font-size:12px;">${icon}</span>
-                        ${display}
+                        ≥ ${notaMinRounded.toFixed(2)}
                     </span>
                 `;
             });
@@ -3208,10 +3324,183 @@
 
         calcBtn.addEventListener('click', calcularNotaMinima);
 
-        calcEditLink.addEventListener('click', () => {
+        calcEditLink.addEventListener('click', async () => {
             if (!activeCardForView) return;
-            closeCalcView();
-            openGradesView(activeCardForView);
+            const card = activeCardForView;
+            // Cerrar calculadora directamente sin abrir el selector
+            calcView.classList.remove('active');
+            document.getElementById('calc-min-value').textContent = '—';
+            document.getElementById('calc-min-bar').style.width   = '0%';
+            document.querySelector('.sidebar-right').style.display = '';
+            document.querySelector('.app-container').style.gridTemplateColumns = '';
+            activeCardForView = null;
+            // Abrir vista de calificaciones y luego el modal con origen 'calc'
+            await openGradesView(card);
+            openGradeModal(card, 'calc');
+        });
+
+        // ── Edición inline de la columna Nota en la tabla de la calculadora ──
+
+        let calcEditingMode = false; // Estado: si la tabla está en modo edición
+
+        /**
+         * Activa el modo edición inline en las columnas "Nota" y "Porcentaje"
+         * de TODAS las filas de la tabla, permitiendo ingresar o modificar
+         * tanto la nota como el porcentaje de cualquier corte.
+         */
+        calcInlineEditBtn.addEventListener('click', () => {
+            if (calcEditingMode) return;
+            calcEditingMode = true;
+
+            calcInlineEditBtn.style.display = 'none';
+            calcSaveBtn.style.display       = 'flex';
+
+            calcTableBody.querySelectorAll('tr').forEach(tr => {
+                if (tr.querySelector('td[colspan]')) return;
+
+                // ── Columna Nota ──────────────────────────────────────
+                const notaCell = tr.querySelector('td:nth-child(2)');
+                if (notaCell) {
+                    const badge  = notaCell.querySelector('.grade-score-badge');
+                    const rawVal = badge ? badge.textContent.trim() : '';
+                    const numVal = rawVal === '—' ? '' : rawVal;
+                    notaCell.innerHTML = `
+                        <input class="grade-inline-input number-input calc-nota-input"
+                               type="number" min="0" max="5" step="0.1"
+                               value="${numVal}" placeholder="0.0 – 5.0"
+                               style="max-width:80px;margin:0 auto;display:block;">
+                    `;
+                }
+
+                // ── Columna Porcentaje ────────────────────────────────
+                const pctCell = tr.querySelector('td:nth-child(3)');
+                if (pctCell) {
+                    const pill   = pctCell.querySelector('.grade-percent-pill');
+                    const rawPct = pill ? pill.textContent.replace('%', '').trim() : '';
+                    pctCell.innerHTML = `
+                        <input class="grade-inline-input number-input calc-pct-input"
+                               type="number" min="1" max="100" step="1"
+                               value="${rawPct}" placeholder="1-100"
+                               style="max-width:70px;margin:0 auto;display:block;">
+                    `;
+                }
+            });
+        });
+
+        /**
+         * Guarda los cambios de nota Y porcentaje hechos inline.
+         * Valida que:
+         *  - Las notas estén entre 0.0 y 5.0 (o vacías).
+         *  - Los porcentajes sean entre 1 y 100.
+         *  - La suma total de porcentajes no supere el 100%.
+         * Envía PUT /notas/{id} por cada ítem modificado.
+         */
+        calcSaveBtn.addEventListener('click', async () => {
+            const key    = activeCardForView?.dataset.id;
+            const grades = gradesStore[key] || [];
+            let valid    = true;
+
+            // Filas editables en orden (registradas primero, luego pendientes)
+            const editableRows = [];
+            calcTableBody.querySelectorAll('tr').forEach(tr => {
+                if (tr.querySelector('td[colspan]')) return;
+                const notaInput = tr.querySelector('.calc-nota-input');
+                const pctInput  = tr.querySelector('.calc-pct-input');
+                if (notaInput || pctInput) editableRows.push({ tr, notaInput, pctInput });
+            });
+
+            const registradas = grades.filter(g => g.nota != null);
+            const pendientes  = grades.filter(g => g.nota == null);
+            const allGrades   = [...registradas, ...pendientes];
+
+            // ── Validar notas ─────────────────────────────────────────
+            editableRows.forEach(({ notaInput }) => {
+                if (!notaInput) return;
+                const val = notaInput.value.trim();
+                if (val === '') return; // vacío = null, válido
+                const num = parseFloat(val);
+                if (isNaN(num) || num < 0 || num > 5) {
+                    notaInput.classList.add('error');
+                    valid = false;
+                } else {
+                    notaInput.classList.remove('error');
+                }
+            });
+
+            // ── Validar porcentajes individualmente ───────────────────
+            editableRows.forEach(({ pctInput }) => {
+                if (!pctInput) return;
+                const val = pctInput.value.trim();
+                const num = parseInt(val, 10);
+                if (!val || isNaN(num) || num < 1 || num > 100) {
+                    pctInput.classList.add('error');
+                    valid = false;
+                } else {
+                    pctInput.classList.remove('error');
+                }
+            });
+
+            if (!valid) {
+                showToast('Corrige los valores inválidos antes de guardar.');
+                return;
+            }
+
+            // ── Validar suma total de porcentajes ≤ 100 ───────────────
+            const totalPct = editableRows.reduce((sum, { pctInput }) => {
+                if (!pctInput) return sum;
+                return sum + parseInt(pctInput.value.trim(), 10);
+            }, 0);
+
+            if (totalPct > 100) {
+                // Marcar todos los inputs de porcentaje como error
+                editableRows.forEach(({ pctInput }) => {
+                    if (pctInput) pctInput.classList.add('error');
+                });
+                showToast(`La suma de porcentajes es ${totalPct}% — no puede superar el 100%.`);
+                return;
+            }
+
+            // ── Enviar cambios al backend ─────────────────────────────
+            for (let i = 0; i < editableRows.length; i++) {
+                const { notaInput, pctInput } = editableRows[i];
+                const gradeObj = allGrades[i];
+                if (!gradeObj) continue;
+
+                const notaVal   = notaInput?.value.trim();
+                const newNota   = !notaVal ? null : parseFloat(notaVal);
+                const newPct    = pctInput  ? parseInt(pctInput.value.trim(), 10) : gradeObj.porcentaje;
+
+                // Sin cambios en este ítem → saltar
+                if (newNota === gradeObj.nota && newPct === gradeObj.porcentaje) continue;
+
+                try {
+                    const res = await fetch(`http://localhost:8080/notas/${gradeObj.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            nombre:       gradeObj.nombre,
+                            calificacion: newNota,
+                            porcentaje:   newPct,
+                            asignatura:   { id: parseInt(key) }
+                        })
+                    });
+                    if (!res.ok) throw new Error('Error al actualizar nota');
+                    // Actualizar store local
+                    gradeObj.nota      = newNota;
+                    gradeObj.porcentaje = newPct;
+                } catch (err) {
+                    console.error(err);
+                    showToast('Error al guardar cambios en el servidor.');
+                    return;
+                }
+            }
+
+            // ── Salir del modo edición y re-renderizar ────────────────
+            calcEditingMode = false;
+            calcInlineEditBtn.style.display = 'flex';
+            calcSaveBtn.style.display       = 'none';
+            renderCalcTable(activeCardForView);
+            showToast('Cambios guardados exitosamente.');
         });
 
         // Nav "Dashboard" — cierra cualquier vista secundaria activa
@@ -3314,8 +3603,14 @@
             }
         }
 
-        function openGradeModal(card) {
+        /**
+         * Abre el modal de agregar calificación.
+         * @param {HTMLElement} card   - Tarjeta de la asignatura
+         * @param {string}      origin - 'grades' (desde vista de notas) | 'calc' (desde calculadora)
+         */
+        function openGradeModal(card, origin = 'grades') {
             activeCardForGrade = card;
+            gradeModalOrigin   = origin;
             const gradeKey = card.dataset.id;
 
             gradeModalSubjName.textContent = card.querySelector('.subject-name').textContent;
@@ -3335,10 +3630,24 @@
             setTimeout(() => document.getElementById('grade-name').focus(), 350);
         }
 
+        /**
+         * Cierra el modal de calificación y vuelve a la vista de origen:
+         *  - 'grades': permanece en la vista de calificaciones de la asignatura.
+         *  - 'calc':   vuelve a la calculadora de la misma asignatura.
+         */
         function closeGradeModal() {
             gradeModal.classList.remove('active');
             document.body.style.overflow = '';
+            const card   = activeCardForGrade;
             activeCardForGrade = null;
+
+            if (gradeModalOrigin === 'calc' && card) {
+                // Cerrar vista de calificaciones si estaba abierta y volver a calc
+                gradesView.classList.remove('active');
+                dashboardView.classList.add('hidden');
+                openCalcView(card);
+            }
+            // Si el origen es 'grades', no hacemos nada — el usuario ya está en esa vista
         }
 
         // ── FAB ────────────────────────────────────────────────────────
@@ -3529,7 +3838,11 @@
 
         async function fetchAsignaturasBackend() {
             try {
-                const res = await fetch(`http://localhost:8080/asignaturas`);
+                const userId = document.querySelector('.profile-id')?.dataset.userId;
+                const url = userId
+                    ? `http://localhost:8080/asignaturas?usuarioId=${userId}`
+                    : `http://localhost:8080/asignaturas`;
+                const res = await fetch(url);
                 if (!res.ok) throw new Error("No se pudieron cargar materias");
                 const asignaturas = await res.json();
                 subjectsGrid.innerHTML = '';
@@ -3564,13 +3877,15 @@
             e.preventDefault();
             if (!validateSubjectForm()) return;
 
+            const userId = document.querySelector('.profile-id')?.dataset.userId;
             const payload = {
-                nombre:   document.getElementById('subject-name').value.trim(),
-                codigo:   document.getElementById('subject-code').value.trim().toUpperCase(),
-                creditos: parseInt(document.getElementById('subject-credits').value),
-                profesor: document.getElementById('subject-professor').value.trim(),
-                horario:  document.getElementById('subject-schedule').value.trim(),
-                periodo:  document.getElementById('subject-semester').value,
+                nombre:    document.getElementById('subject-name').value.trim(),
+                codigo:    document.getElementById('subject-code').value.trim().toUpperCase(),
+                creditos:  parseInt(document.getElementById('subject-credits').value),
+                profesor:  document.getElementById('subject-professor').value.trim(),
+                horario:   document.getElementById('subject-schedule').value.trim(),
+                periodo:   document.getElementById('subject-semester').value,
+                usuarioId: userId ? parseInt(userId) : null,
             };
 
             try {
