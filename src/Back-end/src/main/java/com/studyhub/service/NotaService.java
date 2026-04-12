@@ -76,6 +76,9 @@ public class NotaService {
         double suma = 0.0;
 
         for (Nota nota : notas) {
+            if (nota.getCalificacion() == null) {
+                continue;
+            }
             double calificacion = nota.getCalificacion();
             double porcentaje = nota.getPorcentaje();
 
