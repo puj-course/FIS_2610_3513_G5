@@ -2684,7 +2684,17 @@
     </div>
 
     <script>
-        const API = 'http://localhost:8080';
+        const API      = 'http://localhost:8080'; // URL base del backend — cambiar aquí si el puerto varía
+        const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
+
+        /**
+         * Retorna el ID del usuario actualmente autenticado,
+         * leyéndolo del atributo data-userId del elemento de perfil.
+         * @returns {string|null} ID del usuario o null si no hay sesión activa
+         */
+        function getUserId() {
+            return document.querySelector('.profile-id')?.dataset.userId ?? null;
+        }
 
         // ── Referencias al DOM ──────────────────────────────────────────
         const modalOverlay      = document.getElementById('modal-overlay');
@@ -2846,15 +2856,16 @@
                 const inputPct    = tr.querySelector('.grade-inline-input.pct-input');
 
                 const newNombre = inputNombre.value.trim();
-                const newNota   = parseFloat(inputNota.value);
+                const newNota   = inputNota.value.trim() === '' ? null : parseFloat(inputNota.value);
                 const newPct    = parseInt(inputPct.value, 10);
 
                 let valid = true;
                 if (!newNombre) { inputNombre.classList.add('error'); valid = false; }
                 else inputNombre.classList.remove('error');
 
-                if (isNaN(newNota) || newNota < 0 || newNota > 5) { inputNota.classList.add('error'); valid = false; }
-                else inputNota.classList.remove('error');
+                if (newNota !== null && (isNaN(newNota) || newNota < 0 || newNota > 5)) {
+                    inputNota.classList.add('error'); valid = false;
+                } else inputNota.classList.remove('error');
 
                 const otherPct = (gradesStore[key] || []).reduce((s, g, i) => i !== idx ? s + g.porcentaje : s, 0);
                 if (isNaN(newPct) || newPct < 1 || newPct > 100 || otherPct + newPct > 100) {
@@ -2863,8 +2874,11 @@
 
                 if (!valid) return;
 
-                gradesStore[key][idx] = { ...gradesStore[key][idx], nombre: newNombre, nota: newNota, porcentaje: newPct };
+                // Actualizar store local
+                const gradeObj = gradesStore[key][idx];
+                gradesStore[key][idx] = { ...gradeObj, nombre: newNombre, nota: newNota, porcentaje: newPct };
 
+                // Volver a modo vista
                 tr.classList.remove('editing');
                 tr.querySelector('.cell-nombre').textContent = newNombre;
                 tr.querySelector('.cell-nota').innerHTML =
@@ -2876,6 +2890,28 @@
                 btn.title = 'Editar';
 
                 refreshAverage(key);
+
+                // Persistir en el backend
+                fetch(`${API}/notas/${gradeObj.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre:       newNombre,
+                        calificacion: newNota,
+                        porcentaje:   newPct,
+                        asignatura:   { id: parseInt(key) }
+                    })
+                })
+                .then(async res => {
+                    if (!res.ok) {
+                        const errBody = await res.json().catch(() => ({}));
+                        throw new Error(errBody.mensaje || `Error ${res.status} al actualizar la nota`);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Error al guardar el cambio en el servidor.');
+                });
 
             } else {
                 gradesTableBody.querySelectorAll('tr.editing').forEach(row => {
@@ -2891,7 +2927,7 @@
                 tr.querySelector('.cell-nombre').innerHTML =
                     `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
                 tr.querySelector('.cell-nota').innerHTML =
-                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
+                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota != null ? g.nota.toFixed(1) : ''}" placeholder="Opcional">`;
                 tr.querySelector('.cell-pct').innerHTML =
                     `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
 
@@ -2917,6 +2953,12 @@
             }
         }
 
+        /**
+         * Elimina una calificación de la tabla y del backend.
+         * Primero llama a DELETE /notas/{id} y solo si responde OK
+         * anima la fila y la elimina del store local.
+         * @param {HTMLElement} btn - Botón de eliminar presionado
+         */
         async function deleteGradeRow(btn) {
             const tr  = btn.closest('tr');
             const key = tr.dataset.gradeKey;
@@ -2925,10 +2967,13 @@
 
             try {
                 if (gradeId && gradeId !== "undefined") {
-                    const res = await fetch(`http://localhost:8080/notas/${gradeId}`, {
+                    const res = await fetch(`${API}/notas/${gradeId}`, {
                         method: 'DELETE'
                     });
-                    if (!res.ok) throw new Error("Error al eliminar nota en el servidor");
+                    if (!res.ok) {
+                        const errBody = await res.json().catch(() => ({}));
+                        throw new Error(errBody.mensaje || `Error ${res.status} al eliminar la nota`);
+                    }
                 }
 
                 tr.classList.add('removing');
@@ -2959,15 +3004,45 @@
             gradesViewTitle.textContent    = nombre;
             gradesViewSubtitle.textContent = subId;
 
+            // Mostrar vista y spinner mientras se cargan los datos
+            dashboardView.classList.add('hidden');
+            gradesView.classList.add('active');
+            gradesEmpty.style.display = 'none';
+            gradesTableContainer.classList.remove('visible');
+
+            // Spinner de carga temporal
+            const spinner = document.createElement('div');
+            spinner.id = 'grades-spinner';
+            spinner.style.cssText = `
+                display:flex;flex-direction:column;align-items:center;
+                justify-content:center;gap:14px;padding:60px 0;
+            `;
+            spinner.innerHTML = `
+                <div style="
+                    width:36px;height:36px;border-radius:50%;
+                    border:3px solid var(--gray-200);
+                    border-top-color:var(--blue-500);
+                    animation:spin .7s linear infinite;">
+                </div>
+                <span style="font-size:13px;color:var(--gray-400);">Cargando calificaciones...</span>
+            `;
+            // Añadir keyframe de rotación si no existe
+            if (!document.getElementById('spin-style')) {
+                const style = document.createElement('style');
+                style.id = 'spin-style';
+                style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+                document.head.appendChild(style);
+            }
+            gradesView.appendChild(spinner);
+
             const dbId = card.dataset.id;
             if (dbId) {
                 await fetchNotasBackend(dbId);
             }
 
+            // Quitar spinner y renderizar tabla
+            spinner.remove();
             renderGradesTable(card);
-
-            dashboardView.classList.add('hidden');
-            gradesView.classList.add('active');
         }
 
         function closeGradesView() {
@@ -3001,7 +3076,7 @@
             // Leer materias desde el backend filtradas por usuario
             let asignaturas = [];
             try {
-                const userId = document.querySelector('.profile-id')?.dataset.userId;
+                const userId = getUserId();
                 const url = userId
                     ? `${API}/asignaturas?usuarioId=${userId}`
                     : `${API}/asignaturas`;
@@ -3474,7 +3549,7 @@
                 if (newNota === gradeObj.nota && newPct === gradeObj.porcentaje) continue;
 
                 try {
-                    const res = await fetch(`http://localhost:8080/notas/${gradeObj.id}`, {
+                    const res = await fetch(`${API}/notas/${gradeObj.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -3484,7 +3559,10 @@
                             asignatura:   { id: parseInt(key) }
                         })
                     });
-                    if (!res.ok) throw new Error('Error al actualizar nota');
+                    if (!res.ok) {
+                        const errBody = await res.json().catch(() => ({}));
+                        throw new Error(errBody.mensaje || `Error ${res.status} al actualizar la nota`);
+                    }
                     // Actualizar store local
                     gradeObj.nota      = newNota;
                     gradeObj.porcentaje = newPct;
@@ -3799,11 +3877,10 @@
         }
 
         function fetchResumenUsuario() {
-            const profileIdEl = document.querySelector('.profile-id');
-            if (!profileIdEl || !profileIdEl.dataset.userId) return;
-            const userId = profileIdEl.dataset.userId;
+            const userId = getUserId();
+            if (!userId) return;
 
-            fetch(`http://localhost:8080/api/usuarios/${userId}/resumen`)
+            fetch(`${API}/api/usuarios/${userId}/resumen`)
                 .then(res => {
                     if (!res.ok) throw new Error('Resumen no encontrado');
                     return res.json();
@@ -3836,12 +3913,17 @@
                 .catch(err => console.error("Error fetching user resumen:", err));
         }
 
+        /**
+         * Carga las asignaturas del usuario autenticado desde el backend
+         * y las renderiza como tarjetas en el grid del dashboard.
+         * Filtra por usuarioId si hay sesión activa.
+         */
         async function fetchAsignaturasBackend() {
             try {
-                const userId = document.querySelector('.profile-id')?.dataset.userId;
+                const userId = getUserId();
                 const url = userId
-                    ? `http://localhost:8080/asignaturas?usuarioId=${userId}`
-                    : `http://localhost:8080/asignaturas`;
+                    ? `${API}/asignaturas?usuarioId=${userId}`
+                    : `${API}/asignaturas`;
                 const res = await fetch(url);
                 if (!res.ok) throw new Error("No se pudieron cargar materias");
                 const asignaturas = await res.json();
@@ -3855,9 +3937,15 @@
             }
         }
 
+        /**
+         * Carga las calificaciones de una asignatura desde el backend
+         * y las almacena en el gradesStore, sobreescribiendo cualquier
+         * dato previo en memoria para esa asignatura.
+         * @param {string|number} asignaturaId - ID de la asignatura
+         */
         async function fetchNotasBackend(asignaturaId) {
             try {
-                const res = await fetch(`http://localhost:8080/notas/asignatura/${asignaturaId}`);
+                const res = await fetch(`${API}/notas/asignatura/${asignaturaId}`);
                 if (!res.ok) throw new Error("No se pudieron cargar notas");
                 const notas = await res.json();
                 
@@ -3877,7 +3965,7 @@
             e.preventDefault();
             if (!validateSubjectForm()) return;
 
-            const userId = document.querySelector('.profile-id')?.dataset.userId;
+            const userId = getUserId();
             const payload = {
                 nombre:    document.getElementById('subject-name').value.trim(),
                 codigo:    document.getElementById('subject-code').value.trim().toUpperCase(),
@@ -4017,12 +4105,15 @@
                 };
 
                 try {
-                    const res = await fetch(`http://localhost:8080/notas`, {
+                    const res = await fetch(`${API}/notas`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    if (!res.ok) throw new Error("Error al guardar nota en el servidor");
+                    if (!res.ok) {
+                        const errBody = await res.json().catch(() => ({}));
+                        throw new Error(errBody.mensaje || `Error ${res.status} al guardar la nota`);
+                    }
                     const savedNota = await res.json();
 
                     if (!gradesStore[key]) gradesStore[key] = [];
@@ -4067,7 +4158,7 @@
             const name = card.querySelector('.subject-name')?.textContent || 'Materia';
 
             try {
-                const res = await fetch(`http://localhost:8080/asignaturas/${dbId}`, {
+                const res = await fetch(`${API}/asignaturas/${dbId}`, {
                     method: 'DELETE'
                 });
                 if (!res.ok) throw new Error('Error al eliminar en el servidor');
@@ -4185,7 +4276,6 @@
         };
 
         // ── Manejadores de Eventos Refactorizados ───────────────────────
-        const API_BASE = "http://localhost:8080/api/usuarios";
 
         function checkSession() {
             const session = SessionManager.getInstance();
