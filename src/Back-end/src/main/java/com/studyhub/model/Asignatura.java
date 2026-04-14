@@ -24,6 +24,7 @@ public class Asignatura {
     private String periodo;
     
     @jakarta.persistence.Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("progreso")
     private double progreso;
 
     @ManyToOne
