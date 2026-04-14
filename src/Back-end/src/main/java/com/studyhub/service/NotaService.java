@@ -76,12 +76,28 @@ public class NotaService {
         double suma = 0.0;
 
         for (Nota nota : notas) {
+            if (nota.getCalificacion() == null) {
+                continue;
+            }
             double calificacion = nota.getCalificacion();
             double porcentaje = nota.getPorcentaje();
 
             suma += calificacion * (porcentaje / 100);
         }
 
+        return suma;
+    }
+
+    public double calcularProgreso(Long asignaturaId) {
+        List<Nota> notas = notaRepository.findByAsignaturaId(asignaturaId);
+        if (notas.isEmpty()) return 0.0;
+        
+        double suma = 0.0;
+        for (Nota nota : notas) {
+            if (nota.getCalificacion() != null) {
+                suma += nota.getPorcentaje();
+            }
+        }
         return suma;
     }
 }

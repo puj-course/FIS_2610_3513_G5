@@ -29,11 +29,6 @@ public class NotaController {
             error.put("mensaje", "El nombre de la nota es obligatorio");
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
-        if (nota.getCalificacion() == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("mensaje", "La calificación es obligatoria");
-            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-        }
         if (nota.getPorcentaje() == null) {
             Map<String, Object> error = new HashMap<>();
             error.put("mensaje", "El porcentaje es obligatorio");

@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,18 +22,27 @@ public class Asignatura {
     private String horario;
     private int creditos;
     private String periodo;
+    
+    @jakarta.persistence.Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("progreso")
+    private double progreso;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     public Asignatura() {
     }
 
     public Asignatura(String nombre, String codigo, String profesor,
-                      String horario, int creditos, String periodo) {
+                      String horario, int creditos, String periodo, Usuario usuario) {
         this.nombre = nombre;
         this.codigo = codigo;
         this.profesor = profesor;
         this.horario = horario;
         this.creditos = creditos;
         this.periodo = periodo;
+        this.usuario = usuario;
     }
 
     public Long getId() { return id; }
@@ -55,6 +66,12 @@ public class Asignatura {
     public String getPeriodo() { return periodo; }
     public void setPeriodo(String periodo) { this.periodo = periodo; }
 
+    public double getProgreso() { return progreso; }
+    public void setProgreso(double progreso) { this.progreso = progreso; }
+
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
     @Override
     public String toString() {
         return "Asignatura{" +
@@ -65,6 +82,7 @@ public class Asignatura {
                 ", horario='" + horario + '\'' +
                 ", creditos=" + creditos +
                 ", periodo='" + periodo + '\'' +
+                ", usuario=" + (usuario != null ? usuario.getId() : "null") +
                 '}';
     }
 }
