@@ -3221,6 +3221,8 @@
                 btn.title = 'Editar';
 
                 refreshAverage(key);
+                updateCardInProgress(key);
+                fetchResumenUsuario();
 
                 // Persistir en el backend
                 fetch(`${API}/notas/${gradeObj.id}`, {
@@ -3315,6 +3317,8 @@
                     if (activeCardForGrade && activeCardForGrade.dataset.id === key) {
                         updatePercentSummary(key);
                     }
+                    updateCardInProgress(key);
+                    fetchResumenUsuario();
                 }, { once: true });
             } catch (err) {
                 console.error(err);
@@ -3909,6 +3913,8 @@
             calcInlineEditBtn.style.display = 'flex';
             calcSaveBtn.style.display       = 'none';
             renderCalcTable(activeCardForView);
+            updateCardInProgress(key);
+            fetchResumenUsuario();
             showToast('Cambios guardados exitosamente.');
         });
 
@@ -4211,11 +4217,29 @@
                     ${data.horario}
                 </div>
                 <div class="subject-progress">
-                    <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
+                    <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso}%"></div>
                 </div>
-                <div class="subject-progress-label">0% del curso completado</div>
+                <div class="subject-progress-label">${(data.progreso || 0).toFixed(0)}% del curso completado</div>
             `;
             subjectsGrid.appendChild(card);
+        }
+
+        /**
+         * Actualiza visualmente el progreso en la tarjeta del dashboard.
+         * Se usa tras agregar, editar o eliminar una nota.
+         */
+        function updateCardInProgress(subjectId) {
+            const card = document.querySelector(`.subject-card[data-id="${subjectId}"]`);
+            if (!card) return;
+            
+            const grades = gradesStore[subjectId] || [];
+            const progress = grades.reduce((s, g) => s + (g.nota != null ? g.porcentaje : 0), 0);
+            
+            const progressBar = card.querySelector('.subject-progress-bar');
+            const progressLabel = card.querySelector('.subject-progress-label');
+            
+            if (progressBar) progressBar.style.width = progress + '%';
+            if (progressLabel) progressLabel.textContent = progress.toFixed(0) + '% del curso completado';
         }
 
         // ── Toast ──────────────────────────────────────────────────────
@@ -4669,6 +4693,7 @@
                     });
                     
                     fetchResumenUsuario();
+                    updateCardInProgress(key);
                     closeGradeModal();
                     showToast('Calificación guardada con éxito');
                 } catch (err) {
