@@ -22,6 +22,10 @@ public class Asignatura {
     private String horario;
     private int creditos;
     private String periodo;
+    
+    @jakarta.persistence.Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("progreso")
+    private double progreso;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -61,6 +65,9 @@ public class Asignatura {
 
     public String getPeriodo() { return periodo; }
     public void setPeriodo(String periodo) { this.periodo = periodo; }
+
+    public double getProgreso() { return progreso; }
+    public void setProgreso(double progreso) { this.progreso = progreso; }
 
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }

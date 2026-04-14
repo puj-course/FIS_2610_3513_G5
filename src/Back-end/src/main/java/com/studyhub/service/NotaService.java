@@ -87,4 +87,17 @@ public class NotaService {
 
         return suma;
     }
+
+    public double calcularProgreso(Long asignaturaId) {
+        List<Nota> notas = notaRepository.findByAsignaturaId(asignaturaId);
+        if (notas.isEmpty()) return 0.0;
+        
+        double suma = 0.0;
+        for (Nota nota : notas) {
+            if (nota.getCalificacion() != null) {
+                suma += nota.getPorcentaje();
+            }
+        }
+        return suma;
+    }
 }

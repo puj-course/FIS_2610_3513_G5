@@ -76,6 +76,12 @@ public class AsignaturaController {
         List<Asignatura> asignaturas = usuarioId != null
                 ? asignaturaService.findByUserId(usuarioId)
                 : asignaturaRepository.findAll();
+        
+        // Calcular progreso para cada asignatura
+        for (Asignatura asignatura : asignaturas) {
+            asignatura.setProgreso(notaService.calcularProgreso(asignatura.getId()));
+        }
+        
         return new ResponseEntity<>(asignaturas, HttpStatus.OK);
     }
 
