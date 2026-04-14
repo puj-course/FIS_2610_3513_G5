@@ -60,8 +60,11 @@ public class TareaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tarea>> listarTareas() {
-        return new ResponseEntity<>(tareaRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<Tarea>> listarTareas(@RequestParam(required = false) Long usuarioId) {
+        List<Tarea> tareas = usuarioId != null
+                ? tareaRepository.findByAsignatura_Usuario_Id(usuarioId)
+                : tareaRepository.findAll();
+        return new ResponseEntity<>(tareas, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}/estado")

@@ -4315,7 +4315,11 @@
 
         async function fetchTareasBackend() {
             try {
-                const res = await fetch(`${API}/api/tareas`);
+                const userId = getUserId();
+                const url = userId
+                    ? `${API}/api/tareas?usuarioId=${userId}`
+                    : `${API}/api/tareas`;
+                const res = await fetch(url);
                 if (!res.ok) throw new Error("No se pudieron cargar tareas");
                 const tareas = await res.json();
                 renderTasks(tareas);
@@ -4428,7 +4432,7 @@
                 document.getElementById('subjects-count-label').textContent = `Semestre actual · ${asignaturas.length} materias inscritas`;
 
                 // 2. Obtener tareas y filtrar pendientes
-                const taskRes = await fetch(`${API}/api/tareas`);
+                const taskRes = await fetch(userId ? `${API}/api/tareas?usuarioId=${userId}` : `${API}/api/tareas`);
                 const tareas = await taskRes.json();
                 const pendientes = tareas.filter(t => t.estado);
                 document.getElementById('dash-tasks-count').textContent = pendientes.length;
@@ -4848,13 +4852,16 @@
             const session = SessionManager.getInstance();
 
             try {
+                console.log("Intentando login para:", correo);
                 const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo, password })
                 });
 
+                console.log("Status del login:", response.status);
                 const result = await response.json();
+                console.log("Resultado del login:", result);
 
                 if (response.ok) {
                     session.setUser(result);
@@ -4865,6 +4872,7 @@
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
+                console.error("Error en handleLogin:", err);
                 errorDiv.textContent = "Error al conectar con el servidor";
                 errorDiv.style.display = 'block';
             }
@@ -4922,6 +4930,10 @@
 
         function logout() {
             SessionManager.getInstance().clear();
+            // Limpiar datos de asignaturas y notas al cerrar sesión
+            for (const key in gradesStore) delete gradesStore[key];
+            subjectsGrid.innerHTML = '';
+            
             AccessProxy.goTo('login');
             showToast('Sesión cerrada');
         }
