@@ -10,5 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
 	List<Tarea> findByFechaEntrega(java.time.LocalDate fechaEntrega);
 	List<Tarea> findByAsignatura_Usuario_Id(Long usuarioId);
+	List<Tarea> findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(Long usuarioId);
 	
 }

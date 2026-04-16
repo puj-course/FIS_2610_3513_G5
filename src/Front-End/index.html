@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <!-- PDF Generation Libraries (HU-27) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         /* ========== RESET & BASE ========== */
         *,
@@ -206,6 +211,22 @@
 
         .nav-item:hover {
             background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .nav-item.export-btn {
+            margin-top: 12px;
+            background: var(--blue-50);
+            color: var(--blue-700);
+            border: 1px dashed var(--blue-200);
+        }
+
+        .nav-item.export-btn:hover {
+            background: var(--blue-100);
+            border-color: var(--blue-300);
+        }
+
+        .nav-item.export-btn .material-icons-round {
             color: var(--blue-600);
         }
 
@@ -2231,7 +2252,149 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ========== APUNTES (NOTAS) ========== */
+        .apuntes-view {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+        .apuntes-view.active { display: flex; }
+
+        .apuntes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .apunte-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid var(--blue-500);
+        }
+        .apunte-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .apunte-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .apunte-preview {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .apunte-date {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        /* Modal estilo iPhone */
+        .iphone-modal {
+            background: #fdfdfd;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .iphone-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #fff;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .iphone-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .iphone-btn.cancel { color: var(--blue-500); }
+        .iphone-btn.save { color: var(--gray-400); font-weight: 700; pointer-events: none; }
+        .iphone-btn.save.active { color: var(--blue-500); font-weight: 700; pointer-events: auto; }
+        .iphone-modal-body {
+            padding: 24px;
+            background: #fdfdfd;
+            flex: 1;
+        }
+        .iphone-input-title {
+            width: 100%;
+            border: none;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: transparent;
+            color: var(--gray-800);
+        }
+        .iphone-input-title:focus { outline: none; }
+        .iphone-input-content {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--gray-600);
+            min-height: 250px;
+            background: transparent;
+        }
+        .iphone-input-content:focus { outline: none; }
+        .iphone-modal-footer {
+            padding: 16px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--gray-200);
+        }
+        .delete-note-btn {
+            color: #e53935;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
     </style>
+
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
 </head>
 
 <body onload="checkSession()">
@@ -2330,6 +2493,10 @@
                         <span class="material-icons-round">dashboard</span>
                         Dashboard
                     </div>
+                    <div class="nav-item" id="nav-apuntes">
+                        <span class="material-icons-round">edit_note</span>
+                        Mis Notas
+                    </div>
                     <div class="nav-item" id="nav-subjects">
                         <span class="material-icons-round">menu_book</span>
                         Mis Materias
@@ -2341,6 +2508,10 @@
                     <div class="nav-item" id="nav-calculadora">
                         <span class="material-icons-round">calculate</span>
                         Calculadora de Notas
+                    </div>
+                    <div class="nav-item export-btn" id="nav-export" onclick="exportarInformePDF()">
+                        <span class="material-icons-round">picture_as_pdf</span>
+                        Generar Informe PDF
                     </div>
                     <div class="nav-item">
                         <span class="material-icons-round">rate_review</span>
@@ -2366,6 +2537,10 @@
                     <button class="fab-option" id="add-task">
                         <span class="material-icons-round">assignment</span>
                         Agregar Tarea
+                    </button>
+                    <button class="fab-option" id="add-apunte" onclick="openNewNoteModal()">
+                        <span class="material-icons-round">edit_note</span>
+                        Agregar Nota Rápida
                     </button>
                 </div>
             </div>
@@ -2650,6 +2825,29 @@
 
             </div><!-- /.calc-view -->
 
+
+            <!-- ══════ VISTA: MIS NOTAS ══════ -->
+            <div class="apuntes-view" id="apuntes-view">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Mis Notas rápidas</h2>
+                        <p class="section-subtitle">Apunta ideas y recordatorios importantes</p>
+                    </div>
+                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openNewNoteModal()">
+                        <span class="material-icons-round">add</span>
+                        Nueva nota
+                    </button>
+                </div>
+                
+                <div id="apuntes-empty" class="grades-empty">
+                    <div class="grades-empty-icon"><span class="material-icons-round">edit_note</span></div>
+                    <p class="grades-empty-text">No tienes notas aún. ¡Crea una nueva nota!</p>
+                </div>
+                
+                <div class="apuntes-grid" id="apuntes-grid">
+                    <!-- Notas inyectadas aca -->
+                </div>
+            </div>
             <!-- Vista: Mis Tareas -->
             <div class="tasks-view" id="tasks-view">
                 <div class="section-header">
@@ -2803,6 +3001,10 @@
                         <div class="calendar-day">28</div>
                         <div class="calendar-day other-month"></div>
                     </div>
+                    <button class="fab-option" id="add-apunte" onclick="openNewNoteModal()">
+                        <span class="material-icons-round">edit_note</span>
+                        Agregar Nota Rápida
+                    </button>
                 </div>
             </div>
         </aside>
@@ -4968,6 +5170,304 @@
         document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
         document.querySelector('.profile-avatar').onclick = logout;
 
+
+        // ========================================== //
+        // ======== SPRINT 7: APUNTES LOGIC ========= //
+        // ========================================== //
+        
+        const API_APUNTES = 'http://localhost:8080/apuntes';
+        const apuntesView = document.getElementById('apuntes-view');
+        
+        document.getElementById('nav-apuntes').addEventListener('click', () => {
+            hideAllViews();
+            apuntesView.classList.add('active');
+            syncNavbar('nav-apuntes');
+            loadNotes();
+        });
+        
+        async function loadNotes() {
+            try {
+                const res = await fetch(API_APUNTES);
+                if (!res.ok) throw new Error("API Error");
+                const notas = await res.json();
+                
+                const grid = document.getElementById('apuntes-grid');
+                const empty = document.getElementById('apuntes-empty');
+                
+                grid.innerHTML = '';
+                
+                if (notas.length === 0) {
+                    empty.style.display = 'flex';
+                } else {
+                    empty.style.display = 'none';
+                    notas.forEach(nota => {
+                        const date = new Date(nota.fechaCreacion).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                        const notaEscaped = JSON.stringify(nota).replace(/'/g, "\\'");
+                        grid.innerHTML += `
+                            <div class="apunte-card" onclick='openEditNoteModal(${notaEscaped})'>
+                                <div class="apunte-title">${nota.titulo}</div>
+                                <div class="apunte-preview">${nota.contenido}</div>
+                                <div class="apunte-date"><span class="material-icons-round" style="font-size:14px">schedule</span> ${date}</div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Error al cargar notas:", err);
+            }
+        }
+        
+        function openNewNoteModal() {
+            document.getElementById('iphone-note-id').value = '';
+            document.getElementById('iphone-note-title').value = '';
+            document.getElementById('iphone-note-content').value = '';
+            document.getElementById('iphone-note-header-txt').innerText = 'Nueva Nota';
+            document.getElementById('iphone-note-footer').style.display = 'none';
+            checkNoteInputs();
+            document.getElementById('iphone-note-overlay').classList.add('active');
+        }
+        
+        function openEditNoteModal(nota) {
+            document.getElementById('iphone-note-id').value = nota.id;
+            document.getElementById('iphone-note-title').value = nota.titulo;
+            document.getElementById('iphone-note-content').value = nota.contenido;
+            document.getElementById('iphone-note-header-txt').innerText = 'Editar Nota';
+            document.getElementById('iphone-note-footer').style.display = 'flex';
+            checkNoteInputs();
+            document.getElementById('iphone-note-overlay').classList.add('active');
+        }
+        
+        function closeNoteModal() {
+            document.getElementById('iphone-note-overlay').classList.remove('active');
+        }
+        
+        function checkNoteInputs() {
+            const title = document.getElementById('iphone-note-title').value.trim();
+            const content = document.getElementById('iphone-note-content').value.trim();
+            const btn = document.getElementById('iphone-save-btn');
+            
+            if (title.length > 0 && content.length > 0) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+        
+        async function saveNote() {
+            const id = document.getElementById('iphone-note-id').value;
+            const titulo = document.getElementById('iphone-note-title').value.trim();
+            const contenido = document.getElementById('iphone-note-content').value.trim();
+            
+            if (!titulo || !contenido) return;
+            
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_APUNTES}/${id}` : API_APUNTES;
+            
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo, contenido })
+                });
+                if (res.ok) {
+                    closeNoteModal();
+                    loadNotes();
+                }
+            } catch (err) {
+                console.error("Error al guardar nota:", err);
+            }
+        }
+        
+        async function deleteNote() {
+            const id = document.getElementById('iphone-note-id').value;
+            if (!id) return;
+            if (!confirm("¿Seguro que deseas eliminar esta nota?")) return;
+            
+            try {
+                const res = await fetch(`${API_APUNTES}/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    closeNoteModal();
+                    loadNotes();
+                }
+            } catch (err) {
+                console.error("Error al eliminar nota:", err);
+            }
+        }
+
+
+        // ========================================== //
+        // ======= SPRINT 8: PDF EXPORT LOGIC ======= //
+        // ========================================== //
+        
+        async function exportarInformePDF() {
+            const user = JSON.parse(localStorage.getItem('studyhub_user'));
+            const userId = user ? user.id : null;
+            if (!userId) {
+                showToast("Inicie sesión para exportar");
+                return;
+            }
+            
+            const btn = document.querySelector('#nav-export');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons-round">sync</span> Generando...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/usuarios/${userId}/informe-academico`);
+                if (!response.ok) throw new Error("No se pudo obtener el informe");
+                
+                const data = await response.json();
+                
+                if (data.asignaturas.length === 0 && data.tareasPendientes.length === 0) {
+                    alert("No hay suficientes datos para generar el informe. ¡Empieza por agregar materias y tareas!");
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const blueColor = [37, 99, 235]; // var(--blue-600) roughly
+                const grayColor = [107, 114, 128]; // var(--gray-500)
+                
+                // --- Encabezado ---
+                doc.setFontSize(22);
+                doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                doc.text("StudyHub Academic Report", 20, 25);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                doc.text(`Generado el: ${fecha}`, 160, 25);
+                
+                doc.setDrawColor(229, 231, 235);
+                doc.line(20, 32, 190, 32);
+                
+                // --- Info Usuario ---
+                doc.setFontSize(14);
+                doc.setTextColor(31, 41, 55); // var(--gray-800)
+                doc.text(`Estudiante: ${data.nombreUsuario}`, 20, 45);
+                
+                doc.setFontSize(14);
+                doc.text(`Promedio Global: ${data.promedioGlobal.toFixed(2)}`, 140, 45);
+                
+                // --- Sección: Calificaciones ---
+                doc.setFontSize(16);
+                doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                doc.text("Resumen de Calificaciones", 20, 60);
+                
+                let currentY = 65;
+                
+                if (data.asignaturas.length === 0) {
+                    doc.setFontSize(11);
+                    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                    doc.text("No hay materias registradas.", 25, currentY + 10);
+                    currentY += 20;
+                } else {
+                    data.asignaturas.forEach(asig => {
+                        // Nombre de Materia y Promedio
+                        doc.setFontSize(12);
+                        doc.setTextColor(55, 65, 81);
+                        doc.text(asig.nombre.toUpperCase(), 20, currentY + 10);
+                        
+                        const colorPromedio = asig.promedio >= 3.0 ? [22, 163, 74] : [220, 38, 38];
+                        doc.setTextColor(colorPromedio[0], colorPromedio[1], colorPromedio[2]);
+                        doc.text(`Promedio: ${asig.promedio.toFixed(2)}`, 160, currentY + 10);
+                        
+                        // Tabla de Notas
+                        const rows = asig.notas.map(n => [
+                            n.nombre, 
+                            n.calificacion !== null ? n.calificacion.toFixed(2) : "Pendiente", 
+                            `${n.porcentaje}%`
+                        ]);
+                        
+                        doc.autoTable({
+                            startY: currentY + 15,
+                            head: [['Evaluación', 'Nota', 'Porcentaje']],
+                            body: rows,
+                            theme: 'striped',
+                            headStyles: { fillColor: blueColor, fontSize: 9 },
+                            styles: { fontSize: 8 },
+                            margin: { left: 25, right: 25 }
+                        });
+                        
+                        currentY = doc.lastAutoTable.finalY + 10;
+                        
+                        // Salto de página si es necesario
+                        if (currentY > 250) {
+                            doc.addPage();
+                            currentY = 20;
+                        }
+                    });
+                }
+                
+                // --- Sección: Tareas Pendientes ---
+                if (currentY > 230) { doc.addPage(); currentY = 20; }
+                
+                doc.setFontSize(16);
+                doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                doc.text("Tareas Pendientes", 20, currentY + 10);
+                
+                if (data.tareasPendientes.length === 0) {
+                    doc.setFontSize(11);
+                    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                    doc.text("¡Felicidades! No tienes tareas pendientes.", 25, currentY + 20);
+                } else {
+                    const taskRows = data.tareasPendientes.map(t => [
+                        t.titulo, 
+                        t.asignaturaNombre, 
+                        new Date(t.fechaEntrega).toLocaleDateString('es-ES')
+                    ]);
+                    
+                    doc.autoTable({
+                        startY: currentY + 15,
+                        head: [['Tarea', 'Materia', 'Fecha Entrega']],
+                        body: taskRows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [75, 85, 99], fontSize: 9 },
+                        styles: { fontSize: 8 },
+                        margin: { left: 20, right: 20 }
+                    });
+                }
+                
+                // Pie de página
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150);
+                    doc.text(`Página ${i} de ${pageCount} - Generado por StudyHub App`, 105, 290, { align: 'center' });
+                }
+
+                doc.save(`resumen_academico_${new Date().toISOString().split('T')[0]}.pdf`);
+                
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                alert("Ocurrió un error al generar el PDF. Por favor intenta de nuevo.");
+            } finally {
+                document.querySelector('#nav-export').innerHTML = originalText;
+            }
+        }
+
     </script>
+
+    <!-- Modal Nueva Nota / Edicion estilo iPhone -->
+    <div class="modal-overlay" id="iphone-note-overlay">
+        <div class="iphone-modal" style="margin-top: 50px;">
+            <div class="iphone-modal-header">
+                <button class="iphone-btn cancel" onclick="closeNoteModal()">Cancelar</button>
+                <div style="font-weight: 600; color: var(--gray-800);" id="iphone-note-header-txt">Nueva Nota</div>
+                <button class="iphone-btn save" id="iphone-save-btn" onclick="saveNote()">Guardar</button>
+            </div>
+            <div class="iphone-modal-body">
+                <input type="hidden" id="iphone-note-id">
+                <input type="text" id="iphone-note-title" class="iphone-input-title" placeholder="Título" oninput="checkNoteInputs()">
+                <textarea id="iphone-note-content" class="iphone-input-content" placeholder="Escribe aquí tu nota..." oninput="checkNoteInputs()"></textarea>
+            </div>
+            <div class="iphone-modal-footer" id="iphone-note-footer" style="display: none;">
+                <button class="delete-note-btn" onclick="deleteNote()">
+                    <span class="material-icons-round">delete_outline</span> Eliminar nota
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
