@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <!-- PDF Generation Libraries (HU-27) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         /* ========== RESET & BASE ========== */
         *,
@@ -206,6 +211,22 @@
 
         .nav-item:hover {
             background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .nav-item.export-btn {
+            margin-top: 12px;
+            background: var(--blue-50);
+            color: var(--blue-700);
+            border: 1px dashed var(--blue-200);
+        }
+
+        .nav-item.export-btn:hover {
+            background: var(--blue-100);
+            border-color: var(--blue-300);
+        }
+
+        .nav-item.export-btn .material-icons-round {
             color: var(--blue-600);
         }
 
@@ -2369,6 +2390,11 @@
         }
 
     </style>
+
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
 </head>
 
 <body onload="checkSession()">
@@ -2482,6 +2508,10 @@
                     <div class="nav-item" id="nav-calculadora">
                         <span class="material-icons-round">calculate</span>
                         Calculadora de Notas
+                    </div>
+                    <div class="nav-item export-btn" id="nav-export" onclick="exportarInformePDF()">
+                        <span class="material-icons-round">picture_as_pdf</span>
+                        Generar Informe PDF
                     </div>
                     <div class="nav-item">
                         <span class="material-icons-round">rate_review</span>
@@ -5261,6 +5291,159 @@
                 }
             } catch (err) {
                 console.error("Error al eliminar nota:", err);
+            }
+        }
+
+
+        // ========================================== //
+        // ======= SPRINT 8: PDF EXPORT LOGIC ======= //
+        // ========================================== //
+        
+        async function exportarInformePDF() {
+            const user = JSON.parse(localStorage.getItem('studyhub_user'));
+            const userId = user ? user.id : null;
+            if (!userId) {
+                showToast("Inicie sesión para exportar");
+                return;
+            }
+            
+            const btn = document.querySelector('#nav-export');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons-round">sync</span> Generando...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/usuarios/${userId}/informe-academico`);
+                if (!response.ok) throw new Error("No se pudo obtener el informe");
+                
+                const data = await response.json();
+                
+                if (data.asignaturas.length === 0 && data.tareasPendientes.length === 0) {
+                    alert("No hay suficientes datos para generar el informe. ¡Empieza por agregar materias y tareas!");
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const blueColor = [37, 99, 235]; // var(--blue-600) roughly
+                const grayColor = [107, 114, 128]; // var(--gray-500)
+                
+                // --- Encabezado ---
+                doc.setFontSize(22);
+                doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                doc.text("StudyHub Academic Report", 20, 25);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                doc.text(`Generado el: ${fecha}`, 160, 25);
+                
+                doc.setDrawColor(229, 231, 235);
+                doc.line(20, 32, 190, 32);
+                
+                // --- Info Usuario ---
+                doc.setFontSize(14);
+                doc.setTextColor(31, 41, 55); // var(--gray-800)
+                doc.text(`Estudiante: ${data.nombreUsuario}`, 20, 45);
+                
+                doc.setFontSize(14);
+                doc.text(`Promedio Global: ${data.promedioGlobal.toFixed(2)}`, 140, 45);
+                
+                // --- Sección: Calificaciones ---
+                doc.setFontSize(16);
+                doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                doc.text("Resumen de Calificaciones", 20, 60);
+                
+                let currentY = 65;
+                
+                if (data.asignaturas.length === 0) {
+                    doc.setFontSize(11);
+                    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                    doc.text("No hay materias registradas.", 25, currentY + 10);
+                    currentY += 20;
+                } else {
+                    data.asignaturas.forEach(asig => {
+                        // Nombre de Materia y Promedio
+                        doc.setFontSize(12);
+                        doc.setTextColor(55, 65, 81);
+                        doc.text(asig.nombre.toUpperCase(), 20, currentY + 10);
+                        
+                        const colorPromedio = asig.promedio >= 3.0 ? [22, 163, 74] : [220, 38, 38];
+                        doc.setTextColor(colorPromedio[0], colorPromedio[1], colorPromedio[2]);
+                        doc.text(`Promedio: ${asig.promedio.toFixed(2)}`, 160, currentY + 10);
+                        
+                        // Tabla de Notas
+                        const rows = asig.notas.map(n => [
+                            n.nombre, 
+                            n.calificacion !== null ? n.calificacion.toFixed(2) : "Pendiente", 
+                            `${n.porcentaje}%`
+                        ]);
+                        
+                        doc.autoTable({
+                            startY: currentY + 15,
+                            head: [['Evaluación', 'Nota', 'Porcentaje']],
+                            body: rows,
+                            theme: 'striped',
+                            headStyles: { fillColor: blueColor, fontSize: 9 },
+                            styles: { fontSize: 8 },
+                            margin: { left: 25, right: 25 }
+                        });
+                        
+                        currentY = doc.lastAutoTable.finalY + 10;
+                        
+                        // Salto de página si es necesario
+                        if (currentY > 250) {
+                            doc.addPage();
+                            currentY = 20;
+                        }
+                    });
+                }
+                
+                // --- Sección: Tareas Pendientes ---
+                if (currentY > 230) { doc.addPage(); currentY = 20; }
+                
+                doc.setFontSize(16);
+                doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                doc.text("Tareas Pendientes", 20, currentY + 10);
+                
+                if (data.tareasPendientes.length === 0) {
+                    doc.setFontSize(11);
+                    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                    doc.text("¡Felicidades! No tienes tareas pendientes.", 25, currentY + 20);
+                } else {
+                    const taskRows = data.tareasPendientes.map(t => [
+                        t.titulo, 
+                        t.asignaturaNombre, 
+                        new Date(t.fechaEntrega).toLocaleDateString('es-ES')
+                    ]);
+                    
+                    doc.autoTable({
+                        startY: currentY + 15,
+                        head: [['Tarea', 'Materia', 'Fecha Entrega']],
+                        body: taskRows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [75, 85, 99], fontSize: 9 },
+                        styles: { fontSize: 8 },
+                        margin: { left: 20, right: 20 }
+                    });
+                }
+                
+                // Pie de página
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150);
+                    doc.text(`Página ${i} de ${pageCount} - Generado por StudyHub App`, 105, 290, { align: 'center' });
+                }
+
+                doc.save(`resumen_academico_${new Date().toISOString().split('T')[0]}.pdf`);
+                
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                alert("Ocurrió un error al generar el PDF. Por favor intenta de nuevo.");
+            } finally {
+                document.querySelector('#nav-export').innerHTML = originalText;
             }
         }
 
