@@ -1,7 +1,12 @@
+package com.studyhub.service;
+
 import com.studyhub.dto.AsignaturaResumenDTO;
 import com.studyhub.dto.ResumenAcademicoDTO;
 import com.studyhub.dto.TareaResumenDTO;
+import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
+import com.studyhub.model.Usuario;
 import com.studyhub.repository.TareaRepository;
 import com.studyhub.repository.UsuarioRepository;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
