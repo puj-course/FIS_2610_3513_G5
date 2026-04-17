@@ -1,14 +1,16 @@
-package com.studyhub.service;
-
-import com.studyhub.model.Usuario;
-import com.studyhub.model.Asignatura;
-import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.AsignaturaResumenDTO;
+import com.studyhub.dto.ResumenAcademicoDTO;
+import com.studyhub.dto.TareaResumenDTO;
+import com.studyhub.model.Tarea;
+import com.studyhub.repository.TareaRepository;
 import com.studyhub.repository.UsuarioRepository;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -18,15 +20,20 @@ public class UsuarioService {
 
     private final AsignaturaService asignaturaService;
     private final NotaService notaService;
+    private final TareaRepository tareaRepository;
 
     // CORREGIDO: PasswordEncryptionStrategy ahora existe (ver BCryptEncryptionStrategy)
     private final PasswordEncryptionStrategy encryptionStrategy;
 
     @Autowired
-    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy, AsignaturaService asignaturaService, NotaService notaService) {
+    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy, 
+                          AsignaturaService asignaturaService, 
+                          NotaService notaService,
+                          TareaRepository tareaRepository) {
         this.encryptionStrategy = encryptionStrategy;
         this.asignaturaService = asignaturaService;
         this.notaService = notaService;
+        this.tareaRepository = tareaRepository;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -77,6 +84,42 @@ public class UsuarioService {
                 usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
                 totalAsignaturas,
                 promedioGlobal
+        );
+    }
+
+    public ResumenAcademicoDTO obtenerResumenAcademico(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // 1. Obtener asignaturas con sus notas y promedios
+        List<Asignatura> asignaturasRaw = asignaturaService.findByUserId(usuarioId);
+        List<AsignaturaResumenDTO> asignaturasResumen = new ArrayList<>();
+        double sumaPromedios = 0;
+
+        for (Asignatura asig : asignaturasRaw) {
+            double promedio = notaService.calcularPromedio(asig.getId());
+            sumaPromedios += promedio;
+            asignaturasResumen.add(new AsignaturaResumenDTO(
+                asig.getNombre(),
+                notaService.obtenerNotasPorAsignatura(asig.getId()),
+                promedio
+            ));
+        }
+
+        double promedioGlobal = asignaturasRaw.isEmpty() ? 0 : sumaPromedios / asignaturasRaw.size();
+        promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
+
+        // 2. Obtener tareas pendientes
+        List<Tarea> tareasRaw = tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
+        List<TareaResumenDTO> tareasResumen = tareasRaw.stream()
+            .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega()))
+            .collect(Collectors.toList());
+
+        return new ResumenAcademicoDTO(
+            usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
+            promedioGlobal,
+            asignaturasResumen,
+            tareasResumen
         );
     }
 }
