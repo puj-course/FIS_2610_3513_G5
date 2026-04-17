@@ -5763,7 +5763,7 @@
             btn.innerHTML = '<span class="material-icons-round">sync</span> Generando...';
             
             try {
-                const response = await fetch(`${API_BASE}/usuarios/${userId}/informe-academico`);
+                const response = await fetch(`${API_BASE}/${userId}/informe-academico`);
                 if (!response.ok) throw new Error("No se pudo obtener el informe");
                 
                 const data = await response.json();
