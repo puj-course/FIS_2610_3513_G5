@@ -807,6 +807,147 @@
             background: var(--blue-400);
         }
 
+        /* ========== VISTA DE RESEÑAS (FORO) ========== */
+        .resenas-view {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .resenas-view.active {
+            display: flex;
+        }
+
+        .resenas-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .resenas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .resena-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .resena-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--blue-200);
+        }
+
+        .resena-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .resena-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--blue-50);
+            color: var(--blue-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resena-user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .resena-date {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .resena-rating {
+            display: flex;
+            gap: 2px;
+            color: #FFB300;
+            margin-bottom: 8px;
+        }
+
+        .resena-rating .material-icons-round {
+            font-size: 18px;
+        }
+
+        .resena-content {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .resena-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .resena-delete-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--gray-300);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .resena-delete-btn:hover {
+            color: #E53935;
+        }
+
+        .resena-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .pagination-btn.active {
+            background: var(--blue-500);
+            color: var(--white);
+            border-color: var(--blue-500);
+        }
+
         /* ========== Animaciones ========== */
         @keyframes fadeInUp {
             from {
@@ -2513,7 +2654,7 @@
                         <span class="material-icons-round">picture_as_pdf</span>
                         Generar Informe PDF
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-resenas">
                         <span class="material-icons-round">rate_review</span>
                         Reseñas
                     </div>
@@ -2873,6 +3014,35 @@
                 </div>
             </div><!-- /.tasks-view -->
 
+            <!-- Vista: Foro de Reseñas -->
+            <div class="resenas-view" id="resenas-view">
+                <div class="resenas-header">
+                    <div>
+                        <h2 class="section-title">Foro de Reseñas</h2>
+                        <p class="section-subtitle">Comparte y lee opiniones sobre materias y profesores</p>
+                    </div>
+                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openResenaModal()">
+                        <span class="material-icons-round">add_comment</span>
+                        Escribir Reseña
+                    </button>
+                </div>
+
+                <div id="resenas-empty" class="grades-empty" style="display: none;">
+                    <div class="grades-empty-icon">
+                        <span class="material-icons-round">rate_review</span>
+                    </div>
+                    <p class="grades-empty-text">No hay reseñas disponibles. ¡Sé el primero en compartir!</p>
+                </div>
+
+                <div id="resenas-list" class="resenas-list">
+                    <!-- Las reseñas se cargarán aquí dinámicamente -->
+                </div>
+
+                <div id="resenas-pagination" class="resena-pagination">
+                    <!-- Paginación dinámica -->
+                </div>
+            </div><!-- /.resenas-view -->
+
         </main>
 
         <aside class="sidebar-right">
@@ -3207,6 +3377,68 @@
         <span id="toast-text">Materia agregada exitosamente</span>
     </div>
 
+    <!-- ===== MODAL: AGREGAR RESEÑA ===== -->
+    <div class="modal-overlay" id="resena-modal-overlay">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <span class="material-icons-round">rate_review</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Escribir Reseña</div>
+                        <div class="modal-subtitle">Tu opinión ayuda a otros estudiantes</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="resena-modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="resena-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">¿Sobre qué quieres opinar?</label>
+                        <div style="display: flex; gap: 12px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="radio" name="resena-tipo" value="MATERIA" checked> Materia
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="radio" name="resena-tipo" value="PROFESOR"> Profesor
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="resena-objetivo">Nombre de la Materia / Profesor</label>
+                        <input class="form-input" id="resena-objetivo" placeholder="Ej: Cálculo Diferencial o Carlos Ramírez" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Calificación</label>
+                        <div id="star-rating" style="display: flex; gap: 8px; color: #DEE2E6; cursor: pointer;">
+                            <span class="material-icons-round" data-value="1">star</span>
+                            <span class="material-icons-round" data-value="2">star</span>
+                            <span class="material-icons-round" data-value="3">star</span>
+                            <span class="material-icons-round" data-value="4">star</span>
+                            <span class="material-icons-round" data-value="5">star</span>
+                        </div>
+                        <input type="hidden" id="resena-rating-value" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="resena-comentario">Tu Reseña</label>
+                        <textarea class="form-input" id="resena-comentario" rows="4" placeholder="Cuéntanos tu experiencia..." maxlength="500" style="resize: none;" required></textarea>
+                        <div style="text-align: right; font-size: 11px; color: var(--gray-400); margin-top: 4px;" id="resena-char-count">0 / 500</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="resena-btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">
+                        <span class="material-icons-round">send</span>
+                        Publicar Reseña
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API      = 'http://localhost:8080'; // URL base del backend — cambiar aquí si el puerto varía
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
@@ -3282,6 +3514,18 @@
 
         // ── Referencias: Vista de materias ─────────────────────────────
         const subjectsView        = document.getElementById('subjects-view');
+
+        // ── Referencias: Vista de reseñas ──────────────────────────────
+        const resenasView           = document.getElementById('resenas-view');
+        const resenasList           = document.getElementById('resenas-list');
+        const resenasEmpty          = document.getElementById('resenas-empty');
+        const resenaModal           = document.getElementById('resena-modal-overlay');
+        const resenaForm            = document.getElementById('resena-form');
+        const resenaModalClose      = document.getElementById('resena-modal-close');
+        const resenaBtnCancel       = document.getElementById('resena-btn-cancel');
+        const starRating            = document.getElementById('star-rating');
+        const resenaRatingValue     = document.getElementById('resena-rating-value');
+        const resenasPagination     = document.getElementById('resenas-pagination');
 
         const META_APROBACION  = 3.0;
 
@@ -4147,8 +4391,16 @@
             fetchTareasBackend();
         });
 
+        // Nav "Reseñas"
+        document.getElementById('nav-resenas').addEventListener('click', () => {
+            hideAllViews();
+            resenasView.classList.add('active');
+            syncNavbar('nav-resenas');
+            fetchResenasBackend();
+        });
+
         function hideAllViews() {
-            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView];
+            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView];
             views.forEach(v => v.classList.remove('active'));
             // Reset nav active class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -4312,15 +4564,18 @@
         taskModalClose.addEventListener('click', closeTaskModal);
         taskBtnCancel.addEventListener('click', closeTaskModal);
 
-        gradeModalClose.addEventListener('click', closeGradeModal);
-        gradeBtnCancel.addEventListener('click', closeGradeModal);
         gradeModal.addEventListener('click', (e) => { if (e.target === gradeModal) closeGradeModal(); });
+
+        resenaModalClose.addEventListener('click', closeResenaModal);
+        resenaBtnCancel.addEventListener('click', closeResenaModal);
+        resenaModal.addEventListener('click', (e) => { if (e.target === resenaModal) closeResenaModal(); });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (modalOverlay.classList.contains('active')) closeModal();
                 if (taskModal.classList.contains('active'))    closeTaskModal();
                 if (gradeModal.classList.contains('active'))   closeGradeModal();
+                if (resenaModal.classList.contains('active'))  closeResenaModal();
             }
         });
 
@@ -4442,6 +4697,185 @@
             
             if (progressBar) progressBar.style.width = progress + '%';
             if (progressLabel) progressLabel.textContent = progress.toFixed(0) + '% del curso completado';
+        }
+
+        // ── Lógica de Reseñas ───────────────────────────────────────────
+
+        function openResenaModal() {
+            resenaModal.classList.add('active');
+            resenaForm.reset();
+            resetStars();
+            document.body.style.overflow = 'hidden';
+            document.getElementById('resena-char-count').textContent = "0 / 500";
+        }
+
+        function closeResenaModal() {
+            resenaModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Star Rating Logic
+        starRating.querySelectorAll('.material-icons-round').forEach(star => {
+            star.addEventListener('click', () => {
+                const val = parseInt(star.dataset.value);
+                resenaRatingValue.value = val;
+                updateStars(val);
+            });
+            star.addEventListener('mouseover', () => {
+                const val = parseInt(star.dataset.value);
+                updateStars(val, true);
+            });
+            star.addEventListener('mouseout', () => {
+                const val = parseInt(resenaRatingValue.value);
+                updateStars(val);
+            });
+        });
+
+        function updateStars(val, isHover = false) {
+            starRating.querySelectorAll('.material-icons-round').forEach(star => {
+                const starVal = parseInt(star.dataset.value);
+                if (starVal <= val) {
+                    star.style.color = isHover ? '#FFE082' : '#FFB300';
+                } else {
+                    star.style.color = '#DEE2E6';
+                }
+            });
+        }
+
+        function resetStars() {
+            resenaRatingValue.value = "0";
+            updateStars(0);
+        }
+
+        document.getElementById('resena-comentario').addEventListener('input', function() {
+            document.getElementById('resena-char-count').textContent = `${this.value.length} / 500`;
+        });
+
+        resenaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tipo = resenaForm.querySelector('input[name="resena-tipo"]:checked').value;
+            const objetivo = document.getElementById('resena-objetivo').value.trim();
+            const rating = parseInt(resenaRatingValue.value);
+            const comentario = document.getElementById('resena-comentario').value.trim();
+            const userId = getUserId();
+
+            if (rating === 0) {
+                showToast('Por favor selecciona una calificación');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/api/resenas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tipo,
+                        objetivo,
+                        calificacion: rating,
+                        comentario,
+                        usuario: { id: parseInt(userId) }
+                    })
+                });
+
+                if (res.ok) {
+                    closeResenaModal();
+                    showToast('¡Reseña publicada!');
+                    fetchResenasBackend();
+                } else {
+                    const error = await res.json();
+                    showToast(error.mensaje || 'Error al publicar reseña');
+                }
+            } catch (err) {
+                showToast('Error de conexión');
+            }
+        });
+
+        async function fetchResenasBackend(page = 0) {
+            try {
+                const res = await fetch(`${API}/api/resenas?page=${page}&size=10`);
+                if (res.ok) {
+                    const data = await res.json();
+                    renderResenas(data.content);
+                    renderPagination(data);
+                }
+            } catch (err) {
+                console.error("Error fetching resenas:", err);
+            }
+        }
+
+        function renderResenas(resenas) {
+            resenasList.innerHTML = '';
+            if (resenas.length === 0) {
+                resenasEmpty.style.display = 'flex';
+                return;
+            }
+            resenasEmpty.style.display = 'none';
+
+            resenas.forEach(r => {
+                const date = new Date(r.fechaCreacion).toLocaleDateString();
+                const stars = 'star'.repeat(r.calificacion).split('').map(() => 
+                    `<span class="material-icons-round">star</span>`
+                ).join('') + 'star'.repeat(5 - r.calificacion).split('').map(() => 
+                    `<span class="material-icons-round" style="color: #DEE2E6">star</span>`
+                ).join('');
+
+                const isAuthor = r.usuario.id === parseInt(getUserId());
+
+                const card = document.createElement('div');
+                card.className = 'resena-card';
+                card.innerHTML = `
+                    ${isAuthor ? `<span class="material-icons-round resena-delete-btn" onclick="deleteResena(${r.id})">delete_outline</span>` : ''}
+                    <div class="resena-user-info">
+                        <div class="resena-user-avatar">
+                            <span class="material-icons-round">person</span>
+                        </div>
+                        <div>
+                            <div class="resena-user-name">${r.usuario.nombre} ${r.usuario.apellido}</div>
+                            <div class="resena-date">${date}</div>
+                        </div>
+                    </div>
+                    <div class="resena-rating">${stars}</div>
+                    <div class="resena-content">${r.comentario}</div>
+                    <div class="resena-tag">
+                        <span class="material-icons-round" style="font-size: 14px;">${r.tipo === 'MATERIA' ? 'menu_book' : 'person'}</span>
+                        ${r.objetivo}
+                    </div>
+                `;
+                resenasList.appendChild(card);
+            });
+        }
+
+        function renderPagination(data) {
+            resenasPagination.innerHTML = '';
+            if (data.totalPages <= 1) return;
+
+            for (let i = 0; i < data.totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = `pagination-btn ${i === data.number ? 'active' : ''}`;
+                btn.textContent = i + 1;
+                btn.onclick = () => fetchResenasBackend(i);
+                resenasPagination.appendChild(btn);
+            }
+        }
+
+        async function deleteResena(id) {
+            if (!confirm('¿Estás seguro de eliminar esta reseña?')) return;
+            const userId = getUserId();
+
+            try {
+                const res = await fetch(`${API}/api/resenas/${id}?usuarioId=${userId}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    showToast('Reseña eliminada');
+                    fetchResenasBackend();
+                } else {
+                    const error = await res.json();
+                    showToast(error.mensaje || 'Error al eliminar');
+                }
+            } catch (err) {
+                showToast('Error de conexión');
+            }
         }
 
         // ── Toast ──────────────────────────────────────────────────────
@@ -4981,7 +5415,8 @@
                 this.states = {
                     login: new LoginState(this),
                     register: new RegisterState(this),
-                    dashboard: new DashboardState(this)
+                    dashboard: new DashboardState(this),
+                    resenas: new ResenasState(this)
                 };
                 this.currentState = null;
             }
@@ -5031,6 +5466,22 @@
                 
                 fetchAsignaturasBackend();
                 renderDashboardSummary();
+            }
+        }
+
+        class ResenasState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                document.querySelector('.profile-id').dataset.userId = user.id;
+
+                hideAllViews();
+                resenasView.classList.add('active');
+                syncNavbar('nav-resenas');
+                fetchResenasBackend();
             }
         }
 
@@ -5312,7 +5763,7 @@
             btn.innerHTML = '<span class="material-icons-round">sync</span> Generando...';
             
             try {
-                const response = await fetch(`${API_BASE}/usuarios/${userId}/informe-academico`);
+                const response = await fetch(`${API_BASE}/${userId}/informe-academico`);
                 if (!response.ok) throw new Error("No se pudo obtener el informe");
                 
                 const data = await response.json();
