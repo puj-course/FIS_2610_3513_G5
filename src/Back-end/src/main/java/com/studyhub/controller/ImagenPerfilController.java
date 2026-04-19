@@ -21,7 +21,7 @@ import java.util.UUID;
  * Controller para la gestión de fotos de perfil de usuario.
  *
  * Endpoint principal:
- *   POST /api/usuarios/{id}/foto  — recibe imagen, valida y guarda en disco
+ * ST /api/usuarios/{id}/foto — ecibe imagen, valida y guarda en disco
  *
  * Las imágenes se sirven de forma estática desde /uploads/fotos-perfil/
  * gracias a la configuración de recursos estáticos en WebConfig.
@@ -50,13 +50,13 @@ public class ImagenPerfilController {
      * Recibe una imagen de perfil, la valida y la guarda en disco.
      *
      * Validaciones:
-     *  - El usuario debe existir (404).
-     *  - El archivo no puede estar vacío (400).
-     *  - Solo se aceptan JPG, PNG y WebP (400).
-     *  - El tamaño máximo es 2 MB (400).
+     *  El usuario debe existir (404).
+     *  El archivo no puede estar vacío (400).
+     *  Solo se aceptan JPG, PNG y WebP (400).
+     *  El tamaño máximo es 2 MB (400).
      *
-     * @param id    ID del usuario
-     * @param foto  Archivo de imagen enviado como multipart/form-data
+     * @param id   D del usuario
+     * @param foto rchivo de imagen enviado como multipart/form-data
      * @return URL pública de la imagen guardada
      */
     @PostMapping(value = "/{id}/foto", consumes = "multipart/form-data")
@@ -119,8 +119,6 @@ public class ImagenPerfilController {
             return ResponseEntity.ok(Map.of(
                     "mensaje", "Foto de perfil actualizada exitosamente",
                     "urlFoto", urlPublica
-            ));
-
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("mensaje", "Error al guardar el archivo: " + e.getMessage()));
@@ -128,18 +126,18 @@ public class ImagenPerfilController {
     }
 
     /**
-     * Determina la extensión del archivo a partir del nombre original
-     * o del Content-Type como fallback.
-     */
+    * Infiere la extensión del archivo a partir del nombre original.
+    * Si no tiene extensión, usa el Content-Type como alternativa.
+    */
     private String obtenerExtension(String nombreOriginal, String contentType) {
         if (nombreOriginal != null && nombreOriginal.contains(".")) {
             return nombreOriginal.substring(nombreOriginal.lastIndexOf(".")).toLowerCase();
         }
         return switch (contentType) {
             case "image/jpeg" -> ".jpg";
-            case "image/png"  -> ".png";
-            case "image/webp" -> ".webp";
-            default           -> ".jpg";
-        };
+            case "image/png" -> ".png";
+            case "image/webp -> ".webp";
+            default -> ".jpg";
+        }; 
     }
 }
