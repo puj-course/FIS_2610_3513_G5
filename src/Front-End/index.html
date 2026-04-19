@@ -2593,14 +2593,6 @@
                     <label class="form-label">Confirmar Contraseña</label>
                     <input type="password" id="reg-pass-confirm" class="form-input" placeholder="Repite tu contraseña" required>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Carrera <span style="font-weight:400;color:var(--gray-400);">(opcional)</span></label>
-                    <input type="text" id="reg-carrera" class="form-input" placeholder="Ej: Ingeniería de Sistemas">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Semestre <span style="font-weight:400;color:var(--gray-400);">(opcional)</span></label>
-                    <input type="number" id="reg-semestre" class="form-input" placeholder="Ej: 4" min="1" max="12">
-                </div>
                 <button type="submit" class="auth-btn">Crear Cuenta</button>
             </form>
             <p class="auth-switch">¿Ya tienes cuenta? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
@@ -2644,7 +2636,7 @@
                     </div>
                     <div class="nav-item" id="nav-apuntes">
                         <span class="material-icons-round">edit_note</span>
-                        Mis Notas
+                        Mis Notas Rápidas
                     </div>
                     <div class="nav-item" id="nav-subjects">
                         <span class="material-icons-round">menu_book</span>
@@ -2656,7 +2648,7 @@
                     </div>
                     <div class="nav-item" id="nav-calculadora">
                         <span class="material-icons-round">calculate</span>
-                        Calculadora de Notas
+                        Calculadora de Promedios
                     </div>
                     <div class="nav-item export-btn" id="nav-export" onclick="exportarInformePDF()">
                         <span class="material-icons-round">picture_as_pdf</span>
@@ -2742,7 +2734,7 @@
                         <div class="dashboard-tasks-card">
                             <div class="section-header" style="margin-bottom: 0;">
                                 <h3 class="section-title" style="font-size: 16px;">Próximas Entregas</h3>
-                                <button class="btn-text" onclick="document.getElementById('nav-tasks').click()">Ver todas</button>
+                                <span class="widget-action" onclick="document.getElementById('nav-tasks').click()" style="cursor:pointer;">Ver todas</span>
                             </div>
                             <div id="dash-mini-tasks" class="mini-task-list">
                                 <!-- Se cargan vía JS -->
@@ -2782,12 +2774,15 @@
 
             <!-- Vista: Mis Materias (Solo Cuadrícula) -->
             <div class="subjects-view" id="subjects-view">
-                <div class="section-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Mis Materias</h2>
-                        <p class="section-subtitle" id="subjects-count-label">Cargando materias...</p>
+                        <h2 class="grades-view-title">Mis Materias</h2>
+                        <p class="grades-view-subtitle" id="subjects-count-label">Cargando materias...</p>
                     </div>
-                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openModal()">
+                    <button class="grades-add-btn" style="margin-top:0;margin-left:auto;" onclick="openModal()">
                         <span class="material-icons-round">add</span>
                         Nueva Materia
                     </button>
@@ -2860,7 +2855,7 @@
                         <span class="material-icons-round">arrow_back</span>
                     </button>
                     <div>
-                        <div class="grades-view-title">Calculadora de Nota Mínima</div>
+                        <div class="grades-view-title">Calculadora de Promedios</div>
                         <div class="grades-view-subtitle">Selecciona una materia para calcular</div>
                     </div>
                 </div>
@@ -2875,7 +2870,7 @@
                         <span class="material-icons-round">arrow_back</span>
                     </button>
                     <div>
-                        <div class="grades-view-title" id="calc-view-title">Calculadora de Nota Mínima</div>
+                        <div class="grades-view-title" id="calc-view-title">Calculadora de Promedios</div>
                         <div class="grades-view-subtitle" id="calc-view-subtitle"></div>
                     </div>
                 </div>
@@ -2977,12 +2972,15 @@
 
             <!-- ══════ VISTA: MIS NOTAS ══════ -->
             <div class="apuntes-view" id="apuntes-view">
-                <div class="section-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Mis Notas rápidas</h2>
-                        <p class="section-subtitle">Apunta ideas y recordatorios importantes</p>
+                        <h2 class="grades-view-title">Mis Notas Rápidas</h2>
+                        <p class="grades-view-subtitle">Apunta ideas y recordatorios importantes</p>
                     </div>
-                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openNewNoteModal()">
+                    <button class="grades-add-btn" style="margin-top:0;margin-left:auto;" onclick="openNewNoteModal()">
                         <span class="material-icons-round">add</span>
                         Nueva nota
                     </button>
@@ -2999,11 +2997,18 @@
             </div>
             <!-- Vista: Mis Tareas -->
             <div class="tasks-view" id="tasks-view">
-                <div class="section-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Mis Tareas y Pendientes</h2>
-                        <p class="section-subtitle" id="tasks-subtitle">Organiza tus actividades académicas</p>
+                        <h2 class="grades-view-title">Mis Tareas y Pendientes</h2>
+                        <p class="grades-view-subtitle" id="tasks-subtitle">Organiza tus actividades académicas</p>
                     </div>
+                    <button id="tasks-add-btn" class="grades-add-btn" style="margin-top:0;margin-left:auto;display:none;" onclick="openTaskModal()">
+                        <span class="material-icons-round">add</span>
+                        Agregar Tarea
+                    </button>
                 </div>
 
                 <div id="tasks-empty" class="grades-empty" style="display: none;">
@@ -3024,12 +3029,15 @@
 
             <!-- Vista: Foro de Reseñas -->
             <div class="resenas-view" id="resenas-view">
-                <div class="resenas-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Foro de Reseñas</h2>
-                        <p class="section-subtitle">Comparte y lee opiniones sobre materias y profesores</p>
+                        <h2 class="grades-view-title">Foro de Reseñas</h2>
+                        <p class="grades-view-subtitle">Comparte y lee opiniones sobre materias y profesores</p>
                     </div>
-                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openResenaModal()">
+                    <button class="grades-add-btn" style="margin-top:0;margin-left:auto;" onclick="openResenaModal()">
                         <span class="material-icons-round">add_comment</span>
                         Escribir Reseña
                     </button>
@@ -3271,11 +3279,11 @@
                         <div class="modal-subtitle">Registra una tarea o parcial</div>
                     </div>
                 </div>
-                <button class="modal-close" id="task-modal-close">
+                <button class="modal-close" id="task-modal-close" type="button">
                     <span class="material-icons-round">close</span>
                 </button>
             </div>
-            <form id="task-form">
+            <div id="task-form">
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Título de la Tarea</label>
@@ -3283,18 +3291,18 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Asignatura</label>
-                        <select class="form-select" id="task-subject" required>
+                        <select class="form-select" id="task-subject">
                             <option value="">Selecciona una materia</option>
                         </select>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Fecha de entrega</label>
-                            <input class="form-input" type="date" id="task-date" required>
+                            <input class="form-input" type="date" id="task-date">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Hora</label>
-                            <input class="form-input" type="time" id="task-time" required>
+                            <input class="form-input" type="time" id="task-time">
                         </div>
                     </div>
                     <div class="form-group">
@@ -3304,12 +3312,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" id="task-btn-cancel">Cancelar</button>
-                    <button type="submit" class="btn-save">
+                    <button type="button" class="btn-save" id="task-save-btn">
                         <span class="material-icons-round">save</span>
                         Guardar Tarea
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -3353,7 +3361,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="grade-score">
-                                Nota <span class="required">*</span>
+                                Nota
                             </label>
                             <input class="form-input" type="number" id="grade-score"
                                 placeholder="Opcional" min="0" max="5" step="0.1">
@@ -3545,6 +3553,8 @@
         // 'grades' = se abrió desde vista de calificaciones
         // 'calc'   = se abrió desde la calculadora
         let gradeModalOrigin   = 'grades';
+        // Rastrea la vista activa para evitar side effects de llamadas async
+        let currentView        = 'dashboard';
 
         // ── Colores e iconos para tarjetas ─────────────────────────────
         const cardColors = [
@@ -4377,6 +4387,7 @@
             hideAllViews();
             dashboardView.classList.add('active');
             syncNavbar('nav-dashboard');
+            currentView = 'dashboard';
             document.querySelector('.sidebar-right').style.display = '';
             document.querySelector('.app-container').style.gridTemplateColumns = '';
             renderDashboardSummary();
@@ -4387,6 +4398,7 @@
             hideAllViews();
             subjectsView.classList.add('active');
             syncNavbar('nav-subjects');
+            currentView = 'subjects';
             document.querySelector('.sidebar-right').style.display = '';
             document.querySelector('.app-container').style.gridTemplateColumns = '';
         });
@@ -4396,6 +4408,7 @@
             hideAllViews();
             tasksView.classList.add('active');
             syncNavbar('nav-tasks');
+            currentView = 'tasks';
             fetchTareasBackend();
         });
 
@@ -4404,14 +4417,16 @@
             hideAllViews();
             resenasView.classList.add('active');
             syncNavbar('nav-resenas');
+            currentView = 'resenas';
             fetchResenasBackend();
         });
 
         function hideAllViews() {
-            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView];
-            views.forEach(v => v.classList.remove('active'));
+            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView];
+            views.forEach(v => { if (v) v.classList.remove('active'); });
             // Reset nav active class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            currentView = '';
         }
 
         function syncNavbar(activeId) {
@@ -4421,7 +4436,7 @@
             });
         }
 
-        // Nav "Calculadora de Notas"
+        // Nav "Calculadora de Promedios"
         document.getElementById('nav-calculadora').addEventListener('click', () => {
             if (calcView.classList.contains('active')) {
                 closeCalcView();
@@ -4474,7 +4489,12 @@
         function closeTaskModal() {
             taskModal.classList.remove('active');
             document.body.style.overflow = '';
-            taskForm.reset();
+            // Reset manual de campos ya que no es un form
+            document.getElementById('task-title').value = '';
+            document.getElementById('task-subject').value = '';
+            document.getElementById('task-date').value = '';
+            document.getElementById('task-time').value = '';
+            document.getElementById('task-description').value = '';
         }
 
         // ══════════════════════════════════════════════════════════════
@@ -4572,6 +4592,8 @@
         taskModalClose.addEventListener('click', closeTaskModal);
         taskBtnCancel.addEventListener('click', closeTaskModal);
 
+        gradeModalClose.addEventListener('click', closeGradeModal);
+        gradeBtnCancel.addEventListener('click', closeGradeModal);
         gradeModal.addEventListener('click', (e) => { if (e.target === gradeModal) closeGradeModal(); });
 
         resenaModalClose.addEventListener('click', closeResenaModal);
@@ -4658,7 +4680,7 @@
                         </button>
                         <button class="card-dropdown-item" onclick="openCalcView(this.closest('.subject-card'))">
                             <span class="material-icons-round">calculate</span>
-                            Calculadora de Notas
+                            Calculadora de Promedios
                         </button>
                         <div class="card-dropdown-divider"></div>
                         <button class="card-dropdown-item delete" onclick="deleteCard(this)">
@@ -4898,7 +4920,7 @@
             const subtitleEl = document.getElementById('subjects-count-label');
             if (subtitleEl) subtitleEl.textContent = `Semestre actual · ${count} materias inscritas`;
             fetchResumenUsuario();
-            if (!dashboardView.classList.contains('hidden')) renderDashboardSummary();
+            if (currentView === 'dashboard') renderDashboardSummary();
         }
 
         function fetchResumenUsuario() {
@@ -5000,16 +5022,19 @@
             const tasksGrid = document.getElementById('tasks-grid');
             const tasksEmpty = document.getElementById('tasks-empty');
             const tasksSubtitle = document.getElementById('tasks-subtitle');
+            const tasksAddBtn = document.getElementById('tasks-add-btn');
             
             tasksGrid.innerHTML = '';
             
             if (tareas.length === 0) {
                 tasksEmpty.style.display = 'flex';
+                tasksAddBtn.style.display = 'none';
                 tasksSubtitle.textContent = 'No tienes tareas pendientes';
                 return;
             }
             
             tasksEmpty.style.display = 'none';
+            tasksAddBtn.style.display = 'flex';
             tasksSubtitle.textContent = `Tienes ${tareas.length} tareas registradas`;
             
             tareas.forEach(tarea => {
@@ -5064,14 +5089,13 @@
         }
 
         async function deleteTask(id) {
-            if (!confirm('¿Estás seguro de eliminar esta tarea?')) return;
             try {
                 const res = await fetch(`${API}/api/tareas/${id}`, { method: 'DELETE' });
                 if (!res.ok) throw new Error('Error al eliminar');
                 fetchTareasBackend();
                 showToast('Tarea eliminada');
-                // Si estamos en el dashboard, refrescar resumen
-                if (!dashboardView.classList.contains('hidden')) renderDashboardSummary();
+                // Refrescar resumen del dashboard solo si está activo
+                if (dashboardView.classList.contains('active')) renderDashboardSummary();
             } catch (err) {
                 console.error(err);
                 showToast('Error al eliminar tarea');
@@ -5205,8 +5229,8 @@
         });
 
         // ── Submit: Guardar Tarea ──────────────────────────────────────
-        taskForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ── Guardar Tarea (botón, no form submit) ──────────────────────
+        document.getElementById('task-save-btn').addEventListener('click', async () => {
 
             const titulo       = document.getElementById('task-title').value.trim();
             const asignaturaId = document.getElementById('task-subject').value;
@@ -5471,6 +5495,7 @@
                 hideAllViews();
                 dashboardView.classList.add('active');
                 syncNavbar('nav-dashboard');
+                currentView = 'dashboard';
                 
                 fetchAsignaturasBackend();
                 renderDashboardSummary();
@@ -5566,14 +5591,11 @@
 
         async function handleRegister(e) {
             e.preventDefault();
-            const nombre   = document.getElementById('reg-nombre').value.trim();
+            const nombre = document.getElementById('reg-nombre').value.trim();
             const apellido = document.getElementById('reg-apellido').value.trim();
-            const correo   = document.getElementById('reg-email').value.trim();
+            const correo = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-pass').value.trim();
-            const confirm  = document.getElementById('reg-pass-confirm').value.trim();
-            const carrera  = document.getElementById('reg-carrera').value.trim() || null;
-            const semestreRaw = document.getElementById('reg-semestre').value.trim();
-            const semestre = semestreRaw ? parseInt(semestreRaw) : null;
+            const confirm = document.getElementById('reg-pass-confirm').value.trim();
             const errorDiv = document.getElementById('register-error');
 
             if (password !== confirm) {
@@ -5586,7 +5608,7 @@
                 const response = await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE", carrera, semestre })
+                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
                 });
 
                 const result = await response.json();
@@ -5931,5 +5953,21 @@
             </div>
         </div>
     </div>
+    <script>
+        // Desactiva el Live Reload de Live Server cerrando su WebSocket
+        // Esto evita recargas automáticas no deseadas durante las pruebas
+        (function disableLiveReload() {
+            const _WebSocket = window.WebSocket;
+            window.WebSocket = function(url, protocols) {
+                if (url && url.toString().indexOf('5500') !== -1) {
+                    console.log('[LiveReload] Conexión bloqueada para evitar recargas automáticas.');
+                    const fakeWs = { send: () => {}, close: () => {}, addEventListener: () => {} };
+                    return fakeWs;
+                }
+                return new _WebSocket(url, protocols);
+            };
+            window.WebSocket.prototype = _WebSocket.prototype;
+        })();
+    </script>
 </body>
 </html>
