@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,19 +27,17 @@ public class UsuarioService {
     private final AsignaturaService asignaturaService;
     private final NotaService notaService;
     private final TareaRepository tareaRepository;
-
-    // CORREGIDO: PasswordEncryptionStrategy ahora existe (ver BCryptEncryptionStrategy)
     private final PasswordEncryptionStrategy encryptionStrategy;
 
     @Autowired
-    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy, 
-                          AsignaturaService asignaturaService, 
+    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy,
+                          AsignaturaService asignaturaService,
                           NotaService notaService,
                           TareaRepository tareaRepository) {
         this.encryptionStrategy = encryptionStrategy;
-        this.asignaturaService = asignaturaService;
-        this.notaService = notaService;
-        this.tareaRepository = tareaRepository;
+        this.asignaturaService  = asignaturaService;
+        this.notaService        = notaService;
+        this.tareaRepository    = tareaRepository;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -55,22 +54,76 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
     }
 
-    // NUEVO: método requerido por UsuarioController
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
+    }
+
+    /**
+     * Actualiza los campos de perfil editables de un usuario:
+     * nombre, apellido, carrera y semestre.
+     *
+     * Validaciones:
+     *  - El usuario debe existir (404 si no).
+     *  - nombre y apellido son obligatorios y no pueden estar vacíos (400).
+     *  - carrera y semestre son opcionales.
+     *
+     * @param id     ID del usuario a actualizar
+     * @param campos Mapa con los campos: nombre, apellido, carrera, semestre
+     * @return El usuario actualizado y persistido
+     * @throws RuntimeException con mensaje descriptivo si falla la validación
+     */
+    public Usuario actualizarPerfil(Long id, Map<String, Object> campos) {
+        // Buscar usuario — lanza excepción si no existe (se convierte en 404)
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+
+        // Validar nombre (obligatorio)
+        String nombre = campos.get("nombre") != null ? campos.get("nombre").toString().trim() : "";
+        if (nombre.isEmpty()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+
+        // Validar apellido (obligatorio)
+        String apellido = campos.get("apellido") != null ? campos.get("apellido").toString().trim() : "";
+        if (apellido.isEmpty()) {
+            throw new IllegalArgumentException("El apellido es obligatorio");
+        }
+
+        // Aplicar cambios obligatorios
+        usuario.setNombre(nombre);
+        usuario.setApellido(apellido);
+
+        // Aplicar campos opcionales si vienen en el body
+        if (campos.containsKey("carrera")) {
+            String carrera = campos.get("carrera") != null ? campos.get("carrera").toString().trim() : null;
+            usuario.setCarrera(carrera.isEmpty() ? null : carrera);
+        }
+
+        if (campos.containsKey("semestre")) {
+            try {
+                Integer semestre = campos.get("semestre") != null
+                        ? Integer.parseInt(campos.get("semestre").toString())
+                        : null;
+                if (semestre != null && (semestre < 1 || semestre > 12)) {
+                    throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
+                }
+                usuario.setSemestre(semestre);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El semestre debe ser un número entero válido");
+            }
+        }
+
+        return usuarioRepository.save(usuario);
     }
 
     public UsuarioResumenDTO obtenerResumenUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
 
-        // Obtener asignaturas registradas
         List<Asignatura> asignaturas = asignaturaService.findByUserId(id);
         int totalAsignaturas = asignaturas.size();
 
         double sumaPromedios = 0.0;
-        
-        // El promedio ponderado global será el promedio simple de los promedios individuales por requerimiento.
         for (Asignatura asignatura : asignaturas) {
             double promedioAsignatura = notaService.calcularPromedio(asignatura.getId());
             sumaPromedios += promedioAsignatura;
@@ -80,8 +133,7 @@ public class UsuarioService {
         if (totalAsignaturas > 0) {
             promedioGlobal = sumaPromedios / totalAsignaturas;
         }
-        
-        // Redondear a 2 decimales
+
         promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
         return new UsuarioResumenDTO(
@@ -96,7 +148,6 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 1. Obtener asignaturas con sus notas y promedios
         List<Asignatura> asignaturasRaw = asignaturaService.findByUserId(usuarioId);
         List<AsignaturaResumenDTO> asignaturasResumen = new ArrayList<>();
         double sumaPromedios = 0;
@@ -114,7 +165,6 @@ public class UsuarioService {
         double promedioGlobal = asignaturasRaw.isEmpty() ? 0 : sumaPromedios / asignaturasRaw.size();
         promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
-        // 2. Obtener tareas pendientes
         List<Tarea> tareasRaw = tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
         List<TareaResumenDTO> tareasResumen = tareasRaw.stream()
             .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega()))

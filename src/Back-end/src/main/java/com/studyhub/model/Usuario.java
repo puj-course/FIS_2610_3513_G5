@@ -30,6 +30,12 @@ public class Usuario {
     @NotBlank
     private String rol;
 
+    /** Carrera universitaria del estudiante (editable desde el perfil) */
+    private String carrera;
+
+    /** Semestre actual del estudiante (editable desde el perfil) */
+    private Integer semestre;
+
     private LocalDateTime fechaRegistro;
 
     @PrePersist
@@ -63,6 +69,14 @@ public class Usuario {
         return rol;
     }
 
+    public String getCarrera() {
+        return carrera;
+    }
+
+    public Integer getSemestre() {
+        return semestre;
+    }
+
     public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
     }
@@ -91,6 +105,14 @@ public class Usuario {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public void setCarrera(String carrera) {
+        this.carrera = carrera;
+    }
+
+    public void setSemestre(Integer semestre) {
+        this.semestre = semestre;
     }
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {

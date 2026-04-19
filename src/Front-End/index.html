@@ -2593,6 +2593,14 @@
                     <label class="form-label">Confirmar Contraseña</label>
                     <input type="password" id="reg-pass-confirm" class="form-input" placeholder="Repite tu contraseña" required>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Carrera <span style="font-weight:400;color:var(--gray-400);">(opcional)</span></label>
+                    <input type="text" id="reg-carrera" class="form-input" placeholder="Ej: Ingeniería de Sistemas">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Semestre <span style="font-weight:400;color:var(--gray-400);">(opcional)</span></label>
+                    <input type="number" id="reg-semestre" class="form-input" placeholder="Ej: 4" min="1" max="12">
+                </div>
                 <button type="submit" class="auth-btn">Crear Cuenta</button>
             </form>
             <p class="auth-switch">¿Ya tienes cuenta? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
@@ -5558,11 +5566,14 @@
 
         async function handleRegister(e) {
             e.preventDefault();
-            const nombre = document.getElementById('reg-nombre').value.trim();
+            const nombre   = document.getElementById('reg-nombre').value.trim();
             const apellido = document.getElementById('reg-apellido').value.trim();
-            const correo = document.getElementById('reg-email').value.trim();
+            const correo   = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-pass').value.trim();
-            const confirm = document.getElementById('reg-pass-confirm').value.trim();
+            const confirm  = document.getElementById('reg-pass-confirm').value.trim();
+            const carrera  = document.getElementById('reg-carrera').value.trim() || null;
+            const semestreRaw = document.getElementById('reg-semestre').value.trim();
+            const semestre = semestreRaw ? parseInt(semestreRaw) : null;
             const errorDiv = document.getElementById('register-error');
 
             if (password !== confirm) {
@@ -5575,7 +5586,7 @@
                 const response = await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE", carrera, semestre })
                 });
 
                 const result = await response.json();
