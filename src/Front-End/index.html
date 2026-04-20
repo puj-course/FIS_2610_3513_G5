@@ -5499,6 +5499,7 @@
                 
                 fetchAsignaturasBackend();
                 renderDashboardSummary();
+                iniciarGuardDeSesion();
             }
         }
 
@@ -5777,7 +5778,131 @@
                 console.error("Error al eliminar nota:", err);
             }
         }
+        
+        // =====================================================
+// GUARD DE RUTAS — Sub-issue 2 HU-27
+// Verifica en cada cambio de vista que la sesión
+// sigue siendo válida contra el back-end.
+// =====================================================
 
+let sessionGuardInterval = null;
+
+/**
+ * Llama a GET /auth/validar-sesion con el usuarioId y loginAt
+ * guardados en localStorage. Si el back-end responde { valida: false }
+ * (porque hubo un logout posterior), limpia el estado local y
+ * redirige a login sin mostrar contenido protegido.
+ *
+ * @returns {boolean} true si la sesión es válida, false si fue invalidada
+ */
+async function verificarSesionActiva() {
+    const session = SessionManager.getInstance();
+
+    // 1. Si no hay sesión local → redirigir directamente
+    if (!session.isLoggedIn()) {
+        navSystem.transitionTo('login');
+        return false;
+    }
+
+    const user = session.getUser();
+
+    // 2. Sesión heredada sin loginAt (antes de este sprint) → forzar re-login
+    if (!user.loginAt) {
+        console.warn('[Guard] Sesión sin loginAt — re-login requerido');
+        session.clear();
+        navSystem.transitionTo('login');
+        return false;
+    }
+
+    try {
+        // LocalDateTime.toString() en Java puede incluir nanosegundos;
+        // el parser del back-end solo acepta segundos → truncar
+        const loginAtClean = user.loginAt.split('.')[0];
+
+        const res = await fetch(
+            `${API}/auth/validar-sesion` +
+            `?usuarioId=${user.id}` +
+            `&loginAt=${encodeURIComponent(loginAtClean)}`
+        );
+
+        // Error de red o servidor → asumir válida (no cortar sesión por problema externo)
+        if (!res.ok) return true;
+
+        const data = await res.json();
+
+        if (!data.valida) {
+            console.warn('[Guard] Sesión invalidada por el servidor');
+            // Limpiar solo localmente (el back-end ya la marcó como inválida)
+            session.clear();
+            for (const key in gradesStore) delete gradesStore[key];
+            navSystem.transitionTo('login');
+            showToast('Tu sesión fue cerrada. Vuelve a iniciar sesión.');
+            return false;
+        }
+
+        return true;
+
+    } catch (err) {
+        // Sin conexión → no forzar logout para no romper uso offline
+        console.warn('[Guard] No se pudo verificar sesión (sin conexión):', err);
+        return true;
+    }
+}
+
+/**
+ * Inicia un polling cada 60 s que verifica la sesión activa.
+ * Llama a esto justo después del login exitoso.
+ * Sirve para detectar logouts hechos desde otra pestaña o dispositivo.
+ */
+function iniciarGuardDeSesion() {
+    if (sessionGuardInterval) clearInterval(sessionGuardInterval);
+    sessionGuardInterval = setInterval(async () => {
+        const session = SessionManager.getInstance();
+        if (!session.isLoggedIn()) {
+            clearInterval(sessionGuardInterval);
+            return;
+        }
+        await verificarSesionActiva();
+    }, 60000); // 60 segundos
+}
+
+/** Detiene el polling. Llamar siempre al hacer logout. */
+function detenerGuardDeSesion() {
+    if (sessionGuardInterval) {
+        clearInterval(sessionGuardInterval);
+        sessionGuardInterval = null;
+    }
+}
+
+// ── Interceptar el botón Atrás/Adelante del navegador ─────────────────
+// Crea una entrada en el historial para que la SPA pueda capturar popstate.
+history.pushState(null, '', window.location.href);
+
+window.addEventListener('popstate', async () => {
+    const session = SessionManager.getInstance();
+    if (!session.isLoggedIn()) {
+        // Usuario intentó volver atrás luego de cerrar sesión → bloquear
+        history.pushState(null, '', window.location.href);
+        navSystem.transitionTo('login');
+        return;
+    }
+    // Si hay sesión activa, verificar que siga siendo válida
+    await verificarSesionActiva();
+});
+
+// ── Detectar logout desde otras pestañas ─────────────────────────────
+// El evento 'storage' se dispara cuando OTRA pestaña modifica localStorage.
+window.addEventListener('storage', (e) => {
+    if (e.key === 'studyhub_user' && e.newValue === null) {
+        // Otra pestaña borró la sesión
+        const session = SessionManager.getInstance();
+        if (!session.isLoggedIn()) return; // ya estamos en login, ignorar
+        console.warn('[Guard] Logout detectado en otra pestaña');
+        for (const key in gradesStore) delete gradesStore[key];
+        navSystem.transitionTo('login');
+        showToast('Sesión cerrada desde otra pestaña');
+    }
+});
 
         // ========================================== //
         // ======= SPRINT 8: PDF EXPORT LOGIC ======= //
