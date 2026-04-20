@@ -5745,13 +5745,7 @@
         }
 
         function logout() {
-            SessionManager.getInstance().clear();
-            // Limpiar datos de asignaturas y notas al cerrar sesión
-            for (const key in gradesStore) delete gradesStore[key];
-            subjectsGrid.innerHTML = '';
-            
-            AccessProxy.goTo('login');
-            showToast('Sesión cerrada');
+            openLogoutModal();
         }
 
         // Agregar EventListener al avatar para cerrar sesión
@@ -6020,6 +6014,72 @@ window.addEventListener('storage', (e) => {
         function closeLogoutModal() {
             document.getElementById('logout-modal-overlay').classList.remove('active');
             document.body.style.overflow = '';
+        }
+        
+        // ── LÓGICA DE LOGOUT — Sub-issue 4 HU-27 ───────────────────────────────────
+
+        /**
+         * Se ejecuta al hacer clic en "Confirmar" del modal.
+         * 1. Llama a POST /auth/logout para registrar la invalidación en el back-end.
+         * 2. Sin importar si el back-end falla, limpia el estado local y redirige.
+         */
+        async function confirmLogout() {
+            const btn = document.getElementById('btn-confirm-logout');
+            btn.textContent = 'Cerrando...';
+            btn.disabled = true;
+
+            const session = SessionManager.getInstance();
+            const user    = session.getUser();
+
+            try {
+                if (user && user.id) {
+                    // Notificar al back-end para que invalide la sesión en la blacklist
+                    await fetch(`${API}/auth/logout`, {
+                        method:  'POST',
+                        headers: {
+                            'Content-Type':  'application/json',
+                            'Authorization': String(user.id)   // el back-end acepta el id como "token"
+                        },
+                        body: JSON.stringify({ usuarioId: user.id })
+                    });
+                }
+            } catch (err) {
+                // El back-end no respondió, pero el front SIEMPRE limpia la sesión local
+                console.warn('[Logout] No se pudo notificar al servidor:', err);
+            } finally {
+                performLocalLogout();
+            }
+        }
+
+        /**
+         * Limpia completamente el estado del cliente:
+         *  - Detiene el guard de polling
+         *  - Borra localStorage (sesión del usuario)
+         *  - Limpia el estado en memoria (gradesStore, DOM del grid)
+         *  - Cierra el modal y redirige al login
+         */
+        function performLocalLogout() {
+            // 1. Detener el polling del guard para no dejar intervalos colgados
+            detenerGuardDeSesion();
+
+            // 2. Eliminar todos los datos del usuario del almacenamiento local
+            SessionManager.getInstance().clear();
+
+            // 3. Limpiar estado global en memoria
+            for (const key in gradesStore) delete gradesStore[key];
+            if (subjectsGrid) subjectsGrid.innerHTML = '';
+
+            // 4. Restaurar el botón del modal (por si se vuelve a abrir en otra sesión)
+            const btn = document.getElementById('btn-confirm-logout');
+            if (btn) { btn.textContent = 'Cerrar sesión'; btn.disabled = false; }
+
+            // 5. Cerrar modal y restaurar scroll
+            closeLogoutModal();
+            document.body.style.overflow = '';
+
+            // 6. Redirigir a la vista de login
+            navSystem.transitionTo('login');
+            showToast('Sesión cerrada correctamente');
         }
 
         // ========================================== //
