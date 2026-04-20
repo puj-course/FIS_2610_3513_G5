@@ -118,7 +118,7 @@ public class ImagenPerfilController {
 
             return ResponseEntity.ok(Map.of(
                     "mensaje", "Foto de perfil actualizada exitosamente",
-                    "urlFoto", urlPublica
+                    "urlFoto", urlPublica));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("mensaje", "Error al guardar el archivo: " + e.getMessage()));
@@ -136,7 +136,7 @@ public class ImagenPerfilController {
         return switch (contentType) {
             case "image/jpeg" -> ".jpg";
             case "image/png" -> ".png";
-            case "image/webp -> ".webp";
+            case "image/webp" -> ".webp";
             default -> ".jpg";
         }; 
     }

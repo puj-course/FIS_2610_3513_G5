@@ -35,7 +35,15 @@ public class UsuarioController {
             String correo   = credenciales.get("correo");
             String password = credenciales.get("password");
             Usuario usuario = usuarioService.login(correo, password);
-            return ResponseEntity.ok(usuario);
+            String loginAt = java.time.LocalDateTime.now().toString();
+            return ResponseEntity.ok(Map.of(
+                "id",       usuario.getId(),
+                "nombre",   usuario.getNombre(),
+                "apellido", usuario.getApellido(),
+                "correo",   usuario.getCorreo(),
+                "rol",      usuario.getRol(),
+                "loginAt",  loginAt          // timestamp del login para el guard
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("mensaje", e.getMessage()));
