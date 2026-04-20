@@ -2529,6 +2529,87 @@
             gap: 6px;
             cursor: pointer;
         }
+        
+        /* ========== MODAL LOGOUT CONFIRMACIÓN — Sub-issue 3 HU 27 ========== */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 71, 161, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 6000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: all 0.25s ease;
+        }
+        .logout-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .logout-modal {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            width: 380px; max-width: 90vw;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .logout-modal-overlay.active .logout-modal {
+            transform: scale(1) translateY(0);
+        }
+        .logout-modal-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: #FFF3E0;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .logout-modal-icon .material-icons-round { font-size: 28px; color: #E65100; }
+        .logout-modal h3 {
+            font-size: 18px; font-weight: 700;
+            color: var(--gray-700); margin-bottom: 8px;
+        }
+        .logout-modal p {
+            font-size: 14px; color: var(--gray-500);
+            margin-bottom: 28px; line-height: 1.5;
+        }
+        .logout-modal-actions { display: flex; gap: 12px; }
+        .logout-modal-actions .btn-cancel-logout {
+            flex: 1; padding: 12px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            background: var(--white); color: var(--gray-600);
+            font-size: 14px; font-weight: 500;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .logout-modal-actions .btn-cancel-logout:hover { background: var(--gray-100); }
+        .logout-modal-actions .btn-confirm-logout {
+            flex: 1; padding: 12px; border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, #E53935, #C62828);
+            color: white; font-size: 14px; font-weight: 600;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(229,57,53,0.3);
+        }
+        .logout-modal-actions .btn-confirm-logout:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(229,57,53,0.4);
+        }
+
+        /* Botón en el sidebar */
+        .nav-item.logout-btn {
+            color: #C62828;
+            border: 1px solid #FFCDD2;
+            margin-top: 8px;
+        }
+        .nav-item.logout-btn:hover {
+            background: #FFEBEE;
+            color: #B71C1C;
+        }
+        .nav-item.logout-btn .material-icons-round { color: #E53935; }
 
     </style>
 
@@ -2629,7 +2710,7 @@
                     </div>
                 </div>
 
-                <nav class="sidebar-nav">
+                <nav class="sidebar-nav">   
                     <div class="nav-item active" id="nav-dashboard">
                         <span class="material-icons-round">dashboard</span>
                         Dashboard
@@ -2661,6 +2742,10 @@
                     <div class="nav-item">
                         <span class="material-icons-round">settings</span>
                         Configuración
+                    </div>
+                    <div class="nav-item logout-btn" id="nav-logout" onclick="openLogoutModal()">
+                        <span class="material-icons-round">logout</span>
+                        Cerrar Sesión
                     </div>
                 </nav>
             </div>
@@ -3387,7 +3472,24 @@
             </form>
         </div>
     </div>
-
+    
+    <!-- ===== MODAL: CONFIRMACIÓN CERRAR SESIÓN — Sub-issue 3 HU-27===== -->
+    <div class="logout-modal-overlay" id="logout-modal-overlay">
+        <div class="logout-modal">
+            <div class="logout-modal-icon">
+                <span class="material-icons-round">logout</span>
+            </div>
+            <h3>¿Cerrar sesión?</h3>
+            <p>Tu sesión se cerrará y serás redirigido a la pantalla de inicio de sesión.</p>
+            <div class="logout-modal-actions">
+                <button class="btn-cancel-logout" onclick="closeLogoutModal()">Cancelar</button>
+                <button class="btn-confirm-logout" id="btn-confirm-logout" onclick="confirmLogout()">
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
         <span id="toast-text">Materia agregada exitosamente</span>
@@ -4606,6 +4708,8 @@
                 if (taskModal.classList.contains('active'))    closeTaskModal();
                 if (gradeModal.classList.contains('active'))   closeGradeModal();
                 if (resenaModal.classList.contains('active'))  closeResenaModal();
+                if (document.getElementById('logout-modal-overlay')
+                        .classList.contains('active')) closeLogoutModal();
             }
         });
 
@@ -5903,6 +6007,20 @@ window.addEventListener('storage', (e) => {
         showToast('Sesión cerrada desde otra pestaña');
     }
 });
+
+        // ── MODAL LOGOUT — Sub-issue 3 HU-27 ────────────────────────────────────────
+
+        /** Abre el modal de confirmación. No hace ningún logout todavía. */
+        function openLogoutModal() {
+            document.getElementById('logout-modal-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        /** Cierra el modal sin hacer nada. */
+        function closeLogoutModal() {
+            document.getElementById('logout-modal-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
         // ========================================== //
         // ======= SPRINT 8: PDF EXPORT LOGIC ======= //
