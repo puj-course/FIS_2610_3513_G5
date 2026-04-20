@@ -4486,41 +4486,49 @@
 
         // Nav "Dashboard" — cierra cualquier vista secundaria activa
         document.getElementById('nav-dashboard').addEventListener('click', () => {
-            hideAllViews();
-            dashboardView.classList.add('active');
-            syncNavbar('nav-dashboard');
-            currentView = 'dashboard';
-            document.querySelector('.sidebar-right').style.display = '';
-            document.querySelector('.app-container').style.gridTemplateColumns = '';
-            renderDashboardSummary();
+            navigateSafe(() => {
+                hideAllViews();
+                dashboardView.classList.add('active');
+                syncNavbar('nav-dashboard');
+                currentView = 'dashboard';
+                document.querySelector('.sidebar-right').style.display = '';
+                document.querySelector('.app-container').style.gridTemplateColumns = '';
+                renderDashboardSummary();
+            });
         });
 
         // Nav "Mis Materias"
         document.getElementById('nav-subjects').addEventListener('click', () => {
-            hideAllViews();
-            subjectsView.classList.add('active');
-            syncNavbar('nav-subjects');
-            currentView = 'subjects';
-            document.querySelector('.sidebar-right').style.display = '';
-            document.querySelector('.app-container').style.gridTemplateColumns = '';
+            navigateSafe(() => {
+                hideAllViews();
+                subjectsView.classList.add('active');
+                syncNavbar('nav-subjects');
+                currentView = 'subjects';
+                document.querySelector('.sidebar-right').style.display = '';
+                document.querySelector('.app-container').style.gridTemplateColumns = '';
+            });
         });
 
         // Nav "Mis Tareas"
         document.getElementById('nav-tasks').addEventListener('click', () => {
-            hideAllViews();
-            tasksView.classList.add('active');
-            syncNavbar('nav-tasks');
-            currentView = 'tasks';
-            fetchTareasBackend();
+            navigateSafe(() => {
+                hideAllViews();
+                tasksView.classList.add('active');
+                syncNavbar('nav-tasks');
+                currentView = 'tasks';
+                fetchTareasBackend();
+            });
         });
 
         // Nav "Reseñas"
         document.getElementById('nav-resenas').addEventListener('click', () => {
-            hideAllViews();
-            resenasView.classList.add('active');
-            syncNavbar('nav-resenas');
-            currentView = 'resenas';
-            fetchResenasBackend();
+            navigateSafe(() => {
+                hideAllViews();
+                resenasView.classList.add('active');
+                syncNavbar('nav-resenas');
+                currentView = 'resenas';
+                fetchResenasBackend();
+            });
         });
 
         function hideAllViews() {
@@ -4540,16 +4548,18 @@
 
         // Nav "Calculadora de Promedios"
         document.getElementById('nav-calculadora').addEventListener('click', () => {
-            if (calcView.classList.contains('active')) {
-                closeCalcView();
-            } else if (calcSelectorView.classList.contains('active')) {
-                // Si ya estamos en el selector, volver al dashboard
-                document.getElementById('nav-dashboard').click();
-            } else {
-                hideAllViews();
-                syncNavbar('nav-calculadora');
-                openCalcSelector();
-            }
+            navigateSafe(() => {
+                if (calcView.classList.contains('active')) {
+                    closeCalcView();
+                } else if (calcSelectorView.classList.contains('active')) {
+                    // Si ya estamos en el selector, volver al dashboard
+                    document.getElementById('nav-dashboard').click();
+                } else {
+                    hideAllViews();
+                    syncNavbar('nav-calculadora');
+                    openCalcSelector();
+                }
+            });
         });
 
         // ══════════════════════════════════════════════════════════════
@@ -5762,10 +5772,12 @@
         const apuntesView = document.getElementById('apuntes-view');
         
         document.getElementById('nav-apuntes').addEventListener('click', () => {
-            hideAllViews();
-            apuntesView.classList.add('active');
-            syncNavbar('nav-apuntes');
-            loadNotes();
+            navigateSafe(() => {
+                hideAllViews();
+                apuntesView.classList.add('active');
+                syncNavbar('nav-apuntes');
+                loadNotes();
+            });
         });
         
         async function loadNotes() {
@@ -6079,7 +6091,22 @@ window.addEventListener('storage', (e) => {
 
             // 6. Redirigir a la vista de login
             navSystem.transitionTo('login');
+            // Reemplazar la entrada actual del historial para que el botón Atrás
+            // no pueda volver a una vista protegida tras el logout
+            history.replaceState(null, '', window.location.href);
             showToast('Sesión cerrada correctamente');
+        }
+        
+        // ── CASOS LÍMITE — Sub-issue 5 HU-27 ────────────────────────────────────────
+
+        /**
+         * Wrapper que verifica la sesión antes de ejecutar cualquier cambio de vista.
+         * Si la sesión es inválida, verificarSesionActiva() ya redirige a login.
+         * @param {Function} navFn - Función que ejecuta el cambio de vista
+         */
+        async function navigateSafe(navFn) {
+            const isValid = await verificarSesionActiva();
+            if (isValid) navFn();
         }
 
         // ========================================== //
