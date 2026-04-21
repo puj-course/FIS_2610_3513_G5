@@ -24,8 +24,8 @@ WORKDIR /app
 # Copiar el archivo JAR construido desde la etapa anterior
 COPY --from=build /app/target/*.jar app.jar
 
-# Crear el directorio de datos para H2
-RUN mkdir -p data/ uploads/fotos-perfil
+# Crear el directorio para carga de archivos
+RUN mkdir -p uploads/fotos-perfil
 
 # Exponer el puerto
 EXPOSE 8080
