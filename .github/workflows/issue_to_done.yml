@@ -24,8 +24,16 @@ jobs:
         run: |
           echo "Buscando Proyecto #$PROJECT_NUMBER en $ORGANIZATION..."
           
-          # 1. Obtener el ID global del proyecto
-          PROJECT_ID=$(gh project view $PROJECT_NUMBER --owner "$ORGANIZATION" --format json | jq -r ".id")
+          # 1. Obtener el ID global del proyecto usando GraphQL (más robusto)
+          PROJECT_ID=$(gh api graphql -f query='
+            query($owner: String!, $number: Int!) {
+              organization(login: $owner) {
+                projectV2(number: $number) { id }
+              }
+              user(login: $owner) {
+                projectV2(number: $number) { id }
+              }
+            }' -f owner="$ORGANIZATION" -F number=$PROJECT_NUMBER --jq '.data.organization.projectV2.id // .data.user.projectV2.id')
           
           if [ -z "$PROJECT_ID" ]; then
             echo "Error: No se encontró el proyecto con número $PROJECT_NUMBER"
