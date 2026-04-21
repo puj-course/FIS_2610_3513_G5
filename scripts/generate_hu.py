@@ -10,27 +10,27 @@ def generate_story_with_ai(title):
         return None
 
     prompt = f"""
-    Eres un experto en agilidad y desarrollo de software. 
-    Expande el siguiente título de Historia de Usuario en una HU completa:
+    Eres un experto en agilidad y desarrollo de software (Product Owner). 
+    Expande el siguiente título de Historia de Usuario en una HU completa y profesional:
     Título: {title}
     
-    La respuesta DEBE ser en formato Markdown y seguir esta estructura:
-    # {title}
+    La respuesta DEBE estar en español, ser en formato Markdown y seguir ESTRICTAMENTE esta estructura:
     
     ## Descripción
-    [Una descripción clara del valor para el usuario]
-    
-    ## Requerimientos Funcionales
-    - [Garantizar que...]
-    - [Permitir que...]
+    [Redacta una descripción detallada siguiendo el formato: "Como [rol], quiero [acción] para [beneficio]". Explica el contexto y el valor de negocio.]
     
     ## Criterios de Aceptación
-    - [El sistema debe...]
+    - [Escenario 1: Dado que... cuando... entonces...]
+    - [Escenario 2: ...]
+    
+    ## Requerimientos Técnicos
+    - [Detalle técnico 1]
     
     ## Definición de Hecho (DoD)
-    - Código revisado.
-    - Pruebas unitarias aprobadas.
-    - Documentación actualizada.
+    - Código sigue estándares de calidad.
+    - Pruebas unitarias al 80% de cobertura.
+    - Revisión de pares (Code Review) completada.
+    - Funcionalidad verificada en ambiente de desarrollo.
     """
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
@@ -48,15 +48,24 @@ def generate_story_with_ai(title):
         return result['candidates'][0]['content']['parts'][0]['text']
     except Exception as e:
         print(f"Error llamando a la API: {e}")
-        return f"# {title}\n\nError al generar el contenido automáticamente."
+        return f"## Descripción\nError al generar el contenido para: {title}"
 
 def create_github_issue(title, body):
-    # Usamos el comando 'gh' de GitHub que ya está instalado en los runners
+    # Usamos un archivo temporal para el cuerpo para evitar problemas de escape en el shell
+    temp_file = "temp_hu_body.md"
     try:
-        # Escapamos comillas simples para evitar problemas con el shell
-        safe_body = body.replace('"', '\\"').replace('`', '\\`')
-        cmd = f'gh issue create --title "{title}" --body "{safe_body}" --label "historia-usuario"'
+        with open(temp_file, "w", encoding="utf-8") as f:
+            f.write(body)
+        
+        # El título debe empezar con HU - como pidió el usuario
+        hu_title = f"HU - {title}"
+        
+        # Usamos --body-file que es más robusto para Markdown largo
+        cmd = f'gh issue create --title "{hu_title}" --body-file "{temp_file}" --label "historia-usuario"'
         os.system(cmd)
+        
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
     except Exception as e:
         print(f"Error creando el issue: {e}")
 
@@ -70,6 +79,7 @@ def main():
 
     for line in lines:
         title = line.strip()
+        # Ignorar líneas vacías o comentarios
         if not title or title.startswith("#"):
             continue
             
@@ -77,7 +87,7 @@ def main():
         body = generate_story_with_ai(title)
         if body:
             create_github_issue(title, body)
-            print(f"Issue creada para: {title}")
+            print(f"Issue creada: HU - {title}")
 
 if __name__ == "__main__":
     main()
