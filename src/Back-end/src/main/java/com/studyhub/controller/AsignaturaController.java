@@ -57,7 +57,7 @@ public class AsignaturaController {
         asignatura.setNombre(body.get("nombre").toString());
         asignatura.setCodigo(body.get("codigo").toString());
         asignatura.setProfesor(body.get("profesor").toString());
-        asignatura.setHorario(body.get("horario").toString());
+        asignatura.setHorarioTexto(body.get("horario").toString());
         asignatura.setCreditos(Integer.parseInt(body.get("creditos").toString()));
         asignatura.setPeriodo(body.get("periodo").toString());
         asignatura.setUsuario(usuario);
