@@ -1,8 +1,9 @@
 package com.studyhub.controller;
 
 import com.studyhub.model.Usuario;
-import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.*;
 import com.studyhub.service.UsuarioService;
+import com.studyhub.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -18,6 +21,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
@@ -111,4 +117,29 @@ public class UsuarioController {
                     .body(Map.of("mensaje", e.getMessage()));
         }
     }
+
+    @PostMapping("/recuperar")
+    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {
+        try {
+            String token = usuarioService.generarTokenRecuperacion(correo);
+            // En producción, esto debería ser la URL real del frontend
+            String enlace = "https://studyhub-c2ft.onrender.com/index.html?token=" + token;
+            emailService.enviarCorreoRecuperacion(correo, enlace);
+            return ResponseEntity.ok(Map.of("mensaje", "Enlace enviado exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/restablecer")
+    public ResponseEntity<?> restablecerPassword(@RequestBody RestablecerRequest request) {
+        try {
+            usuarioService.restablecerPassword(request.getToken(), request.getNuevaPassword());
+            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+
 }

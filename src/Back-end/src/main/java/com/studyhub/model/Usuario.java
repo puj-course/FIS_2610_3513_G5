@@ -75,4 +75,13 @@ public class Usuario {
     public void setSemestre(Integer semestre) { this.semestre = semestre; }
     public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+
+    // Campos para recuperación de contraseña
+    private String tokenRecuperacion;
+    private LocalDateTime tokenExpiracion;
+
+    public String getTokenRecuperacion() { return tokenRecuperacion; }
+    public void setTokenRecuperacion(String tokenRecuperacion) { this.tokenRecuperacion = tokenRecuperacion; }
+    public LocalDateTime getTokenExpiracion() { return tokenExpiracion; }
+    public void setTokenExpiracion(LocalDateTime tokenExpiracion) { this.tokenExpiracion = tokenExpiracion; }
 }
