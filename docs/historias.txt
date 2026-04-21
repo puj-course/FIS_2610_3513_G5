@@ -1,1 +1,2 @@
 # Personalización de perfil, foto, carrera, colores de la página
+# Autenticación con google, poder acceder con cuenta de google
