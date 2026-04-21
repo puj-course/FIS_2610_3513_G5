@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PROJECT_AUTOMATION_TOKEN }}
           ORGANIZATION: "puj-course"
-          PROJECT_NUMBER: 1  # Cambia esto si tu proyecto tiene otro número en la URL
+          PROJECT_NUMBER: 63
           ISSUE_ID: ${{ github.event.issue.node_id }}
         run: |
           echo "Buscando Proyecto #$PROJECT_NUMBER en $ORGANIZATION..."
