@@ -2,7 +2,7 @@ name: AI User Stories Generation
 
 on:
   push:
-    branches: [ "main", "Valeria" ]
+    branches: [ "main" ]
     paths:
       - 'docs/historias.txt'
   workflow_dispatch:
