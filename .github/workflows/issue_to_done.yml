@@ -10,14 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     # Solo se ejecuta si NO tiene la etiqueta 'SCRUM'
     if: "!contains(github.event.issue.labels.*.name, 'SCRUM')"
-    
+    permissions:
+      issues: write
+      contents: read
+
     steps:
       - name: Resolve Project Item and Move to Done
         env:
           GH_TOKEN: ${{ secrets.PROJECT_AUTOMATION_TOKEN }}
-          ORGANIZATION: "puj-course"
+          ORGANIZATION: ${{ github.repository_owner }}
           PROJECT_NUMBER: 63
           ISSUE_ID: ${{ github.event.issue.node_id }}
+          GH_DEBUG: api
         run: |
           echo "Buscando Proyecto #$PROJECT_NUMBER en $ORGANIZATION..."
           
