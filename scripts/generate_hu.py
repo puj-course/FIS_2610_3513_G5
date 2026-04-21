@@ -83,21 +83,7 @@ def create_github_issue(title, body):
         print(f"Ejecutando: {' '.join(cmd)}")
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
-            issue_url = result.stdout.strip()
-            print(f"✅ Éxito: Issue creada en {issue_url}")
-            
-            # Intentar añadir el issue al proyecto 63 automáticamente
-            project_number = 63
-            org = os.getenv("ORGANIZATION", "puj-course")
-            print(f"Añadiendo a proyecto #{project_number} en {org}...")
-            
-            add_cmd = ["gh", "project", "item-add", str(project_number), "--owner", org, "--url", issue_url]
-            add_result = subprocess.run(add_cmd, capture_output=True, text=True)
-            
-            if add_result.returncode == 0:
-                print(f"🚀 Issue vinculada al proyecto #{project_number}")
-            else:
-                print(f"⚠️ No se pudo vincular al proyecto: {add_result.stderr}")
+            print(f"✅ Éxito: {result.stdout.strip()}")
         else:
             print(f"❌ Error ejecutando gh issue create: {result.stderr}")
             # Intento sin la etiqueta por si acaso falló por eso
