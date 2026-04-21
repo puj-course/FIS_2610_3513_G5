@@ -1848,15 +1848,26 @@ sol
             border: none; 
             border-radius: 8px; 
             font-size: 15px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            margin-top: 8px; 
-            font-family: 'Inter', sans-serif; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
         }
         .auth-btn:hover { background: var(--blue-600); transform: translateY(-1px); }
-        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .auth-btn:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; }
+        
+        .auth-link { font-size: 13px; color: var(--blue-500); cursor: pointer; text-decoration: none; display: block; margin-top: 16px; }
+        .auth-link:hover { text-decoration: underline; }
+        .auth-link-bold { font-weight: 700; color: var(--blue-600); cursor: pointer; }
+        .auth-link-bold:hover { text-decoration: underline; }
 
+        .auth-divider { display: flex; align-items: center; gap: 10px; margin: 20px 0; color: var(--gray-400); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--gray-200); }
+        
+        .auth-footer { font-size: 13px; color: var(--gray-500); margin-top: 8px; }
+        
+        .auth-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
         .auth-link { display: inline-block; margin-top: 16px; font-size: 13px; color: var(--blue-500); text-decoration: none; font-weight: 500; cursor: pointer; }
         .auth-link:hover { text-decoration: underline; }
         
@@ -1883,18 +1894,55 @@ sol
                 <span class="material-icons-round auth-logo-icon">school</span>
                 <h2 class="auth-title">Bienvenido a StudyHub</h2>
                 <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
-                <form id="form-login">
+                <div id="login-error" class="auth-alert error"></div>
+                <form id="form-login" onsubmit="handleLogin(event)">
                     <div class="auth-form-group">
                         <label class="auth-label">Correo electrónico</label>
                         <input type="email" id="login-email" class="auth-input" placeholder="tu@correo.com" required>
                     </div>
                     <div class="auth-form-group">
                         <label class="auth-label">Contraseña</label>
-                        <input type="password" id="login-password" class="auth-input" placeholder="••••••••" required>
+                        <input type="password" id="login-pass" class="auth-input" placeholder="••••••••" required>
                     </div>
                     <button type="submit" class="auth-btn">Iniciar Sesión</button>
                 </form>
                 <a class="auth-link" onclick="showAuthScreen('screen-recover')">¿Olvidaste tu contraseña?</a>
+                <div class="auth-divider">o</div>
+                <p class="auth-footer">¿No tienes una cuenta? <a class="auth-link-bold" onclick="showAuthScreen('screen-register')">Regístrate</a></p>
+            </div>
+
+            <!-- Screen: Register -->
+            <div id="screen-register" class="auth-screen">
+                <span class="material-icons-round auth-logo-icon">person_add</span>
+                <h2 class="auth-title">Crea tu Cuenta</h2>
+                <p class="auth-subtitle">Únete a la comunidad de StudyHub</p>
+                <div id="register-error" class="auth-alert error"></div>
+                <form id="form-register" onsubmit="handleRegister(event)">
+                    <div class="auth-form-row">
+                        <div class="auth-form-group">
+                            <label class="auth-label">Nombre</label>
+                            <input type="text" id="reg-nombre" class="auth-input" placeholder="Ej: Juan" required>
+                        </div>
+                        <div class="auth-form-group">
+                            <label class="auth-label">Apellido</label>
+                            <input type="text" id="reg-apellido" class="auth-input" placeholder="Ej: Pérez" required>
+                        </div>
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-label">Correo electrónico</label>
+                        <input type="email" id="reg-email" class="auth-input" placeholder="tu@correo.com" required>
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-label">Contraseña</label>
+                        <input type="password" id="reg-pass" class="auth-input" placeholder="Mín. 6 caracteres" required minlength="6">
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-label">Confirmar Contraseña</label>
+                        <input type="password" id="reg-pass-confirm" class="auth-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="auth-btn">Registrarse</button>
+                </form>
+                <p class="auth-footer">¿Ya tienes cuenta? <a class="auth-link-bold" onclick="showAuthScreen('screen-login')">Inicia sesión</a></p>
             </div>
 
 
@@ -1902,9 +1950,10 @@ sol
             <div id="screen-recover" class="auth-screen">
                 <span class="material-icons-round auth-logo-icon">lock_reset</span>
                 <h2 class="auth-title">Recuperar Acceso</h2>
-                <p class="auth-subtitle">Ingresa tu correo para recibir un enlace</p>
-                <div id="recover-alert" class="auth-alert"></div>
-                <form id="form-recover">
+                <p class="auth-subtitle">Ingresa tu correo para recibir un enlace de recuperación</p>
+                <div id="recover-error" class="auth-alert error"></div>
+                <div id="recover-success" class="auth-alert success"></div>
+                <form id="form-recover" onsubmit="handleRecover(event)">
                     <div class="auth-form-group">
                         <label class="auth-label">Correo electrónico</label>
                         <input type="email" id="recover-email" class="auth-input" placeholder="tu@correo.com" required>
@@ -1918,68 +1967,26 @@ sol
             <div id="screen-reset" class="auth-screen">
                 <span class="material-icons-round auth-logo-icon">password</span>
                 <h2 class="auth-title">Nueva Contraseña</h2>
-                <p class="auth-subtitle">Crea una nueva contraseña segura</p>
-                <div id="reset-alert" class="auth-alert"></div>
-                <form id="form-reset">
+                <p class="auth-subtitle">Crea una nueva contraseña segura para tu cuenta</p>
+                <div id="reset-error" class="auth-alert error"></div>
+                <div id="reset-success" class="auth-alert success"></div>
+                <form id="form-reset" onsubmit="handleReset(event)">
                     <div class="auth-form-group">
                         <label class="auth-label">Nueva Contraseña</label>
-                        <input type="password" id="reset-password" class="auth-input" placeholder="••••••••" required>
+                        <input type="password" id="reset-pass" class="auth-input" placeholder="••••••••" required minlength="6">
                     </div>
                     <div class="auth-form-group">
                         <label class="auth-label">Confirmar Contraseña</label>
-                        <input type="password" id="reset-confirm" class="auth-input" placeholder="••••••••" required>
+                        <input type="password" id="reset-pass-confirm" class="auth-input" placeholder="••••••••" required>
                     </div>
                     <button type="submit" id="btn-reset" class="auth-btn">Actualizar Contraseña</button>
                 </form>
-                <div id="reset-success-actions" style="display: none; margin-top: 16px;">
+                <div id="reset-final-actions" style="display: none; margin-top: 166px;">
                     <button class="auth-btn" onclick="showAuthScreen('screen-login')">Ir al Inicio de Sesión</button>
                 </div>
             </div>
         </div>
 
-        <!-- RECOVER VIEW (NEW HU-26) -->
-        <div id="recover-view" class="auth-card">
-            <div class="auth-header">
-                <div class="auth-logo"><span class="material-icons-round">lock_reset</span></div>
-                <h2 class="auth-title">Recuperar Acceso</h2>
-                <p class="auth-subtitle">Ingresa tu correo para recibir un enlace de recuperación</p>
-            </div>
-            <div id="recover-error" class="error-message"></div>
-            <div id="recover-success" class="success-message"></div>
-            <form class="auth-form" onsubmit="handleRecover(event)">
-                <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" id="recover-email" class="form-input" placeholder="ejemplo@correo.com" required>
-                </div>
-                <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
-            </form>
-            <p class="auth-switch">¿Recordaste tu clave? <span class="auth-link" onclick="toggleAuth('login')">Volver al login</span></p>
-        </div>
-
-        <!-- RESET VIEW (NEW HU-26) -->
-        <div id="reset-view" class="auth-card">
-            <div class="auth-header">
-                <div class="auth-logo"><span class="material-icons-round">password</span></div>
-                <h2 class="auth-title">Nueva Contraseña</h2>
-                <p class="auth-subtitle">Crea una nueva contraseña segura para tu cuenta</p>
-            </div>
-            <div id="reset-error" class="error-message"></div>
-            <div id="reset-success" class="success-message"></div>
-            <form class="auth-form" onsubmit="handleReset(event)">
-                <div class="form-group">
-                    <label class="form-label">Nueva Contraseña</label>
-                    <input type="password" id="reset-pass" class="form-input" placeholder="••••••••" required minlength="6">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Confirmar Contraseña</label>
-                    <input type="password" id="reset-pass-confirm" class="form-input" placeholder="••••••••" required>
-                </div>
-                <button type="submit" id="btn-reset" class="auth-btn">Actualizar Contraseña</button>
-            </form>
-            <div id="reset-final-actions" style="display: none; margin-top: 16px;">
-                <button class="auth-btn" onclick="toggleAuth('login')">Ir al Inicio de Sesión</button>
-            </div>
-        </div>
     </div>
 
     <!-- ========== VIEW: DASHBOARD (APP) ========== -->
@@ -2733,9 +2740,7 @@ sol
 
     <script>
         // URL de la API en Render
-        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'http://localhost:8080' 
-                    : 'https://studyhub-backend.onrender.com';
+        const API = 'https://studyhub-c2ft.onrender.com';
 
         // ── Lógica SPA (Navegación Interna) ─────────────────────────────
         function navigateMainView(viewId) {
@@ -2756,100 +2761,15 @@ sol
 
         function logout() {
             // Limpiar sesión
-            localStorage.removeItem('user'); 
-            localStorage.clear();
+            SessionManager.getInstance().clear();
             
             // Volver al inicio limpio
-            navigateMainView('auth');
-            showAuthScreen('screen-login');
+            AccessProxy.goTo('login');
             
             // Limpiar datos visuales
             subjectsGrid.innerHTML = '';
             document.querySelectorAll('.schedule-block').forEach(el => el.remove());
         }
-
-        // ── Manejo de Formularios Auth ───────────────────────────────
-        
-        // Login
-        document.getElementById('form-login').addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Simulación de login exitoso
-            navigateMainView('dashboard');
-            loadSubjects();
-        });
-
-        // Recuperar Contraseña
-        document.getElementById('form-recover').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('recover-email').value;
-            const btn = document.getElementById('btn-recover');
-            const alert = document.getElementById('recover-alert');
-
-            btn.disabled = true;
-            btn.textContent = 'Enviando...';
-            
-            try {
-                const res = await fetch(`${API}/api/auth/recuperar`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: email })
-                });
-                const data = await res.json();
-                alert.className = 'auth-alert success';
-                alert.textContent = data.mensaje || 'Si el correo existe, recibirás un enlace.';
-            } catch (err) {
-                alert.className = 'auth-alert error';
-                alert.textContent = 'Error al conectar con el servidor.';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Enviar Enlace';
-            }
-        });
-
-        // Restablecer Contraseña
-        document.getElementById('form-reset').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-            const pwd1 = document.getElementById('reset-password').value;
-            const pwd2 = document.getElementById('reset-confirm').value;
-            const alert = document.getElementById('reset-alert');
-
-            if (pwd1 !== pwd2) {
-                alert.className = 'auth-alert error';
-                alert.textContent = 'Las contraseñas no coinciden.';
-                return;
-            }
-
-            const btn = document.getElementById('btn-reset');
-            btn.disabled = true;
-            btn.textContent = 'Actualizando...';
-
-            try {
-                const res = await fetch(`${API}/api/auth/restablecer`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token, nuevaPassword: pwd1 })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    alert.className = 'auth-alert success';
-                    alert.textContent = data.mensaje || 'Contraseña actualizada con éxito.';
-                    document.getElementById('form-reset').style.display = 'none';
-                    document.getElementById('reset-success-actions').style.display = 'block';
-                } else {
-                    alert.className = 'auth-alert error';
-                    alert.textContent = data.error || 'Token inválido o expirado.';
-                }
-            } catch (err) {
-                alert.className = 'auth-alert error';
-                alert.textContent = 'Error de conexión.';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Actualizar Contraseña';
-            }
-        });
-
 
         // ── Referencias al DOM ──────────────────────────────────────────
         const modalOverlay = document.getElementById('modal-overlay');
@@ -2914,33 +2834,28 @@ sol
         //  TABLA DE CALIFICACIONES
         // ══════════════════════════════════════════════════════════════
 
-        /** Clase CSS del badge según la nota (escala 0-5) */
         function scoreClass(nota) {
             if (nota >= 3.5) return 'high';
             if (nota >= 3.0) return 'mid';
             return 'low';
         }
 
-        /** Calcula el promedio ponderado: Σ(nota × porcentaje/100) */
         function calcWeightedAverage(key) {
             const list = gradesStore[key] || [];
             return list.reduce((sum, g) => sum + g.nota * (g.porcentaje / 100), 0);
         }
 
-        /** Clase CSS del promedio final */
         function avgClass(avg) {
             if (avg >= 3.0) return 'good';
             return 'bad';
         }
 
-        /** Actualiza solo el promedio en pantalla */
         function refreshAverage(key) {
             const avg = calcWeightedAverage(key);
             gradesAverageValue.textContent = avg.toFixed(2);
             gradesAverageValue.className = 'grades-average-value ' + avgClass(avg);
         }
 
-        /** Renderiza (o actualiza) la tabla de calificaciones de la tarjeta activa */
         function renderGradesTable(card) {
             if (!card) return;
             const key = card.dataset.gradeKey || '';
@@ -2985,14 +2900,12 @@ sol
             refreshAverage(key);
         }
 
-        /** Activa / desactiva el modo edición inline de una fila */
         function toggleEditRow(btn) {
             const tr = btn.closest('tr');
             const key = tr.dataset.gradeKey;
             const idx = parseInt(tr.dataset.gradeIndex, 10);
 
             if (tr.classList.contains('editing')) {
-                // ── Guardar cambios ──────────────────────────────────
                 const inputNombre = tr.querySelector('.grade-inline-input.name-input');
                 const inputNota = tr.querySelector('.grade-inline-input.nota-input');
                 const inputPct = tr.querySelector('.grade-inline-input.pct-input');
@@ -3001,7 +2914,6 @@ sol
                 const newNota = parseFloat(inputNota.value);
                 const newPct = parseInt(inputPct.value, 10);
 
-                // Validación rápida
                 let valid = true;
                 if (!newNombre) { inputNombre.classList.add('error'); valid = false; }
                 else inputNombre.classList.remove('error');
@@ -3009,7 +2921,6 @@ sol
                 if (isNaN(newNota) || newNota < 0 || newNota > 5) { inputNota.classList.add('error'); valid = false; }
                 else inputNota.classList.remove('error');
 
-                // Verificar que el porcentaje no exceda 100 considerando el resto de filas
                 const otherPct = (gradesStore[key] || []).reduce((s, g, i) => i !== idx ? s + g.porcentaje : s, 0);
                 if (isNaN(newPct) || newPct < 1 || newPct > 100 || otherPct + newPct > 100) {
                     inputPct.classList.add('error'); valid = false;
@@ -3017,133 +2928,59 @@ sol
 
                 if (!valid) return;
 
-                // Persistir en el store
                 gradesStore[key][idx] = { nombre: newNombre, nota: newNota, porcentaje: newPct };
-
-                // Volver a modo vista
                 tr.classList.remove('editing');
                 tr.querySelector('.cell-nombre').textContent = newNombre;
-                tr.querySelector('.cell-nota').innerHTML =
-                    `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
-                tr.querySelector('.cell-pct').innerHTML =
-                    `<span class="grade-percent-pill">${newPct}%</span>`;
-
+                tr.querySelector('.cell-nota').innerHTML = `<span class="grade-score-badge ${scoreClass(newNota)}">${newNota.toFixed(1)}</span>`;
+                tr.querySelector('.cell-pct').innerHTML = `<span class="grade-percent-pill">${newPct}%</span>`;
                 btn.querySelector('.material-icons-round').textContent = 'edit';
                 btn.title = 'Editar';
-
                 refreshAverage(key);
-
             } else {
-                // ── Activar modo edición ─────────────────────────────
-                // Cerrar cualquier otra fila que esté en modo edición
-                gradesTableBody.querySelectorAll('tr.editing').forEach(row => {
-                    if (row !== tr) {
-                        const editBtn = row.querySelector('.grade-edit-btn');
-                        if (editBtn) toggleEditRow(editBtn);   // guardar cambios de la otra fila
-                    }
-                });
-
                 const g = gradesStore[key][idx];
                 tr.classList.add('editing');
-
-                tr.querySelector('.cell-nombre').innerHTML =
-                    `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
-                tr.querySelector('.cell-nota').innerHTML =
-                    `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
-                tr.querySelector('.cell-pct').innerHTML =
-                    `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
-
-                // Actualizar promedio en tiempo real mientras el usuario escribe
-                tr.querySelectorAll('.grade-inline-input').forEach(input => {
-                    input.addEventListener('input', () => {
-                        const tmpNota = parseFloat(tr.querySelector('.nota-input').value);
-                        const tmpPct = parseInt(tr.querySelector('.pct-input').value, 10);
-                        if (!isNaN(tmpNota) && !isNaN(tmpPct) && tmpNota >= 0 && tmpNota <= 5 && tmpPct >= 1 && tmpPct <= 100) {
-                            // Calcular promedio provisional sin tocar el store
-                            const provisional = (gradesStore[key] || []).reduce((sum, gr, i) => {
-                                if (i === idx) return sum + tmpNota * (tmpPct / 100);
-                                return sum + gr.nota * (gr.porcentaje / 100);
-                            }, 0);
-                            gradesAverageValue.textContent = provisional.toFixed(2);
-                            gradesAverageValue.className = 'grades-average-value ' + avgClass(provisional);
-                        }
-                    });
-                });
-
+                tr.querySelector('.cell-nombre').innerHTML = `<input class="grade-inline-input name-input" type="text" value="${g.nombre}">`;
+                tr.querySelector('.cell-nota').innerHTML = `<input class="grade-inline-input number-input nota-input" type="number" min="0" max="5" step="0.1" value="${g.nota.toFixed(1)}">`;
+                tr.querySelector('.cell-pct').innerHTML = `<input class="grade-inline-input number-input pct-input" type="number" min="1" max="100" step="1" value="${g.porcentaje}">`;
                 btn.querySelector('.material-icons-round').textContent = 'check';
                 btn.title = 'Guardar';
-
-                // Foco en el campo nombre
                 tr.querySelector('.name-input').focus();
             }
         }
 
-        /** Elimina una calificación individual de la tabla */
         function deleteGradeRow(btn) {
             const tr = btn.closest('tr');
             const key = tr.dataset.gradeKey;
             const idx = parseInt(tr.dataset.gradeIndex, 10);
-
             tr.classList.add('removing');
             tr.addEventListener('animationend', () => {
                 gradesStore[key].splice(idx, 1);
                 renderGradesTable(activeCardForView);
-                if (activeCardForGrade && activeCardForGrade.dataset.gradeKey === key) {
-                    updatePercentSummary(key);
-                }
             }, { once: true });
         }
 
-        // ══════════════════════════════════════════════════════════════
-        //  VISTA DE CALIFICACIONES
-        // ══════════════════════════════════════════════════════════════
-
         function openGradesView(card) {
             activeCardForView = card;
-
             const nombre = card.querySelector('.subject-name').textContent;
             const subId = card.querySelector('.subject-id')?.textContent || '';
-
             gradesViewTitle.textContent = nombre;
             gradesViewSubtitle.textContent = subId;
-
-            if (!card.dataset.gradeKey) {
-                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
-            }
-
+            if (!card.dataset.gradeKey) card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
             renderGradesTable(card);
-
             showView('grades');
             setNavActive('nav-materials');
         }
 
-        function closeGradesView() {
-            showView('dashboard');
-            setNavActive('nav-dashboard');
-            activeCardForView = null;
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        //  NAVEGACIÓN GENERAL
-        // ══════════════════════════════════════════════════════════════
+        function closeGradesView() { AccessProxy.goTo('dashboard', SessionManager.getInstance().getUser()); activeCardForView = null; }
 
         function showView(viewId) {
-            // Ocultar todas las sub-vistas del dashboard
             const subViews = ['dashboard-view', 'grades-view', 'forum-view', 'apuntes-view'];
             subViews.forEach(id => {
                 const el = document.getElementById(id);
-                if (el) {
-                    el.classList.remove('active');
-                    el.classList.add('hidden');
-                }
+                if (el) { el.classList.remove('active'); el.classList.add('hidden'); }
             });
-
-            // Mostrar la seleccionada
             const selected = document.getElementById(viewId.includes('view') ? viewId : `${viewId}-view`);
-            if (selected) {
-                selected.classList.remove('hidden');
-                selected.classList.add('active');
-            }
+            if (selected) { selected.classList.remove('hidden'); selected.classList.add('active'); }
         }
 
         function setNavActive(navId) {
@@ -3153,58 +2990,19 @@ sol
             });
         }
 
-        document.getElementById('nav-dashboard').addEventListener('click', () => {
-            showView('dashboard');
-            setNavActive('nav-dashboard');
-        });
-
-        document.getElementById('nav-materials').addEventListener('click', () => {
-            showView('dashboard');
-            setNavActive('nav-materials');
-        });
-
-        document.getElementById('nav-forum').addEventListener('click', () => {
-            showView('forum');
-            setNavActive('nav-forum');
-        });
-
-        document.getElementById('nav-tasks').addEventListener('click', () => {
-            showView('dashboard'); // Placeholder for now
-            setNavActive('nav-tasks');
-        });
-
-        document.getElementById('nav-calc').addEventListener('click', () => {
-            showView('dashboard'); // Placeholder
-            setNavActive('nav-calc');
-        });
-
-        document.getElementById('nav-settings').addEventListener('click', () => {
-            showView('dashboard'); // Placeholder
-            setNavActive('nav-settings');
-        });
-
+        document.getElementById('nav-dashboard').addEventListener('click', () => { AccessProxy.goTo('dashboard', SessionManager.getInstance().getUser()); });
+        document.getElementById('nav-materials').addEventListener('click', () => { setNavActive('nav-materials'); showView('dashboard'); });
+        document.getElementById('nav-forum').addEventListener('click', () => { navSystem.transitionTo('resenas'); });
+        document.getElementById('nav-tasks').addEventListener('click', () => { setNavActive('nav-tasks'); });
+        document.getElementById('nav-calc').addEventListener('click', () => { setNavActive('nav-calc'); });
+        document.getElementById('nav-settings').addEventListener('click', () => { setNavActive('nav-settings'); });
         gradesBackBtn.addEventListener('click', closeGradesView);
-
-        // Botón "+ Agregar" del estado vacío
-        gradesAddBtn.addEventListener('click', () => {
-            if (activeCardForView) openGradeModal(activeCardForView);
-        });
-
-        // Botón "+ Agregar calificación" del footer de la tabla
-        gradesAddInlineBtn.addEventListener('click', () => {
-            if (activeCardForView) openGradeModal(activeCardForView);
-        });
-
-        // ══════════════════════════════════════════════════════════════
-        //  LÓGICA DEL FORO
-        // ══════════════════════════════════════════════════════════════
+        gradesAddBtn.addEventListener('click', () => { if (activeCardForView) openGradeModal(activeCardForView); });
+        gradesAddInlineBtn.addEventListener('click', () => { if (activeCardForView) openGradeModal(activeCardForView); });
 
         const mockReviews = [
             { student: 'Ana María G.', professor: 'Carlos Ramírez', subject: 'Fundamentos de Ing. de Software', rating: 5, comment: 'Excelente profesor, explica con mucha claridad y los talleres son muy prácticos.' },
-            { student: 'Luis F. Herrera', professor: 'María López', subject: 'Cálculo Diferencial', rating: 3, comment: 'Sabe mucho, pero va muy rápido en las clases. Hay que estudiar mucho por cuenta propia.' },
-            { student: 'Juan Camilo S.', professor: 'Andrés Castro', subject: 'Física Mecánica', rating: 4, comment: 'Muy justo con las calificaciones y siempre está dispuesto a resolver dudas en tutorías.' },
-            { student: 'Daniela R.', professor: 'Carlos Ramírez', subject: 'Ingeniería de Requerimientos', rating: 5, comment: 'La mejor metodología para aprender. ¡Súper recomendado!' },
-            { student: 'Andrés Felipe', professor: 'Ricardo Gómez', subject: 'Bases de Datos', rating: 2, comment: 'El contenido es denso y el profesor no es muy claro con los criterios de evaluación.' }
+            { student: 'Luis F. Herrera', professor: 'María López', subject: 'Cálculo Diferencial', rating: 3, comment: 'Sabe mucho, pero va muy rápido en las clases. Hay que estudiar mucho por cuenta propia.' }
         ];
 
         let selectedStars = 0;
@@ -3213,12 +3011,7 @@ sol
             const list = document.getElementById('reviews-list');
             if (!list) return;
             list.innerHTML = '';
-
-            const filtered = mockReviews.filter(r =>
-                r.professor.toLowerCase().includes(filter.toLowerCase()) ||
-                r.subject.toLowerCase().includes(filter.toLowerCase())
-            );
-
+            const filtered = mockReviews.filter(r => r.professor.toLowerCase().includes(filter.toLowerCase()) || r.subject.toLowerCase().includes(filter.toLowerCase()));
             filtered.forEach(r => {
                 const card = document.createElement('div');
                 card.className = 'review-card';
@@ -3228,11 +3021,7 @@ sol
                             <div class="student-avatar">${r.student[0]}</div>
                             <span class="student-name">${r.student}</span>
                         </div>
-                        <div class="review-stars">
-                            ${Array(5).fill(0).map((_, i) => `
-                                <span class="material-icons-round">${i < r.rating ? 'star' : 'star_outline'}</span>
-                            `).join('')}
-                        </div>
+                        <div class="review-stars">${Array(5).fill(0).map((_, i) => `<span class="material-icons-round">${i < r.rating ? 'star' : 'star_outline'}</span>`).join('')}</div>
                     </div>
                     <div class="review-meta"><strong>Prof:</strong> ${r.professor} · <strong>Asignatura:</strong> ${r.subject}</div>
                     <p class="review-comment">"${r.comment}"</p>
@@ -3241,499 +3030,132 @@ sol
             });
         }
 
-        // Estrellas interactivas
         function initForumLogic() {
             document.querySelectorAll('#review-stars-input .material-icons-round').forEach(star => {
                 star.addEventListener('click', () => {
                     selectedStars = parseInt(star.dataset.value);
-                    document.querySelectorAll('#review-stars-input .material-icons-round').forEach((s, idx) => {
-                        s.classList.toggle('active', idx < selectedStars);
-                    });
+                    document.querySelectorAll('#review-stars-input .material-icons-round').forEach((s, idx) => { s.classList.toggle('active', idx < selectedStars); });
                 });
             });
-
             const searchInput = document.getElementById('forum-search');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    renderReviews(e.target.value);
-                });
-            }
+            if (searchInput) searchInput.addEventListener('input', (e) => { renderReviews(e.target.value); });
         }
 
         function submitMockReview() {
             const prof = document.getElementById('review-professor').value;
             const subj = document.getElementById('review-subject').value;
             const comment = document.getElementById('review-comment').value;
-
-            if (!prof || !subj || selectedStars === 0 || !comment) {
-                showToast('Por favor completa todos los campos de la reseña');
-                return;
-            }
-
-            mockReviews.unshift({
-                student: 'Tú (Estudiante)',
-                professor: prof,
-                subject: subj,
-                rating: selectedStars,
-                comment: comment
-            });
-
+            if (!prof || !subj || selectedStars === 0 || !comment) { showToast('Completa todos los campos'); return; }
+            mockReviews.unshift({ student: 'Tú', professor: prof, subject: subj, rating: selectedStars, comment: comment });
             renderReviews();
             document.getElementById('review-comment').value = '';
             selectedStars = 0;
             document.querySelectorAll('#review-stars-input .material-icons-round').forEach(s => s.classList.remove('active'));
-
-            showToast('¡Reseña publicada con éxito!');
+            showToast('¡Reseña publicada!');
         }
 
-        // ══════════════════════════════════════════════════════════════
-        //  MODAL ASIGNATURA
-        // ══════════════════════════════════════════════════════════════
-
-        function openModal() {
-            modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('subject-name').focus(), 350);
-        }
-
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            subjectForm.reset();
-            clearErrors();
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        //  MODAL TAREA
-        // ══════════════════════════════════════════════════════════════
+        function openModal() { modalOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; setTimeout(() => document.getElementById('subject-name').focus(), 350); }
+        function closeModal() { modalOverlay.classList.remove('active'); document.body.style.overflow = ''; subjectForm.reset(); clearErrors(); }
 
         function openTaskModal() {
-            taskSubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
+            taskSubjectSelect.innerHTML = '<option value="">Materia</option>';
             document.querySelectorAll('.subject-card').forEach(card => {
-                const id = card.dataset.id;
-                const name = card.querySelector('.subject-name').textContent;
-                if (!id) return;
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = name;
-                taskSubjectSelect.appendChild(option);
+                const opt = document.createElement('option'); opt.value = card.dataset.id; opt.textContent = card.querySelector('.subject-name').textContent;
+                taskSubjectSelect.appendChild(opt);
             });
             taskModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
         }
+        function closeTaskModal() { taskModal.classList.remove('active'); taskForm.reset(); }
 
-        function closeTaskModal() {
-            taskModal.classList.remove('active');
-            document.body.style.overflow = '';
-            taskForm.reset();
-        }
-
-        // ══════════════════════════════════════════════════════════════
-        //  MODAL CALIFICACIÓN
-        // ══════════════════════════════════════════════════════════════
-
-        function getUsedPercent(gradeKey) {
-            return (gradesStore[gradeKey] || []).reduce((sum, g) => sum + g.porcentaje, 0);
-        }
-
+        function getUsedPercent(gradeKey) { return (gradesStore[gradeKey] || []).reduce((sum, g) => sum + g.porcentaje, 0); }
         function updatePercentSummary(gradeKey) {
             const used = getUsedPercent(gradeKey);
-            const pct = Math.min(used, 100);
-            gradePercentBar.style.width = pct + '%';
+            gradePercentBar.style.width = Math.min(used, 100) + '%';
             gradePercentValue.textContent = used + '%';
-
-            gradePercentSummary.classList.remove('warning', 'danger');
-            const icon = gradePercentSummary.querySelector('.material-icons-round');
-
-            if (used >= 100) {
-                gradePercentSummary.classList.add('danger');
-                icon.textContent = 'error';
-            } else if (used >= 75) {
-                gradePercentSummary.classList.add('warning');
-                icon.textContent = 'warning';
-            } else {
-                icon.textContent = 'pie_chart';
-            }
         }
 
         function openGradeModal(card) {
             activeCardForGrade = card;
-
-            if (!card.dataset.gradeKey) {
-                card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
-            }
-
+            if (!card.dataset.gradeKey) card.dataset.gradeKey = 'gk_' + (gradeKeyCounter++);
             gradeModalSubjName.textContent = card.querySelector('.subject-name').textContent;
-
             gradeForm.reset();
-            ['error-grade-name', 'error-grade-score', 'error-grade-percent'].forEach(id => {
-                document.getElementById(id).classList.remove('visible');
-                document.getElementById(id).style.display = 'none';
-            });
-            ['grade-name', 'grade-score', 'grade-percent'].forEach(id => {
-                document.getElementById(id).classList.remove('error');
-            });
-
             updatePercentSummary(card.dataset.gradeKey);
             gradeModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('grade-name').focus(), 350);
         }
+        function closeGradeModal() { gradeModal.classList.remove('active'); activeCardForGrade = null; }
 
-        function closeGradeModal() {
-            gradeModal.classList.remove('active');
-            document.body.style.overflow = '';
-            activeCardForGrade = null;
-        }
-
-        // ── FAB ────────────────────────────────────────────────────────
-        fabAdd.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fabMenu.classList.toggle('active');
-        });
-        addSubjectBtn.addEventListener('click', () => { fabMenu.classList.remove('active'); openModal(); });
-        addTaskBtn.addEventListener('click', () => { fabMenu.classList.remove('active'); openTaskModal(); });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.fab-container')) fabMenu.classList.remove('active');
-        });
-
-        // ── Cerrar modales ─────────────────────────────────────────────
+        fabAdd.addEventListener('click', (e) => { e.stopPropagation(); fabMenu.classList.toggle('active'); });
+        addSubjectBtn.addEventListener('click', openModal);
+        addTaskBtn.addEventListener('click', openTaskModal);
+        document.addEventListener('click', () => fabMenu.classList.remove('active'));
         modalClose.addEventListener('click', closeModal);
         btnCancel.addEventListener('click', closeModal);
-        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
-
         taskModalClose.addEventListener('click', closeTaskModal);
-        taskBtnCancel.addEventListener('click', closeTaskModal);
-
         gradeModalClose.addEventListener('click', closeGradeModal);
-        gradeBtnCancel.addEventListener('click', closeGradeModal);
-        gradeModal.addEventListener('click', (e) => { if (e.target === gradeModal) closeGradeModal(); });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (modalOverlay.classList.contains('active')) closeModal();
-                if (taskModal.classList.contains('active')) closeTaskModal();
-                if (gradeModal.classList.contains('active')) closeGradeModal();
-            }
+        function clearErrors() { document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible')); }
+
+        subjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const days = Array.from(document.querySelectorAll('#subject-days input[type="checkbox"]:checked')).map(cb => cb.value).join(',');
+            const payload = {
+                nombre: document.getElementById('subject-name').value,
+                codigo: document.getElementById('subject-code').value,
+                creditos: document.getElementById('subject-credits').value,
+                profesor: document.getElementById('subject-professor').value,
+                dias: days,
+                horaInicio: document.getElementById('subject-start-time').value,
+                horaFin: document.getElementById('subject-end-time').value,
+                periodo: document.getElementById('subject-semester').value,
+                usuarioId: SessionManager.getInstance().getUser().id
+            };
+            try {
+                await fetch(`${API}/asignaturas`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                loadSubjects(); closeModal(); showToast('Materia guardada');
+            } catch (err) { showToast('Error al conectar'); }
         });
 
-        // ── Acciones rápidas ───────────────────────────────────────────
-        document.querySelectorAll('.action-chip').forEach(chip => {
-            if (chip.textContent.trim().includes('Agregar Materia')) {
-                chip.addEventListener('click', openModal);
-            }
-        });
-
-        // ── Validación Asignatura ──────────────────────────────────────
-        function clearErrors() {
-            document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
-            document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
-        }
-
-        document.querySelectorAll('.form-input, .form-select').forEach(input => {
-            input.addEventListener('input', () => {
-                input.classList.remove('error');
-                const errorEl = input.parentElement.querySelector('.form-error');
-                if (errorEl) errorEl.classList.remove('visible');
-            });
-        });
-
-        function validateSubjectForm() {
-            clearErrors();
-            let isValid = true;
-            const fields = [
-                { id: 'subject-name', errorId: 'error-name' },
-                { id: 'subject-code', errorId: 'error-code' },
-                { id: 'subject-credits', errorId: 'error-credits' },
-                { id: 'subject-professor', errorId: 'error-professor' },
-                { id: 'subject-start-time', errorId: 'error-start-time' },
-                { id: 'subject-end-time', errorId: 'error-end-time' },
-                { id: 'subject-semester', errorId: 'error-semester' },
-            ];
-            fields.forEach(({ id, errorId }) => {
-                const input = document.getElementById(id);
-                if (!input.value.trim()) {
-                    input.classList.add('error');
-                    document.getElementById(errorId).classList.add('visible');
-                    isValid = false;
-                }
-            });
-            const checkboxes = document.querySelectorAll('#subject-days input[type="checkbox"]:checked');
-            if (checkboxes.length === 0) {
-                document.getElementById('error-days').classList.add('visible');
-                isValid = false;
-            } else {
-                document.getElementById('error-days').classList.remove('visible');
-            }
-            const credits = document.getElementById('subject-credits');
-            if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
-                credits.classList.add('error');
-                document.getElementById('error-credits').classList.add('visible');
-                isValid = false;
-            }
-            return isValid;
-        }
-
-        // ── Crear tarjeta en el DOM ────────────────────────────────────
         function createSubjectCard(data, dbId) {
-            const color = cardColors[colorIndex % cardColors.length];
-            const icon = cardIcons[Math.floor(Math.random() * cardIcons.length)];
-            colorIndex++;
-
-            const card = document.createElement('div');
-            card.className = 'subject-card';
-            card.dataset.id = dbId;
-
+            const color = cardColors[colorIndex % cardColors.length]; colorIndex++;
+            const card = document.createElement('div'); card.className = 'subject-card'; card.dataset.id = dbId;
             card.innerHTML = `
-                <div class="card-menu">
-                    <button class="card-menu-btn" onclick="toggleCardMenu(this)">
-                        <span class="material-icons-round">more_vert</span>
-                    </button>
-                    <div class="card-dropdown">
-                        <button class="card-dropdown-item" onclick="openGradeModal(this.closest('.subject-card'))">
-                            <span class="material-icons-round">grade</span>
-                            Agregar Calificación
-                        </button>
-                        <div class="card-dropdown-divider"></div>
-                        <button class="card-dropdown-item delete" onclick="deleteCard(this)">
-                            <span class="material-icons-round">delete_outline</span>
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
-                <div class="subject-icon" style="background:${color.bg};color:${color.text}">
-                    <span class="material-icons-round">${icon}</span>
-                </div>
+                <div class="card-menu"><button class="card-menu-btn" onclick="toggleCardMenu(this)"><span class="material-icons-round">more_vert</span></button>
+                <div class="card-dropdown"><button class="card-dropdown-item" onclick="openGradeModal(this.closest('.subject-card'))"><span class="material-icons-round">grade</span> Calificación</button>
+                <div class="card-dropdown-divider"></div><button class="card-dropdown-item delete" onclick="deleteCard(this)"><span class="material-icons-round">delete_outline</span> Eliminar</button></div></div>
+                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${color.gradient};border-radius:16px 16px 0 0;"></div>
+                <div class="subject-icon" style="background:${color.bg};color:${color.text}"><span class="material-icons-round">school</span></div>
                 <div class="subject-name" onclick="openGradesView(this.closest('.subject-card'))" style="cursor:pointer;">${data.nombre}</div>
-                <div class="subject-id">ID: ${data.codigo} · ${data.creditos} créditos · ${data.periodo}</div>
-                <div class="subject-professor">
-                    <span class="material-icons-round">person</span>
-                    ${data.profesor}
-                </div>
-                <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
-                    <span class="material-icons-round" style="font-size:16px">schedule</span>
-                    ${data.dias || ''} ${data.horaInicio || ''} - ${data.horaFin || ''}
-                </div>
-                <div class="subject-progress">
-                    <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso || 0}%"></div>
-                </div>
-                <div class="subject-progress-label">${Math.round(data.progreso || 0)}% del curso completado</div>
+                <div class="subject-id">${data.codigo} · ${data.profesor}</div>
+                <div class="subject-progress"><div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso || 0}%"></div></div>
             `;
             subjectsGrid.appendChild(card);
         }
 
-        // ── Toast ──────────────────────────────────────────────────────
-        function showToast(message) {
-            document.getElementById('toast-text').textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function updateSubjectCount() {
+        function showToast(m) { toast.querySelector('#toast-text').textContent = m; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
+        function updateSubjectCount() { 
             const count = subjectsGrid.children.length;
-            document.querySelector('.section-subtitle').textContent =
-                `Semestre 2026-1 · ${count} materias inscritas`;
-            const statValues = document.querySelectorAll('.stat-value');
-            if (statValues.length > 0) statValues[0].textContent = count;
+            const subtitle = document.querySelector('.section-subtitle');
+            if (subtitle) subtitle.textContent = `Semestre 2026-1 · ${count} materias`;
         }
 
-        // ── Submit: Guardar Asignatura ─────────────────────────────────
-        subjectForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!validateSubjectForm()) return;
-
-            const selectedDays = Array.from(document.querySelectorAll('#subject-days input[type="checkbox"]:checked')).map(cb => cb.value).join(',');
-            const payload = {
-                nombre: document.getElementById('subject-name').value.trim(),
-                codigo: document.getElementById('subject-code').value.trim().toUpperCase(),
-                creditos: parseInt(document.getElementById('subject-credits').value),
-                profesor: document.getElementById('subject-professor').value.trim(),
-                dias: selectedDays,
-                horaInicio: document.getElementById('subject-start-time').value,
-                horaFin: document.getElementById('subject-end-time').value,
-                periodo: document.getElementById('subject-semester').value,
-            };
-
-            try {
-                const res = await fetch(`${API}/asignaturas`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                if (!res.ok) throw new Error('Error al guardar');
-                const json = await res.json();
-                loadSubjects();
-                closeModal();
-                showToast(`"${json.asignatura.nombre}" agregada exitosamente`);
-            } catch (err) {
-                console.error(err);
-                showToast('Error al conectar con el servidor');
-            }
-        });
-
-        // ── Submit: Guardar Tarea ──────────────────────────────────────
-        taskForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const titulo = document.getElementById('task-title').value.trim();
-            const asignaturaId = document.getElementById('task-subject').value;
-            const fechaEntrega = document.getElementById('task-date').value;
-            const horaEntrega = document.getElementById('task-time').value;
-            const descripcion = document.getElementById('task-description').value.trim();
-
-            if (!titulo || !asignaturaId || !fechaEntrega || !horaEntrega) {
-                showToast('Completa los campos obligatorios');
-                return;
-            }
-
-            const payload = {
-                titulo,
-                asignaturaId: parseInt(asignaturaId),
-                fechaEntrega,
-                horaEntrega,
-                descripcion: descripcion || null,
-            };
-
-            try {
-                const res = await fetch(`${API}/tareas`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                if (!res.ok) throw new Error('Error al guardar');
-                const json = await res.json();
-                closeTaskModal();
-                showToast(`"${json.tarea.titulo}" guardada exitosamente`);
-            } catch (err) {
-                console.error(err);
-                showToast('Error al conectar con el servidor');
-            }
-        });
-
-        // ── Submit: Guardar Calificación ───────────────────────────────
-        gradeForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const inputNombre = document.getElementById('grade-name');
-            const inputNota = document.getElementById('grade-score');
-            const inputPct = document.getElementById('grade-percent');
-            const errNombre = document.getElementById('error-grade-name');
-            const errNota = document.getElementById('error-grade-score');
-            const errPct = document.getElementById('error-grade-percent');
-
-            // Limpiar
-            [inputNombre, inputNota, inputPct].forEach(el => el.classList.remove('error'));
-            [errNombre, errNota, errPct].forEach(el => { el.style.display = 'none'; });
-
-            const nombre = inputNombre.value.trim();
-            const notaRaw = inputNota.value;
-            const pctRaw = inputPct.value;
-            let valid = true;
-
-            if (!nombre) {
-                inputNombre.classList.add('error');
-                errNombre.textContent = 'Este campo es obligatorio';
-                errNombre.style.display = 'block';
-                valid = false;
-            }
-
-            const nota = parseFloat(notaRaw);
-            if (notaRaw === '' || isNaN(nota) || nota < 0 || nota > 5) {
-                inputNota.classList.add('error');
-                errNota.textContent = 'Ingresa un valor entre 0.0 y 5.0';
-                errNota.style.display = 'block';
-                valid = false;
-            }
-
-            const pct = parseInt(pctRaw, 10);
-            if (pctRaw === '' || isNaN(pct) || pct < 1 || pct > 100) {
-                inputPct.classList.add('error');
-                errPct.textContent = 'Ingresa un valor entre 1% y 100%';
-                errPct.style.display = 'block';
-                valid = false;
-            } else if (activeCardForGrade) {
-                const key = activeCardForGrade.dataset.gradeKey || '';
-                const used = getUsedPercent(key);
-                if (used + pct > 100) {
-                    inputPct.classList.add('error');
-                    errPct.textContent = `El porcentaje acumulado (${used}% + ${pct}%) supera el 100%`;
-                    errPct.style.display = 'block';
-                    valid = false;
-                }
-            }
-
-            if (!valid) return;
-
-            // Guardar en el store
-            if (activeCardForGrade) {
-                const key = activeCardForGrade.dataset.gradeKey;
-                if (!gradesStore[key]) gradesStore[key] = [];
-                gradesStore[key].push({ nombre, nota, porcentaje: pct });
-            }
-
-            closeGradeModal();
-            showToast('Calificación guardada con éxito');
-
-            // Si la vista de calificaciones está abierta para esta tarjeta, actualizar tabla
-            if (activeCardForView && activeCardForView === activeCardForGrade) {
-                // activeCardForGrade ya fue limpiado, usamos la tarjeta de la vista
-            }
-            // Re-renderizar si hay una vista de calificaciones activa
-            if (gradesView.classList.contains('active') && activeCardForView) {
-                renderGradesTable(activeCardForView);
-            }
-        });
-
-        // ── Menú tarjeta ───────────────────────────────────────────────
-        function toggleCardMenu(btn) {
-            document.querySelectorAll('.card-dropdown.open').forEach(d => {
-                if (d !== btn.nextElementSibling) d.classList.remove('open');
-            });
-            btn.nextElementSibling.classList.toggle('open');
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.card-menu'))
-                document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
-        });
-
-        // ── Eliminar tarjeta ───────────────────────────────────────────
+        function toggleCardMenu(btn) { btn.nextElementSibling.classList.toggle('open'); }
         async function deleteCard(btn) {
             const card = btn.closest('.subject-card');
-            const dbId = card.dataset.id;
-            const name = card.querySelector('.subject-name')?.textContent || 'Materia';
-
-            if (!confirm(`¿Estás seguro de que deseas eliminar "${name}"?`)) return;
-
+            if (!confirm('¿Eliminar materia?')) return;
             try {
-                const res = await fetch(`${API}/asignaturas/${dbId}`, {
-                    method: 'DELETE'
-                });
-                if (!res.ok) throw new Error('Error al eliminar en el servidor');
-
-                card.classList.add('removing');
-                card.addEventListener('animationend', () => {
-                    card.remove();
-                    updateSubjectCount();
-                    showToast(`"${name}" eliminada`);
-                });
-            } catch (err) {
-                console.error(err);
-                showToast('Error al eliminar la materia del servidor');
-            }
+                await fetch(`${API}/asignaturas/${card.dataset.id}`, { method: 'DELETE' });
+                card.remove(); updateSubjectCount(); showToast('Materia eliminada');
+            } catch (err) { showToast('Error al eliminar'); }
         }
 
         // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
         const SessionManager = (function() {
             let instance;
-
             function init() {
                 return {
                     getUser: function() {
-                        return JSON.parse(localStorage.getItem('studyhub_user'));
+                        const user = localStorage.getItem('studyhub_user');
+                        return user ? JSON.parse(user) : null;
                     },
                     setUser: function(user) {
                         localStorage.setItem('studyhub_user', JSON.stringify(user));
@@ -3746,7 +3168,6 @@ sol
                     }
                 };
             }
-
             return {
                 getInstance: function() {
                     if (!instance) instance = init();
@@ -3768,7 +3189,6 @@ sol
                 };
                 this.currentState = null;
             }
-
             transitionTo(stateName, data = null) {
                 if (this.states[stateName]) {
                     this.currentState = this.states[stateName];
@@ -3782,6 +3202,8 @@ sol
             render() {
                 navigateMainView('auth');
                 showAuthScreen('screen-login');
+                document.getElementById('view-dashboard').style.display = 'none';
+                document.getElementById('view-auth').style.display = 'flex';
             }
         }
 
@@ -3790,6 +3212,8 @@ sol
             render() {
                 navigateMainView('auth');
                 showAuthScreen('screen-register');
+                document.getElementById('view-dashboard').style.display = 'none';
+                document.getElementById('view-auth').style.display = 'flex';
             }
         }
 
@@ -3812,37 +3236,52 @@ sol
         class DashboardState {
             constructor(system) { this.system = system; }
             render(user) {
-                document.getElementById('auth-container').style.display = 'none';
-                document.querySelector('.app-container').style.display = 'grid';
+                navigateMainView('dashboard');
+                document.getElementById('view-auth').style.display = 'none';
+                document.getElementById('view-dashboard').style.display = 'block';
                 document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
                 document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
                 document.querySelector('.profile-id').dataset.userId = user.id;
-                
-                hideAllViews();
-                dashboardView.classList.add('active');
-                syncNavbar('nav-dashboard');
-                currentView = 'dashboard';
-                
-                fetchAsignaturasBackend();
-                renderDashboardSummary();
-                iniciarGuardDeSesion();
+                loadSubjects();
             }
         }
 
         class ResenasState {
             constructor(system) { this.system = system; }
-            render(user) {
-                document.getElementById('auth-container').style.display = 'none';
-                document.querySelector('.app-container').style.display = 'grid';
-                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
-                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
-                document.querySelector('.profile-id').dataset.userId = user.id;
-
-                hideAllViews();
-                resenasView.classList.add('active');
-                syncNavbar('nav-resenas');
+            render() {
+                showView('forum');
+                setNavActive('nav-forum');
                 fetchResenasBackend();
             }
+        }
+
+        async function fetchResenasBackend() {
+            try {
+                const res = await fetch(`${API}/api/resenas`);
+                if (!res.ok) throw new Error('Error fetch resenas');
+                const reviews = await res.json();
+                const list = document.getElementById('reviews-list');
+                if (!list) return;
+                list.innerHTML = '';
+                reviews.forEach(r => {
+                    const card = document.createElement('div');
+                    card.className = 'review-card';
+                    card.innerHTML = `
+                        <div class="review-card-header">
+                            <div class="student-info">
+                                <div class="student-avatar">${(r.usuario?.nombre || 'U')[0]}</div>
+                                <span class="student-name">${r.usuario?.nombre || 'Usuario'} ${r.usuario?.apellido || ''}</span>
+                            </div>
+                            <div class="review-stars">
+                                ${Array(5).fill(0).map((_, i) => `<span class="material-icons-round">${i < r.puntaje ? 'star' : 'star_outline'}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="review-meta"><strong>Prof:</strong> ${r.profesor} · <strong>Asignatura:</strong> ${r.materia}</div>
+                        <p class="review-comment">"${r.comentario}"</p>
+                    `;
+                    list.appendChild(card);
+                });
+            } catch (err) { console.error('Error cargando reseñas:', err); }
         }
 
         const navSystem = new NavigationSystem();
@@ -3851,58 +3290,36 @@ sol
         const AccessProxy = {
             goTo: function(view, data = null) {
                 const session = SessionManager.getInstance();
-                console.log(`Petición de acceso a: ${view}`);
-
                 if (view === 'dashboard' && !session.isLoggedIn()) {
-                    console.warn("Acceso denegado al Dashboard. Redirigiendo a Login...");
                     navSystem.transitionTo('login');
                     return;
                 }
-
                 navSystem.transitionTo(view, data);
             }
         };
 
-        // ── Manejadores de Eventos Refactorizados ───────────────────────
-
-        function checkSession() {
-            const session = SessionManager.getInstance();
-            if (session.isLoggedIn()) {
-                AccessProxy.goTo('dashboard', session.getUser());
-            } else {
-                AccessProxy.goTo('login');
-            }
-        }
-
-        function toggleAuth(view) {
-            AccessProxy.goTo(view);
-            document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
-            document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('register-error').style.display = 'none';
-        }
+        function toggleAuth(view) { AccessProxy.goTo(view); }
 
         async function handleLogin(e) {
             e.preventDefault();
             const correo = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-pass').value.trim();
             const errorDiv = document.getElementById('login-error');
-            const session = SessionManager.getInstance();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Cargando...";
+            errorDiv.style.display = 'none';
 
             try {
-                console.log("Intentando login para:", correo);
-                const response = await fetch(`${API_BASE}/login`, {
+                const response = await fetch(`${API}/api/usuarios/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo, password })
                 });
-
-                console.log("Status del login:", response.status);
                 const result = await response.json();
-                console.log("Resultado del login:", result);
-
                 if (response.ok) {
-                    session.setUser(result);
+                    SessionManager.getInstance().setUser(result);
                     AccessProxy.goTo('dashboard', result);
                     showToast('¡Bienvenido de nuevo!');
                 } else {
@@ -3910,9 +3327,11 @@ sol
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                console.error("Error en handleLogin:", err);
-                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.textContent = "Error al conectar. El servidor está despertando, intenta en 30s.";
                 errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         }
 
@@ -3924,22 +3343,24 @@ sol
             const password = document.getElementById('reg-pass').value.trim();
             const confirm = document.getElementById('reg-pass-confirm').value.trim();
             const errorDiv = document.getElementById('register-error');
-
             if (password !== confirm) {
                 errorDiv.textContent = "Las contraseñas no coinciden";
                 errorDiv.style.display = 'block';
                 return;
             }
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Cargando...";
+            errorDiv.style.display = 'none';
 
             try {
-                const response = await fetch(API_BASE, {
+                const response = await fetch(`${API}/api/usuarios`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
                 });
-
                 const result = await response.json();
-
                 if (response.ok) {
                     AccessProxy.goTo('login');
                     showToast('Registro exitoso. ¡Inicia sesión!');
@@ -3948,12 +3369,13 @@ sol
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.textContent = "Error de conexión. Intenta de nuevo.";
                 errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         }
-
-        // --- MANEJADORES RECUPERACIÓN (HU-26) ---
 
         async function handleRecover(e) {
             e.preventDefault();
@@ -3961,11 +3383,10 @@ sol
             const errorDiv = document.getElementById('recover-error');
             const successDiv = document.getElementById('recover-success');
             const btn = document.getElementById('btn-recover');
-
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
             btn.disabled = true;
             btn.textContent = 'Enviando...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
 
             try {
                 const res = await fetch(`${API}/auth/recuperar`, {
@@ -3973,17 +3394,15 @@ sol
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo: email })
                 });
-
                 if (res.ok) {
                     successDiv.textContent = "Si el correo está registrado, recibirás un enlace pronto.";
                     successDiv.style.display = 'block';
-                    document.getElementById('recover-email').value = '';
                 } else {
-                    errorDiv.textContent = "Hubo un error al procesar tu solicitud.";
+                    errorDiv.textContent = "Error al procesar la solicitud.";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = "No se pudo conectar con el servidor.";
+                errorDiv.textContent = "Error de conexión.";
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
@@ -3998,34 +3417,29 @@ sol
             const errorDiv = document.getElementById('reset-error');
             const successDiv = document.getElementById('reset-success');
             const btn = document.getElementById('btn-reset');
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-
             if (pass !== confirm) {
                 errorDiv.textContent = "Las contraseñas no coinciden.";
                 errorDiv.style.display = 'block';
                 return;
             }
-
-            errorDiv.style.display = 'none';
             btn.disabled = true;
             btn.textContent = 'Actualizando...';
+            errorDiv.style.display = 'none';
 
             try {
+                const token = new URLSearchParams(window.location.search).get('token');
                 const res = await fetch(`${API}/auth/restablecer`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token, password: pass })
                 });
-
                 if (res.ok) {
-                    successDiv.textContent = "¡Contraseña actualizada! Ya puedes iniciar sesión.";
+                    successDiv.textContent = "¡Contraseña actualizada!";
                     successDiv.style.display = 'block';
                     document.getElementById('reset-final-actions').style.display = 'block';
                     btn.style.display = 'none';
                 } else {
-                    const data = await res.json();
-                    errorDiv.textContent = data.mensaje || "El enlace es inválido o ha expirado.";
+                    errorDiv.textContent = "El enlace es inválido o ha expirado.";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
@@ -4037,140 +3451,19 @@ sol
             }
         }
 
-        // --- DETECCIÓN DE TOKEN AL CARGAR ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('token')) {
-                toggleAuth('reset');
-            }
-        });
-
-        function showDashboard(user) {
-            document.getElementById('auth-container').style.display = 'none';
-            document.querySelector('.app-container').style.display = 'grid';
-            document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido}`;
-            document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
-            document.querySelector('.profile-id').dataset.userId = user.id;
-        }
-
-        function showAuth() {
-            document.getElementById('auth-container').style.display = 'flex';
-            document.querySelector('.app-container').style.display = 'none';
-        }
-
-        // El logout ya está definido arriba
-        document.querySelector('.profile-avatar').style.cursor = 'pointer';
-        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
-        document.querySelector('.profile-avatar').onclick = logout;
-
-
-        // ========================================== //
-        // ======== SPRINT 7: APUNTES LOGIC ========= //
-        // ========================================== //
-        
-        const API_APUNTES = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                            ? 'http://localhost:8080/apuntes' 
-                            : 'https://studyhub-backend.onrender.com/apuntes';
-        const apuntesView = document.getElementById('apuntes-view');
-        
-        document.getElementById('nav-apuntes').addEventListener('click', () => {
-            showView('apuntes');
-            setNavActive('nav-apuntes');
-            // Aquí iría loadNotes() si existiera, por ahora solo mostramos la vista
-        });
-
-        // ── Horario y Carga de Subjects ────────────────────────────────
-        const dayColumns = { 'Lun': 1, 'Mar': 2, 'Mié': 3, 'Jue': 4, 'Vie': 5, 'Sáb': 6, 'Dom': 7 };
-
-        function renderScheduleBlock(data, colorObj) {
-            if (!data.dias || !data.horaInicio || !data.horaFin) return;
-            const dayStartHour = 7;
-            const rowHeight = 37; // 36px tr height + 1px border
-            const thead = document.querySelector('.schedule-table thead');
-            const headerHeight = thead ? thead.offsetHeight : 27;
-            const container = document.querySelector('.schedule-container');
-
-            const diasArray = data.dias.split(',').map(d => d.trim());
-            diasArray.forEach(dia => {
-                const colIndex = dayColumns[dia];
-                if (!colIndex) return;
-
-                const td = document.querySelector(`.schedule-table tbody tr:first-child td:nth-child(${colIndex + 1})`);
-                if (!td) return;
-
-                const parseTime = (timeStr) => {
-                    const parts = timeStr.split(':');
-                    return parseInt(parts[0]) + (parseInt(parts[1]) / 60);
-                };
-
-                const startOffset = parseTime(data.horaInicio) - dayStartHour;
-                const duration = parseTime(data.horaFin) - parseTime(data.horaInicio);
-                if (startOffset < 0 || duration <= 0) return;
-
-                const block = document.createElement('div');
-                block.className = 'schedule-block';
-                block.style.position = 'absolute';
-                block.style.top = `${headerHeight + startOffset * rowHeight}px`;
-                block.style.left = `${td.offsetLeft}px`;
-                block.style.width = `${td.offsetWidth}px`;
-                block.style.height = `${duration * rowHeight}px`;
-                block.style.background = colorObj.bg;
-                block.style.color = colorObj.text;
-                block.style.borderLeft = `3px solid ${colorObj.icon}`;
-                block.style.borderRadius = '3px';
-                block.style.padding = '2px 4px';
-                block.style.fontSize = '9.5px';
-                block.style.overflow = 'hidden';
-                block.style.zIndex = '10';
-                block.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                block.innerHTML = `<strong style="display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden">${data.nombre}</strong>${data.horaInicio.substring(0, 5)} - ${data.horaFin.substring(0, 5)}`;
-
-                container.appendChild(block);
-            });
-        }
-
-        async function loadSubjects() {
-            try {
-                const res = await fetch(`${API}/asignaturas`);
-                if (!res.ok) throw new Error('Error fetch asignaturas');
-                const subjects = await res.json();
-
-                subjectsGrid.innerHTML = '';
-                document.querySelectorAll('.schedule-block').forEach(el => el.remove());
-                colorIndex = 0; // reset colors
-
-                subjects.forEach(sub => {
-                    const color = cardColors[colorIndex % cardColors.length];
-                    createSubjectCard(sub, sub.id); // esto incrementa colorIndex internamente
-                    renderScheduleBlock(sub, color);
-                });
-                updateSubjectCount();
-            } catch (err) {
-                console.error('Error cargando asignaturas:', err);
-            }
-        }
-
         // Init load
         document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-
+            const token = new URLSearchParams(window.location.search).get('token');
             if (token) {
-                navigateMainView('auth');
-                showAuthScreen('screen-reset');
+                AccessProxy.goTo('reset');
             } else {
-                // Por defecto mostrar login al cargar si no hay token
-                navigateMainView('auth');
-                showAuthScreen('screen-login');
+                const session = SessionManager.getInstance();
+                if (session.isLoggedIn()) AccessProxy.goTo('dashboard', session.getUser());
+                else AccessProxy.goTo('login');
             }
-
-            // Solo cargar lógica si entramos directamente al dashboard (por ahora login manda)
-            // loadSubjects();
             renderReviews();
             initForumLogic();
         });
-
     </script>
 </body>
-
 </html>
