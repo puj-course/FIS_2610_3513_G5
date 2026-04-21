@@ -44,12 +44,15 @@ def generate_story_with_ai(title):
 
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
-        response.raise_for_status()
+        if response.status_code != 200:
+            print(f"Error de API (Status {response.status_code}): {response.text}")
+            return f"## Descripción\nError de API (Status {response.status_code}).\n\n**Detalle:**\n```json\n{response.text}\n```"
+        
         result = response.json()
         return result['candidates'][0]['content']['parts'][0]['text']
     except Exception as e:
         print(f"Error llamando a la API: {e}")
-        return f"## Descripción\nError al generar el contenido para: {title}"
+        return f"## Descripción\nError excepcional al generar el contenido.\n\n**Error:** {str(e)}"
 
 def create_github_issue(title, body):
     # El título debe empezar con HU - como pidió el usuario
