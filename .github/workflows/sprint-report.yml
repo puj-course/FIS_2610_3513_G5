@@ -221,6 +221,9 @@ jobs:
           START="${{ steps.commits.outputs.sprint_start }}"
           END="${{ steps.commits.outputs.sprint_end }}"
 
+          # Asegurar que el label existe para que no falle el comando
+          gh label create "sprint-report" --color "EDEDED" --description "Reportes automáticos de Sprint" || true
+
           gh issue create \
             --title "Reporte de Sprint: ${SPRINT_NAME} (${START} / ${END})" \
             --body-file report_body.md \
