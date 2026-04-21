@@ -1,6 +1,6 @@
 // Configuración básica para el módulo de autenticación
-const API_BASE_URL = "http://localhost:8080/api/auth";
-const API_URL = "http://localhost:8080/api";
+const API_BASE_URL = window.location.origin + "/api/auth";
+const API_URL = window.location.origin + "/api";
 
 console.log("StudyHub Auth System Inyectado Correctamente.");
 console.log("Módulo Auth inicializado.");
