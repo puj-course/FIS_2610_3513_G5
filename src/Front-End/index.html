@@ -15,6 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
+
+    
     <style>
         /* ========== RESET & BASE ========== */
         *,
@@ -2645,6 +2647,8 @@
                 </div>
                 <button type="submit" class="auth-btn">Iniciar Sesión</button>
             </form>
+
+
             <p class="auth-switch">¿No tienes cuenta? <span class="auth-link" onclick="toggleAuth('register')">Regístrate</span></p>
         </div>
 
@@ -5697,11 +5701,19 @@
         // ÔöÇÔöÇ Manejadores de Eventos Refactorizados ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         function checkSession() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            if (token) {
+                toggleAuth('reset');
+                return;
+            }
+
             const session = SessionManager.getInstance();
             if (session.isLoggedIn()) {
                 AccessProxy.goTo('dashboard', session.getUser());
             } else {
                 AccessProxy.goTo('login');
+
             }
         }
 
@@ -5717,7 +5729,13 @@
             document.getElementById('recover-error').style.display = 'none';
             document.getElementById('recover-success').style.display = 'none';
             document.getElementById('reset-error').style.display = 'none';
+
+            if (view === 'login') {
+
+            }
         }
+
+
 
         async function handleRecover(e) {
             e.preventDefault();
@@ -5732,20 +5750,22 @@
             successDiv.style.display = 'none';
 
             try {
+                // Endpoint POST /api/usuarios/recuperar?correo=...
                 const response = await fetch(`${API_BASE}/recuperar?correo=${encodeURIComponent(correo)}`, {
                     method: 'POST'
                 });
                 const result = await response.json();
 
                 if (response.ok) {
-                    successDiv.textContent = "¡Enlace enviado! Revisa tu bandeja de entrada.";
+                    successDiv.textContent = "¡Enlace enviado! Revisa tu bandeja de entrada y sigue las instrucciones.";
                     successDiv.style.display = 'block';
+                    document.getElementById('recover-email').value = '';
                 } else {
-                    errorDiv.textContent = result.mensaje || "Error al procesar la solicitud";
+                    errorDiv.textContent = result.mensaje || "El correo no está registrado en el sistema";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.textContent = "Error de red al intentar recuperar la cuenta";
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
@@ -5773,23 +5793,25 @@
             errorDiv.style.display = 'none';
 
             try {
+                // Endpoint POST /api/usuarios/restablecer con JSON { token, nuevaPassword }
                 const response = await fetch(`${API_BASE}/restablecer`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, password })
+                    body: JSON.stringify({ token: token, nuevaPassword: password })
                 });
                 const result = await response.json();
 
                 if (response.ok) {
-                    showToast('¡Contraseña actualizada! Ya puedes iniciar sesión.');
+                    showToast('¡Contraseña actualizada con éxito! Ya puedes entrar.');
                     toggleAuth('login');
+                    // Limpiar el token de la URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 } else {
-                    errorDiv.textContent = result.mensaje || "Error al restablecer la contraseña";
+                    errorDiv.textContent = result.mensaje || "El enlace es inválido o ha expirado";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.textContent = "No se pudo conectar para restablecer la contraseña";
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
