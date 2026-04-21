@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 import json
+import subprocess
 
 def generate_story_with_ai(title):
     api_key = os.getenv("GEMINI_API_KEY")
@@ -51,18 +52,31 @@ def generate_story_with_ai(title):
         return f"## Descripción\nError al generar el contenido para: {title}"
 
 def create_github_issue(title, body):
+    # El título debe empezar con HU - como pidió el usuario
+    hu_title = f"HU - {title}"
+    
+    # Asegurarnos de que el cuerpo incluya el título original y esté completo
+    full_body = f"# {title}\n\n{body}"
+    
     # Usamos un archivo temporal para el cuerpo para evitar problemas de escape en el shell
     temp_file = "temp_hu_body.md"
     try:
         with open(temp_file, "w", encoding="utf-8") as f:
-            f.write(body)
+            f.write(full_body)
         
-        # El título debe empezar con HU - como pidió el usuario
-        hu_title = f"HU - {title}"
+        # Usamos subprocess.run con una lista para evitar problemas con comillas y caracteres especiales
+        cmd = [
+            "gh", "issue", "create",
+            "--title", hu_title,
+            "--body-file", temp_file,
+            "--label", "historia-usuario"
+        ]
         
-        # Usamos --body-file que es más robusto para Markdown largo
-        cmd = f'gh issue create --title "{hu_title}" --body-file "{temp_file}" --label "historia-usuario"'
-        os.system(cmd)
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            print(f"Éxito: {result.stdout.strip()}")
+        else:
+            print(f"Error ejecutanzo gh: {result.stderr}")
         
         if os.path.exists(temp_file):
             os.remove(temp_file)
@@ -78,10 +92,13 @@ def main():
         lines = f.readlines()
 
     for line in lines:
-        title = line.strip()
-        # Ignorar líneas vacías o comentarios
-        if not title or title.startswith("#"):
+        raw_line = line.strip()
+        # Ignorar líneas vacías
+        if not raw_line:
             continue
+            
+        # Si la línea empieza con #, quitarle los # y espacios iniciales
+        title = raw_line.lstrip("#").strip()
             
         print(f"Generando HU para: {title}...")
         body = generate_story_with_ai(title)
