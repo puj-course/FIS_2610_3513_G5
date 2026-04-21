@@ -1780,144 +1780,11 @@ sol
         .review-stars .material-icons-round {
             font-size: 16px;
         }
-
-        /* ========== AUTH SPA VIEWS ========== */
-        .spa-view { display: none; width: 100%; min-height: 100vh; }
-        .spa-view.active { display: flex; align-items: center; justify-content: center; background: var(--gray-50); }
-        
-        #view-dashboard.active { display: block; background: transparent; min-height: auto; }
-
-        .auth-card { 
-            background: var(--white); 
-            width: 100%; 
-            max-width: 400px; 
-            padding: 40px; 
-            border-radius: var(--radius-lg); 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-            text-align: center; 
-            animation: fadeInUp 0.5s ease;
-        }
-        .auth-screen { display: none; }
-        .auth-screen.active { display: block; }
-        
-        .auth-logo-icon { font-size: 48px; color: var(--blue-500); margin-bottom: 16px; }
-        .auth-title { font-size: 24px; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
-        .auth-subtitle { font-size: 14px; color: var(--gray-500); margin-bottom: 24px; }
-        
-        .auth-form-group { text-align: left; margin-bottom: 16px; }
-        .auth-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--gray-700); }
-        .auth-input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            border: 1.5px solid var(--gray-200); 
-            border-radius: 8px; 
-            font-family: 'Inter', sans-serif; 
-            font-size: 14px; 
-            outline: none; 
-            transition: all 0.2s; 
-        }
-        .auth-input:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1); }
-        
-        .auth-btn { 
-            width: 100%; 
-            padding: 14px; 
-            background: var(--blue-500); 
-            color: var(--white); 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            margin-top: 8px; 
-            font-family: 'Inter', sans-serif; 
-        }
-        .auth-btn:hover { background: var(--blue-600); transform: translateY(-1px); }
-        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .auth-link { display: inline-block; margin-top: 16px; font-size: 13px; color: var(--blue-500); text-decoration: none; font-weight: 500; cursor: pointer; }
-        .auth-link:hover { text-decoration: underline; }
-        
-        .auth-alert { 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-size: 13px; 
-            margin-bottom: 16px; 
-            display: none; 
-            text-align: left; 
-            border: 1px solid transparent;
-        }
-        .auth-alert.success { background: #E8F5E9; color: #2E7D32; border-color: #A5D6A7; display: block; }
-        .auth-alert.error { background: #FFEBEE; color: #C62828; border-color: #FFCDD2; display: block; }
     </style>
 </head>
 
 <body>
-    <!-- ========== VIEW: AUTHENTICATION ========== -->
-    <div id="view-auth" class="spa-view active">
-        <div class="auth-card">
-            <!-- Screen: Login -->
-            <div id="screen-login" class="auth-screen active">
-                <span class="material-icons-round auth-logo-icon">school</span>
-                <h2 class="auth-title">Bienvenido a StudyHub</h2>
-                <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
-                <form id="form-login">
-                    <div class="auth-form-group">
-                        <label class="auth-label">Correo electrónico</label>
-                        <input type="email" id="login-email" class="auth-input" placeholder="tu@correo.com" required>
-                    </div>
-                    <div class="auth-form-group">
-                        <label class="auth-label">Contraseña</label>
-                        <input type="password" id="login-password" class="auth-input" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" class="auth-btn">Iniciar Sesión</button>
-                </form>
-                <a class="auth-link" onclick="showAuthScreen('screen-recover')">¿Olvidaste tu contraseña?</a>
-            </div>
-
-            <!-- Screen: Recover Password -->
-            <div id="screen-recover" class="auth-screen">
-                <span class="material-icons-round auth-logo-icon">lock_reset</span>
-                <h2 class="auth-title">Recuperar Acceso</h2>
-                <p class="auth-subtitle">Ingresa tu correo para recibir un enlace</p>
-                <div id="recover-alert" class="auth-alert"></div>
-                <form id="form-recover">
-                    <div class="auth-form-group">
-                        <label class="auth-label">Correo electrónico</label>
-                        <input type="email" id="recover-email" class="auth-input" placeholder="tu@correo.com" required>
-                    </div>
-                    <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
-                </form>
-                <a class="auth-link" onclick="showAuthScreen('screen-login')">Volver al inicio de sesión</a>
-            </div>
-
-            <!-- Screen: Reset Password -->
-            <div id="screen-reset" class="auth-screen">
-                <span class="material-icons-round auth-logo-icon">password</span>
-                <h2 class="auth-title">Nueva Contraseña</h2>
-                <p class="auth-subtitle">Crea una nueva contraseña segura</p>
-                <div id="reset-alert" class="auth-alert"></div>
-                <form id="form-reset">
-                    <div class="auth-form-group">
-                        <label class="auth-label">Nueva Contraseña</label>
-                        <input type="password" id="reset-password" class="auth-input" placeholder="••••••••" required>
-                    </div>
-                    <div class="auth-form-group">
-                        <label class="auth-label">Confirmar Contraseña</label>
-                        <input type="password" id="reset-confirm" class="auth-input" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" id="btn-reset" class="auth-btn">Actualizar Contraseña</button>
-                </form>
-                <div id="reset-success-actions" style="display: none; margin-top: 16px;">
-                    <button class="auth-btn" onclick="showAuthScreen('screen-login')">Ir al Inicio de Sesión</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== VIEW: DASHBOARD (APP) ========== -->
-    <div id="view-dashboard" class="spa-view">
-        <div class="app-container">
+    <div class="app-container">
 
         <header class="header">
             <div class="header-logo" onclick="showView('dashboard'); setNavActive('nav-dashboard');"
@@ -1972,7 +1839,7 @@ sol
                         <span class="material-icons-round">settings</span>
                         Configuración
                     </div>
-                    <div class="nav-item" id="nav-logout" onclick="logout()" style="margin-top: auto; color: #d32f2f;">
+                    <div class="nav-item" id="nav-logout" onclick="window.location.href='login.html'" style="margin-top: auto; color: #d32f2f;">
                         <span class="material-icons-round">logout</span>
                         Cerrar Sesión
                     </div>
@@ -2087,19 +1954,19 @@ sol
                         <h2 class="section-title">Acciones Rápidas</h2>
                     </div>
                     <div class="actions-row">
-                        <button class="action-chip" onclick="openTaskModal()">
+                        <button class="action-chip">
                             <span class="material-icons-round">note_add</span>
                             Nueva Nota
                         </button>
-                        <button class="action-chip" onclick="openTaskModal()">
+                        <button class="action-chip">
                             <span class="material-icons-round">event</span>
                             Nuevo Evento
                         </button>
-                        <button class="action-chip" onclick="openModal()">
+                        <button class="action-chip">
                             <span class="material-icons-round">book</span>
                             Agregar Materia
                         </button>
-                        <button class="action-chip" onclick="showView('forum'); setNavActive('nav-forum');">
+                        <button class="action-chip">
                             <span class="material-icons-round">star</span>
                             Escribir Reseña
                         </button>
@@ -2656,9 +2523,6 @@ sol
         </div>
     </div>
 
-    </div><!-- /.app-container -->
-    </div><!-- /#view-dashboard -->
-
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
         <span id="toast-text">Materia agregada exitosamente</span>
@@ -2666,112 +2530,6 @@ sol
 
     <script>
         const API = 'http://localhost:8080';
-
-        // ── Lógica SPA (Navegación Interna) ─────────────────────────────
-        function navigateMainView(viewId) {
-            document.querySelectorAll('.spa-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${viewId}`).classList.add('active');
-        }
-
-        function showAuthScreen(screenId) {
-            document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            
-            // Limpiar alertas al cambiar
-            document.querySelectorAll('.auth-alert').forEach(a => {
-                a.style.display = 'none';
-                a.textContent = '';
-            });
-        }
-
-        function logout() {
-            // Aquí podrías limpiar tokens/sesión local
-            navigateMainView('auth');
-            showAuthScreen('screen-login');
-        }
-
-        // ── Manejo de Formularios Auth ───────────────────────────────
-        
-        // Login
-        document.getElementById('form-login').addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Simulación de login exitoso
-            navigateMainView('dashboard');
-            loadSubjects();
-        });
-
-        // Recuperar Contraseña
-        document.getElementById('form-recover').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('recover-email').value;
-            const btn = document.getElementById('btn-recover');
-            const alert = document.getElementById('recover-alert');
-
-            btn.disabled = true;
-            btn.textContent = 'Enviando...';
-            
-            try {
-                const res = await fetch(`${API}/api/auth/recuperar`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: email })
-                });
-                const data = await res.json();
-                alert.className = 'auth-alert success';
-                alert.textContent = data.mensaje || 'Si el correo existe, recibirás un enlace.';
-            } catch (err) {
-                alert.className = 'auth-alert error';
-                alert.textContent = 'Error al conectar con el servidor.';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Enviar Enlace';
-            }
-        });
-
-        // Restablecer Contraseña
-        document.getElementById('form-reset').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-            const pwd1 = document.getElementById('reset-password').value;
-            const pwd2 = document.getElementById('reset-confirm').value;
-            const alert = document.getElementById('reset-alert');
-
-            if (pwd1 !== pwd2) {
-                alert.className = 'auth-alert error';
-                alert.textContent = 'Las contraseñas no coinciden.';
-                return;
-            }
-
-            const btn = document.getElementById('btn-reset');
-            btn.disabled = true;
-            btn.textContent = 'Actualizando...';
-
-            try {
-                const res = await fetch(`${API}/api/auth/restablecer`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token, nuevaPassword: pwd1 })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    alert.className = 'auth-alert success';
-                    alert.textContent = data.mensaje || 'Contraseña actualizada con éxito.';
-                    document.getElementById('form-reset').style.display = 'none';
-                    document.getElementById('reset-success-actions').style.display = 'block';
-                } else {
-                    alert.className = 'auth-alert error';
-                    alert.textContent = data.error || 'Token inválido o expirado.';
-                }
-            } catch (err) {
-                alert.className = 'auth-alert error';
-                alert.textContent = 'Error de conexión.';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Actualizar Contraseña';
-            }
-        });
-
 
         // ── Referencias al DOM ──────────────────────────────────────────
         const modalOverlay = document.getElementById('modal-overlay');
@@ -3707,18 +3465,6 @@ sol
 
         // Init load
         document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-
-            if (token) {
-                navigateMainView('auth');
-                showAuthScreen('screen-reset');
-            } else {
-                // Por defecto mostrar login al cargar si no hay token
-                navigateMainView('auth');
-                showAuthScreen('screen-login');
-            }
-
             loadSubjects();
             renderReviews();
             initForumLogic();
