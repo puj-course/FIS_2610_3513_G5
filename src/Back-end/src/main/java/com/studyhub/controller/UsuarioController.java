@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -122,8 +123,8 @@ public class UsuarioController {
     public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {
         try {
             String token = usuarioService.generarTokenRecuperacion(correo);
-            // En producción, esto debería ser la URL real del frontend
-            String enlace = "https://studyhub-c2ft.onrender.com/index.html?token=" + token;
+            String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            String enlace = baseUri + "/index.html?token=" + token;
             emailService.enviarCorreoRecuperacion(correo, enlace);
             return ResponseEntity.ok(Map.of("mensaje", "Enlace enviado exitosamente"));
         } catch (RuntimeException e) {
