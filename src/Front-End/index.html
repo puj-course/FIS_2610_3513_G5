@@ -2076,11 +2076,11 @@ sol
                         <span class="material-icons-round">forum</span>
                         Foro de reseñas
                     </div>
-                    <div class="nav-item" id="nav-tasks" onclick="setNavActive('nav-tasks')">
+                    <div class="nav-item" id="nav-tasks" onclick="showToast('Mis Tareas: Aún en desarrollo'); setNavActive('nav-tasks')">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
                     </div>
-                    <div class="nav-item" id="nav-calc" onclick="setNavActive('nav-calc')">
+                    <div class="nav-item" id="nav-calc" onclick="showToast('Calculadora: Aún en desarrollo'); setNavActive('nav-calc')">
                         <span class="material-icons-round">calculate</span>
                         Calculadora
                     </div>
@@ -2186,7 +2186,7 @@ sol
             </div>
 
             <!-- Vista: Calificaciones de asignatura -->
-            <div class="grades-view" id="grades-view">
+            <div class="grades-view" id="view-grades">
                 <div class="grades-view-header">
                     <button class="back-btn" id="grades-back-btn">
                         <span class="material-icons-round">arrow_back</span>
@@ -2241,7 +2241,7 @@ sol
             </div><!-- /.grades-view -->
 
             <!-- Vista: Foro de Reseñas -->
-            <div class="forum-view" id="forum-view">
+            <div class="forum-view" id="view-forum">
                 <div class="section-header" style="display: flex; align-items: center; gap: 16px;">
                     <button class="back-btn" onclick="showView('dashboard'); setNavActive('nav-dashboard');"
                         style="margin-right: 0;">
@@ -3124,9 +3124,15 @@ sol
                 usuarioId: SessionManager.getInstance().getUser().id
             };
             try {
-                await fetch(`${API}/asignaturas`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                loadSubjects(); closeModal(); showToast('Materia guardada');
-            } catch (err) { showToast('Error al conectar'); }
+                const response = await fetch(`${API}/asignaturas`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error('Error desde el servidor al guardar.');
+                await loadSubjects(); 
+                closeModal(); 
+                showToast('Materia guardada correctamente');
+            } catch (err) { 
+                showToast('Error: No se pudo guardar en la base de datos'); 
+                console.error(err);
+            }
         });
 
         async function loadSubjects(userId) {
@@ -3281,10 +3287,11 @@ sol
                 document.getElementById('view-dashboard').style.display = 'block';
                 setNavActive('nav-dashboard');
                 
-                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
-                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
-                
-                fetchGlobalSummary(user.id);
+                if (user) {
+                    document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                    document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                    fetchGlobalSummary(user.id);
+                }
             }
         }
 
@@ -3297,7 +3304,7 @@ sol
                 document.getElementById('view-subjects').style.display = 'block';
                 setNavActive('nav-materials');
                 
-                loadSubjects(user.id);
+                loadSubjects(user?.id);
             }
         }
 
@@ -3320,8 +3327,8 @@ sol
                 v.classList.remove('active');
             });
             // Ocultar vistas SPA internas de segundo nivel (si existen)
-            const gradesView = document.getElementById('grades-view');
-            const forumView = document.getElementById('forum-view');
+            const gradesView = document.getElementById('view-grades');
+            const forumView = document.getElementById('view-forum');
             if (gradesView) { gradesView.classList.remove('active'); gradesView.style.display = 'none'; }
             if (forumView) { forumView.classList.remove('active'); forumView.style.display = 'none'; }
         }
