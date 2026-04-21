@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+
 
 @Service
 public class UsuarioService {
@@ -177,4 +180,31 @@ public class UsuarioService {
             tareasResumen
         );
     }
+
+    public String generarTokenRecuperacion(String correo) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese correo"));
+        
+        String token = UUID.randomUUID().toString();
+        usuario.setTokenRecuperacion(token);
+        usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
+        usuarioRepository.save(usuario);
+        return token;
+    }
+
+    public void restablecerPassword(String token, String nuevaPassword) {
+        Usuario usuario = usuarioRepository.findByTokenRecuperacion(token)
+                .orElseThrow(() -> new RuntimeException("Token de recuperación inválido"));
+        
+        if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("El token ha expirado");
+        }
+        
+        usuario.setPassword(encryptionStrategy.encrypt(nuevaPassword));
+        usuario.setTokenRecuperacion(null);
+        usuario.setTokenExpiracion(null);
+        usuarioRepository.save(usuario);
+    }
+
+
 }

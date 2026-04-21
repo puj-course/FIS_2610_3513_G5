@@ -32,15 +32,16 @@ jobs:
       # 3. Build y pruebas del proyecto
       - name: Build con Maven
         id: maven_build
+        shell: bash
         run: |
-          mvn clean verify --batch-mode --no-transfer-progress 2>&1 | tee maven_output.txt
-          echo "build_status=$?" >> $GITHUB_OUTPUT
+          mvn clean verify -f src/Back-end/pom.xml --batch-mode --no-transfer-progress 2>&1 | tee maven_output.txt
+          echo "build_status=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
 
       - name: Extraer resultados de pruebas
         id: test_results
         if: always()
         run: |
-          SUREFIRE_DIR="target/surefire-reports"
+          SUREFIRE_DIR="src/Back-end/target/surefire-reports"
           TESTS_RUN=0
           TESTS_FAILED=0
           TESTS_SKIPPED=0
@@ -66,6 +67,7 @@ jobs:
       # 4. Recopilar commits del sprint
       - name: Recopilar commits del período
         id: commits
+        if: always()
         run: |
           SPRINT_END=$(date +%Y-%m-%d)
           SPRINT_START=$(date -d "6 days ago" +%Y-%m-%d)
@@ -101,6 +103,7 @@ jobs:
       # 5. Recopilar issues cerrados (via GitHub API)
       - name: Obtener issues cerrados del sprint
         id: issues
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPRINT_START: ${{ steps.commits.outputs.sprint_start }}
@@ -151,6 +154,7 @@ jobs:
       # 6. Construir el cuerpo del issue de reporte
       - name: Construir reporte markdown
         id: build_report
+        if: always()
         run: |
           SPRINT_NAME="${{ steps.commits.outputs.sprint_name }}"
           START="${{ steps.commits.outputs.sprint_start }}"
@@ -207,8 +211,9 @@ jobs:
 
           echo "report_ready=true" >> $GITHUB_OUTPUT
 
-      # 7. Publicar como Issue en el repositorio
+      # 8. Publicar como Issue en el repositorio
       - name: Crear issue con el reporte
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
