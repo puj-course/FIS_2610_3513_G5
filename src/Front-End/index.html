@@ -1602,7 +1602,7 @@
             pointer-events: none;
         }
 
-        /* ── Footer de la tabla: botón + promedio ── */
+        /* ÔöÇÔöÇ Footer de la tabla: botón + promedio ÔöÇÔöÇ */
         .grades-table-footer {
             display: flex;
             align-items: center;
@@ -3601,7 +3601,7 @@
     </div>
 
     <script>
-        const API      = 'http://localhost:8080'; // URL base del backend — cambiar aquí si el puerto varía
+        const API      = 'https://studyhub-c2ft.onrender.com'; 
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
 
         /**
@@ -3613,7 +3613,7 @@
             return document.querySelector('.profile-id')?.dataset.userId ?? null;
         }
 
-        // ── Referencias al DOM ──────────────────────────────────────────
+        // ÔöÇÔöÇ Referencias al DOM ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const modalOverlay      = document.getElementById('modal-overlay');
         const modalClose        = document.getElementById('modal-close');
         const btnCancel         = document.getElementById('btn-cancel');
@@ -3630,7 +3630,7 @@
         const taskForm          = document.getElementById('task-form');
         const taskSubjectSelect = document.getElementById('task-subject');
 
-        // ── Referencias: Modal Calificación ────────────────────────────
+        // ÔöÇÔöÇ Referencias: Modal Calificación ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const gradeModal          = document.getElementById('grade-modal-overlay');
         const gradeModalClose     = document.getElementById('grade-modal-close');
         const gradeBtnCancel      = document.getElementById('grade-btn-cancel');
@@ -3640,7 +3640,7 @@
         const gradePercentBar     = document.getElementById('grade-percent-bar');
         const gradePercentValue   = document.getElementById('grade-percent-value');
 
-        // ── Referencias: Vista de calificaciones ───────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de calificaciones ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const dashboardView          = document.getElementById('dashboard-view');
         const gradesView             = document.getElementById('grades-view');
         const gradesViewTitle        = document.getElementById('grades-view-title');
@@ -3653,7 +3653,7 @@
         const gradesAddInlineBtn     = document.getElementById('grades-add-inline-btn');
         const gradesBackBtn          = document.getElementById('grades-back-btn');
 
-        // ── Referencias: Vista calculadora ─────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista calculadora ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const calcView            = document.getElementById('calc-view');
         const calcSelectorView    = document.getElementById('calc-selector-view');
         const calcSelectorGrid    = document.getElementById('calc-selector-grid');
@@ -3667,16 +3667,16 @@
         const calcInlineEditBtn   = document.getElementById('calc-inline-edit-btn');
         const calcSaveBtn         = document.getElementById('calc-save-btn');
 
-        // ── Referencias: Vista de tareas ───────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de tareas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const tasksView           = document.getElementById('tasks-view');
         const tasksGrid           = document.getElementById('tasks-grid');
         const tasksEmpty          = document.getElementById('tasks-empty');
         const tasksSubtitle       = document.getElementById('tasks-subtitle');
 
-        // ── Referencias: Vista de materias ─────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de materias ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const subjectsView        = document.getElementById('subjects-view');
 
-        // ── Referencias: Vista de reseñas ──────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de reseñas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const resenasView           = document.getElementById('resenas-view');
         const resenasList           = document.getElementById('resenas-list');
         const resenasEmpty          = document.getElementById('resenas-empty');
@@ -3690,7 +3690,7 @@
 
         const META_APROBACION  = 3.0;
 
-        // ── Estado ─────────────────────────────────────────────────────
+        // ÔöÇÔöÇ Estado ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         let activeCardForGrade = null;
         let activeCardForView  = null;
         const gradesStore      = {};   // gradeKey → [{ nombre, nota, porcentaje }]
@@ -3701,7 +3701,7 @@
         // Rastrea la vista activa para evitar side effects de llamadas async
         let currentView        = 'dashboard';
 
-        // ── Colores e iconos para tarjetas ─────────────────────────────
+        // ÔöÇÔöÇ Colores e iconos para tarjetas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const cardColors = [
             { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
             { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
@@ -4261,17 +4261,17 @@
             const subEl  = document.getElementById('calc-min-sub');
             const barEl  = document.getElementById('calc-min-bar');
 
-            // ── Caso 1: no hay cortes pendientes ──────────────────────────
+            // ÔöÇÔöÇ Caso 1: no hay cortes pendientes ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             if (pctPending <= 0) {
                 showToast('No hay cortes pendientes por evaluar.');
                 return;
             }
 
-            // ── Caso 2: promedio ya asegurado ─────────────────────────────
+            // ÔöÇÔöÇ Caso 2: promedio ya asegurado ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             // Si incluso sacando 0 en todo lo pendiente el promedio supera la meta,
             // el estudiante ya tiene el promedio asegurado.
             if (promedioActual >= META_APROBACION) {
-                minEl.textContent  = '✓ Asegurado';
+                minEl.textContent  = 'Ô£ô Asegurado';
                 minEl.style.color  = '#2E7D32';
                 subEl.textContent  = `Con tus notas actuales ya superas ${META_APROBACION.toFixed(1)}, sin importar lo pendiente.`;
                 barEl.style.width  = '100%';
@@ -4289,12 +4289,12 @@
                 return;
             }
 
-            // ── Casos 3 y 4: calcular nota mínima requerida ───────────────
+            // ÔöÇÔöÇ Casos 3 y 4: calcular nota mínima requerida ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             // Nota mínima uniforme que debe sacarse en cada corte pendiente
             const notaMin        = (META_APROBACION - promedioActual) / (pctPending / 100);
             const notaMinRounded = Math.max(0, notaMin);
 
-            // ── Caso 3: matemáticamente imposible ────────────────────────
+            // ÔöÇÔöÇ Caso 3: matemáticamente imposible ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             if (notaMinRounded > 5) {
                 minEl.textContent  = 'Imposible';
                 minEl.style.color  = '#C62828';
@@ -4313,7 +4313,7 @@
                 return;
             }
 
-            // ── Caso 4: cálculo normal ────────────────────────────────────
+            // ÔöÇÔöÇ Caso 4: cálculo normal ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             // Colorear según dificultad de la nota requerida
             if (notaMinRounded >= 4) {
                 minEl.style.color  = '#E65100';
@@ -4335,7 +4335,7 @@
                 cell.innerHTML = `
                     <span class="badge-min ${badgeCls}">
                         <span class="material-icons-round" style="font-size:12px;">${icon}</span>
-                        ≥ ${notaMinRounded.toFixed(2)}
+                        ÔëÑ ${notaMinRounded.toFixed(2)}
                     </span>
                 `;
             });
@@ -4358,7 +4358,7 @@
             openGradeModal(card, 'calc');
         });
 
-        // ── Edición inline de la columna Nota en la tabla de la calculadora ──
+        // ÔöÇÔöÇ Edición inline de la columna Nota en la tabla de la calculadora ÔöÇÔöÇ
 
         let calcEditingMode = false; // Estado: si la tabla está en modo edición
 
@@ -4377,7 +4377,7 @@
             calcTableBody.querySelectorAll('tr').forEach(tr => {
                 if (tr.querySelector('td[colspan]')) return;
 
-                // ── Columna Nota ──────────────────────────────────────
+                // ÔöÇÔöÇ Columna Nota ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
                 const notaCell = tr.querySelector('td:nth-child(2)');
                 if (notaCell) {
                     const badge  = notaCell.querySelector('.grade-score-badge');
@@ -4386,12 +4386,12 @@
                     notaCell.innerHTML = `
                         <input class="grade-inline-input number-input calc-nota-input"
                                type="number" min="0" max="5" step="0.1"
-                               value="${numVal}" placeholder="0.0 – 5.0"
+                               value="${numVal}" placeholder="0.0 ÔÇô 5.0"
                                style="max-width:80px;margin:0 auto;display:block;">
                     `;
                 }
 
-                // ── Columna Porcentaje ────────────────────────────────
+                // ÔöÇÔöÇ Columna Porcentaje ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
                 const pctCell = tr.querySelector('td:nth-child(3)');
                 if (pctCell) {
                     const pill   = pctCell.querySelector('.grade-percent-pill');
@@ -4432,7 +4432,7 @@
             const pendientes  = grades.filter(g => g.nota == null);
             const allGrades   = [...registradas, ...pendientes];
 
-            // ── Validar notas ─────────────────────────────────────────
+            // ÔöÇÔöÇ Validar notas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             editableRows.forEach(({ notaInput }) => {
                 if (!notaInput) return;
                 const val = notaInput.value.trim();
@@ -4446,7 +4446,7 @@
                 }
             });
 
-            // ── Validar porcentajes individualmente ───────────────────
+            // ÔöÇÔöÇ Validar porcentajes individualmente ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             editableRows.forEach(({ pctInput }) => {
                 if (!pctInput) return;
                 const val = pctInput.value.trim();
@@ -4464,7 +4464,7 @@
                 return;
             }
 
-            // ── Validar suma total de porcentajes ≤ 100 ───────────────
+            // ÔöÇÔöÇ Validar suma total de porcentajes Ôëñ 100 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             const totalPct = editableRows.reduce((sum, { pctInput }) => {
                 if (!pctInput) return sum;
                 return sum + parseInt(pctInput.value.trim(), 10);
@@ -4479,7 +4479,7 @@
                 return;
             }
 
-            // ── Enviar cambios al backend ─────────────────────────────
+            // ÔöÇÔöÇ Enviar cambios al backend ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             for (let i = 0; i < editableRows.length; i++) {
                 const { notaInput, pctInput } = editableRows[i];
                 const gradeObj = allGrades[i];
@@ -4517,7 +4517,7 @@
                 }
             }
 
-            // ── Salir del modo edición y re-renderizar ────────────────
+            // ÔöÇÔöÇ Salir del modo edición y re-renderizar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             calcEditingMode = false;
             calcInlineEditBtn.style.display = 'flex';
             calcSaveBtn.style.display       = 'none';
@@ -4727,7 +4727,7 @@
             // Si el origen es 'grades', no hacemos nada — el usuario ya está en esa vista
         }
 
-        // ── FAB ────────────────────────────────────────────────────────
+        // ÔöÇÔöÇ FAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         fabAdd.addEventListener('click', (e) => {
             e.stopPropagation();
             fabMenu.classList.toggle('active');
@@ -4739,7 +4739,7 @@
             if (!e.target.closest('.fab-container')) fabMenu.classList.remove('active');
         });
 
-        // ── Cerrar modales ─────────────────────────────────────────────
+        // ÔöÇÔöÇ Cerrar modales ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         modalClose.addEventListener('click', closeModal);
         btnCancel.addEventListener('click', closeModal);
         modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
@@ -4766,14 +4766,14 @@
             }
         });
 
-        // ── Acciones rápidas ───────────────────────────────────────────
+        // ÔöÇÔöÇ Acciones rápidas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         document.querySelectorAll('.action-chip').forEach(chip => {
             if (chip.textContent.trim().includes('Agregar Materia')) {
                 chip.addEventListener('click', openModal);
             }
         });
 
-        // ── Validación Asignatura ──────────────────────────────────────
+        // ÔöÇÔöÇ Validación Asignatura ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function clearErrors() {
             document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
             document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
@@ -4815,7 +4815,7 @@
             return isValid;
         }
 
-        // ── Crear tarjeta en el DOM ────────────────────────────────────
+        // ÔöÇÔöÇ Crear tarjeta en el DOM ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function createSubjectCard(data, dbId) {
             const color = cardColors[colorIndex % cardColors.length];
             const icon  = cardIcons[Math.floor(Math.random() * cardIcons.length)];
@@ -4858,7 +4858,7 @@
                 </div>
                 <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
                     <span class="material-icons-round" style="font-size:16px">schedule</span>
-                    ${data.horario}
+                    ${data.horarioTexto}
                 </div>
                 <div class="subject-progress">
                     <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso}%"></div>
@@ -4886,7 +4886,7 @@
             if (progressLabel) progressLabel.textContent = progress.toFixed(0) + '% del curso completado';
         }
 
-        // ── Lógica de Reseñas ───────────────────────────────────────────
+        // ÔöÇÔöÇ Lógica de Reseñas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         function openResenaModal() {
             resenaModal.classList.add('active');
@@ -5065,7 +5065,7 @@
             }
         }
 
-        // ── Toast ──────────────────────────────────────────────────────
+        // ÔöÇÔöÇ Toast ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function showToast(message) {
             document.getElementById('toast-text').textContent = message;
             toast.classList.add('show');
@@ -5349,7 +5349,7 @@
             }
         }
 
-        // ── Submit: Guardar Asignatura ─────────────────────────────────
+        // ÔöÇÔöÇ Submit: Guardar Asignatura ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         subjectForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!validateSubjectForm()) return;
@@ -5385,8 +5385,8 @@
             }
         });
 
-        // ── Submit: Guardar Tarea ──────────────────────────────────────
-        // ── Guardar Tarea (botón, no form submit) ──────────────────────
+        // ÔöÇÔöÇ Submit: Guardar Tarea ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+        // ÔöÇÔöÇ Guardar Tarea (botón, no form submit) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         document.getElementById('task-save-btn').addEventListener('click', async () => {
 
             const titulo       = document.getElementById('task-title').value.trim();
@@ -5432,7 +5432,7 @@
             }
         });
 
-        // ── Submit: Guardar Calificación ───────────────────────────────
+        // ÔöÇÔöÇ Submit: Guardar Calificación ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         gradeForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -5532,7 +5532,7 @@
             }
         });
 
-        // ── Menú tarjeta ───────────────────────────────────────────────
+        // ÔöÇÔöÇ Menú tarjeta ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function toggleCardMenu(btn) {
             document.querySelectorAll('.card-dropdown.open').forEach(d => {
                 if (d !== btn.nextElementSibling) d.classList.remove('open');
@@ -5545,7 +5545,7 @@
                 document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
         });
 
-        // ── Eliminar tarjeta ───────────────────────────────────────────
+        // ÔöÇÔöÇ Eliminar tarjeta ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         async function deleteCard(btn) {
             const card = btn.closest('.subject-card');
             const dbId = card.dataset.id;
@@ -5569,7 +5569,7 @@
             }
         }
 
-        // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
+        // ÔöÇÔöÇ GOF PATTERN: SINGLETON (SessionManager) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const SessionManager = (function() {
             let instance;
 
@@ -5598,7 +5598,7 @@
             };
         })();
 
-        // ── GOF PATTERN: STATE (NavigationSystem) ──────────────────────────
+        // ÔöÇÔöÇ GOF PATTERN: STATE (NavigationSystem) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         class NavigationSystem {
             constructor() {
                 this.states = {
@@ -5678,7 +5678,7 @@
 
         const navSystem = new NavigationSystem();
 
-        // ── GOF PATTERN: PROXY (AccessProxy) ──────────────────────────────
+        // ÔöÇÔöÇ GOF PATTERN: PROXY (AccessProxy) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const AccessProxy = {
             goTo: function(view, data = null) {
                 const session = SessionManager.getInstance();
@@ -5694,7 +5694,7 @@
             }
         };
 
-        // ── Manejadores de Eventos Refactorizados ───────────────────────
+        // ÔöÇÔöÇ Manejadores de Eventos Refactorizados ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         function checkSession() {
             const session = SessionManager.getInstance();
@@ -5900,7 +5900,7 @@
         // ======== SPRINT 7: APUNTES LOGIC ========= //
         // ========================================== //
         
-        const API_APUNTES = 'http://localhost:8080/apuntes';
+        const API_APUNTES = `${API}/apuntes`;
         const apuntesView = document.getElementById('apuntes-view');
         
         document.getElementById('nav-apuntes').addEventListener('click', () => {
@@ -6116,7 +6116,7 @@ function detenerGuardDeSesion() {
     }
 }
 
-// ── Interceptar el botón Atrás/Adelante del navegador ─────────────────
+// ÔöÇÔöÇ Interceptar el botón Atrás/Adelante del navegador ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // Crea una entrada en el historial para que la SPA pueda capturar popstate.
 history.pushState(null, '', window.location.href);
 
@@ -6132,7 +6132,7 @@ window.addEventListener('popstate', async () => {
     await verificarSesionActiva();
 });
 
-// ── Detectar logout desde otras pestañas ─────────────────────────────
+// ÔöÇÔöÇ Detectar logout desde otras pestañas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // El evento 'storage' se dispara cuando OTRA pestaña modifica localStorage.
 window.addEventListener('storage', (e) => {
     if (e.key === 'studyhub_user' && e.newValue === null) {
@@ -6146,7 +6146,7 @@ window.addEventListener('storage', (e) => {
     }
 });
 
-        // ── MODAL LOGOUT — Sub-issue 3 HU-27 ────────────────────────────────────────
+        // ÔöÇÔöÇ MODAL LOGOUT — Sub-issue 3 HU-27 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         /** Abre el modal de confirmación. No hace ningún logout todavía. */
         function openLogoutModal() {
@@ -6160,7 +6160,7 @@ window.addEventListener('storage', (e) => {
             document.body.style.overflow = '';
         }
         
-        // ── LÓGICA DE LOGOUT — Sub-issue 4 HU-27 ───────────────────────────────────
+        // ÔöÇÔöÇ LÓGICA DE LOGOUT — Sub-issue 4 HU-27 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         /**
          * Se ejecuta al hacer clic en "Confirmar" del modal.
@@ -6229,7 +6229,7 @@ window.addEventListener('storage', (e) => {
             showToast('Sesión cerrada correctamente');
         }
         
-        // ── CASOS LÍMITE — Sub-issue 5 HU-27 ────────────────────────────────────────
+        // ÔöÇÔöÇ CASOS LÍMITE — Sub-issue 5 HU-27 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         /**
          * Wrapper que verifica la sesión antes de ejecutar cualquier cambio de vista.

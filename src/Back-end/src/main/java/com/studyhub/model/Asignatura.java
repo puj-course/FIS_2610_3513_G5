@@ -22,7 +22,7 @@ public class Asignatura {
     private String horario;
     private int creditos;
     private String periodo;
-    private String horario;
+    private String horarioTexto;
     
     @jakarta.persistence.Transient
     @com.fasterxml.jackson.annotation.JsonProperty("progreso")
@@ -67,8 +67,8 @@ public class Asignatura {
     public String getPeriodo() { return periodo; }
     public void setPeriodo(String periodo) { this.periodo = periodo; }
 
-    public String getHorario() { return horario; }
-    public void setHorario(String horario) { this.horario = horario; }
+    public String getHorarioTexto() { return horarioTexto; }
+    public void setHorarioTexto(String horarioTexto) { this.horarioTexto = horarioTexto; }
 
     public double getProgreso() { return progreso; }
     public void setProgreso(double progreso) { this.progreso = progreso; }

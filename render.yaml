@@ -5,9 +5,5 @@ services:
     plan: free
     region: oregon
     envVars:
-      - key: SPRING_DATASOURCE_URL
-        value: jdbc:h2:file:./data/studyhub
-      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
-        value: update
       - key: PORT
         value: 8080
