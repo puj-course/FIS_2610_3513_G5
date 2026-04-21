@@ -1,8 +1,10 @@
 package com.studyhub.service;
 
 import com.studyhub.model.PasswordResetToken;
+import com.studyhub.model.SesionInvalidada;
 import com.studyhub.model.Usuario;
 import com.studyhub.repository.PasswordResetTokenRepository;
+import com.studyhub.repository.SesionInvalidadaRepository;
 import com.studyhub.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,9 @@ import java.util.UUID;
 public class AuthService {
 
     @Autowired
+    private SesionInvalidadaRepository sesionInvalidadaRepository;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -26,7 +31,20 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Genera un hash SHA-256 para almacenar el token de forma segura
+    /** Registra el logout del usuario en la blacklist. */
+    public SesionInvalidada invalidarSesion(Long usuarioId) {
+        return sesionInvalidadaRepository.save(new SesionInvalidada(usuarioId));
+    }
+
+    /** Retorna true si la sesión con ese loginAt sigue vigente. */
+    public boolean esSesionValida(Long usuarioId, LocalDateTime loginAt) {
+        if (loginAt == null) return false;
+        return !sesionInvalidadaRepository
+                .existsByUsuarioIdAndFechaLogoutAfter(usuarioId, loginAt);
+    }
+
+    // ========== FUNCIONES DE RECUPERACIÓN (HU-26) ==========
+
     private String hashToken(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -34,9 +52,7 @@ public class AuthService {
             StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
             for (byte b : encodedhash) {
                 String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
+                if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
             return hexString.toString();
@@ -60,16 +76,11 @@ public class AuthService {
             );
             tokenRepository.save(resetToken);
 
-            // Simulación de envío de correo en consola
+            // Simulación en consola (Sprint 8: Simulación de Email)
             System.out.println("==========================================================");
-            System.out.println("SIMULACIÓN DE ENVÍO DE CORREO - RECUPERACIÓN DE CONTRASEÑA");
+            System.out.println("SIMULACIÓN DE ENVÍO DE CORREO - STUDYHUB");
             System.out.println("Para: " + correo);
-            System.out.println("Asunto: Recuperación de tu contraseña - StudyHub");
-            System.out.println("Mensaje:");
-            System.out.println("Hemos recibido una solicitud para restablecer tu contraseña.");
-            System.out.println("Por favor, usa el siguiente enlace, válido por 30 minutos:");
-            System.out.println(url);
-            System.out.println("O usa este token directamente: " + rawToken);
+            System.out.println("Enlace de recuperación: " + url);
             System.out.println("==========================================================");
         }
     }
@@ -78,9 +89,7 @@ public class AuthService {
         String hashedToken = hashToken(rawToken);
         Optional<PasswordResetToken> tokenOpt = tokenRepository.findByToken(hashedToken);
 
-        if (tokenOpt.isEmpty()) {
-            return false;
-        }
+        if (tokenOpt.isEmpty()) return false;
 
         PasswordResetToken resetToken = tokenOpt.get();
 
@@ -88,7 +97,6 @@ public class AuthService {
             return false;
         }
 
-        // Token válido, actualizar contraseña y marcar usado
         Usuario usuario = resetToken.getUsuario();
         usuario.setPassword(passwordEncoder.encode(nuevaPassword));
         usuarioRepository.save(usuario);

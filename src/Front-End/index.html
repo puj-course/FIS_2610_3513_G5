@@ -1629,7 +1629,105 @@ sol
             display: block;
         }
 
+<<<<<<< Updated upstream
         .forum-header-actions {
+=======
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-400);
+            box-shadow: 0 0 0 3px var(--blue-50);
+        }
+
+        .auth-switch {
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .auth-link {
+            color: var(--blue-600);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #E53935;
+        }
+
+        .success-message {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .auth-card { display: none; }
+        .auth-card.active { display: block; }
+
+        /* ========== VISTAS PRINCIPALES ========== */
+        .dashboard-view,
+        .grades-view,
+        .calc-selector-view,
+        .calc-view,
+        .tasks-view,
+        .subjects-view {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .dashboard-view.active { display: block; }
+        .calc-view.active { display: block; }
+        .calc-selector-view.active { display: block; }
+        .tasks-view.active { display: flex; }
+        .subjects-view.active { display: flex; }
+        .grades-view.active { display: block; }
+
+        .hidden { display: none !important; }
+
+        .calc-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .calc-selector-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+>>>>>>> Stashed changes
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -1874,6 +1972,24 @@ sol
                 </form>
                 <a class="auth-link" onclick="showAuthScreen('screen-recover')">¿Olvidaste tu contraseña?</a>
             </div>
+<<<<<<< Updated upstream
+=======
+            <div id="login-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="login-pass" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">Iniciar Sesión</button>
+            </form>
+            <p class="auth-switch">¿Olvidaste tu contraseña? <span class="auth-link" onclick="toggleAuth('recover')">Recupérala aquí</span></p>
+            <p class="auth-switch" style="margin-top: 8px;">¿No tienes cuenta? <span class="auth-link" onclick="toggleAuth('register')">Regístrate</span></p>
+        </div>
+>>>>>>> Stashed changes
 
             <!-- Screen: Recover Password -->
             <div id="screen-recover" class="auth-screen">
@@ -1911,6 +2027,50 @@ sol
                 <div id="reset-success-actions" style="display: none; margin-top: 16px;">
                     <button class="auth-btn" onclick="showAuthScreen('screen-login')">Ir al Inicio de Sesión</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- RECOVER VIEW (NEW HU-26) -->
+        <div id="recover-view" class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">lock_reset</span></div>
+                <h2 class="auth-title">Recuperar Acceso</h2>
+                <p class="auth-subtitle">Ingresa tu correo para recibir un enlace de recuperación</p>
+            </div>
+            <div id="recover-error" class="error-message"></div>
+            <div id="recover-success" class="success-message"></div>
+            <form class="auth-form" onsubmit="handleRecover(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="recover-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                </div>
+                <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
+            </form>
+            <p class="auth-switch">¿Recordaste tu clave? <span class="auth-link" onclick="toggleAuth('login')">Volver al login</span></p>
+        </div>
+
+        <!-- RESET VIEW (NEW HU-26) -->
+        <div id="reset-view" class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">password</span></div>
+                <h2 class="auth-title">Nueva Contraseña</h2>
+                <p class="auth-subtitle">Crea una nueva contraseña segura para tu cuenta</p>
+            </div>
+            <div id="reset-error" class="error-message"></div>
+            <div id="reset-success" class="success-message"></div>
+            <form class="auth-form" onsubmit="handleReset(event)">
+                <div class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input type="password" id="reset-pass" class="form-input" placeholder="••••••••" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Contraseña</label>
+                    <input type="password" id="reset-pass-confirm" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="btn-reset" class="auth-btn">Actualizar Contraseña</button>
+            </form>
+            <div id="reset-final-actions" style="display: none; margin-top: 16px;">
+                <button class="auth-btn" onclick="toggleAuth('login')">Ir al Inicio de Sesión</button>
             </div>
         </div>
     </div>
@@ -3624,6 +3784,7 @@ sol
         function deleteCard(btn) {
             const card = btn.closest('.subject-card');
             const name = card.querySelector('.subject-name')?.textContent || 'Materia';
+<<<<<<< Updated upstream
             card.classList.add('removing');
             card.addEventListener('animationend', () => {
                 card.remove();
@@ -3631,6 +3792,402 @@ sol
                 showToast(`"${name}" eliminada`);
                 // Recargar el horario entero es más fácil para limpiar los bloques eliminados
                 loadSubjects();
+=======
+
+            try {
+                const res = await fetch(`${API}/asignaturas/${dbId}`, {
+                    method: 'DELETE'
+                });
+                if (!res.ok) throw new Error('Error al eliminar en el servidor');
+
+                card.classList.add('removing');
+                card.addEventListener('animationend', () => {
+                    card.remove();
+                    updateSubjectCount();
+                    showToast(`"${name}" eliminada`);
+                });
+            } catch (err) {
+                console.error(err);
+                showToast('Error al eliminar la materia del servidor');
+            }
+        }
+
+        // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
+        const SessionManager = (function() {
+            let instance;
+
+            function init() {
+                return {
+                    getUser: function() {
+                        return JSON.parse(localStorage.getItem('studyhub_user'));
+                    },
+                    setUser: function(user) {
+                        localStorage.setItem('studyhub_user', JSON.stringify(user));
+                    },
+                    clear: function() {
+                        localStorage.removeItem('studyhub_user');
+                    },
+                    isLoggedIn: function() {
+                        return this.getUser() !== null;
+                    }
+                };
+            }
+
+            return {
+                getInstance: function() {
+                    if (!instance) instance = init();
+                    return instance;
+                }
+            };
+        })();
+
+        // ── GOF PATTERN: STATE (NavigationSystem) ──────────────────────────
+        class NavigationSystem {
+            constructor() {
+                this.states = {
+                    login: new LoginState(this),
+                    register: new RegisterState(this),
+                    recover: new RecoverState(this),
+                    reset: new ResetState(this),
+                    dashboard: new DashboardState(this),
+                    resenas: new ResenasState(this)
+                };
+                this.currentState = null;
+            }
+
+            transitionTo(stateName, data = null) {
+                if (this.states[stateName]) {
+                    this.currentState = this.states[stateName];
+                    this.currentState.render(data);
+                }
+            }
+        }
+
+        class LoginState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('login-error').style.display = 'none';
+            }
+        }
+
+        class RegisterState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'block';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'none';
+                document.getElementById('register-error').style.display = 'none';
+            }
+        }
+
+        class RecoverState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'block';
+                document.getElementById('reset-view').style.display = 'none';
+                document.getElementById('recover-error').style.display = 'none';
+                document.getElementById('recover-success').style.display = 'none';
+            }
+        }
+
+        class ResetState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'block';
+                document.getElementById('reset-error').style.display = 'none';
+                document.getElementById('reset-success').style.display = 'none';
+            }
+        }
+
+        class DashboardState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                document.querySelector('.profile-id').dataset.userId = user.id;
+                
+                hideAllViews();
+                dashboardView.classList.add('active');
+                syncNavbar('nav-dashboard');
+                currentView = 'dashboard';
+                
+                fetchAsignaturasBackend();
+                renderDashboardSummary();
+                iniciarGuardDeSesion();
+            }
+        }
+
+        class ResenasState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                document.querySelector('.profile-id').dataset.userId = user.id;
+
+                hideAllViews();
+                resenasView.classList.add('active');
+                syncNavbar('nav-resenas');
+                fetchResenasBackend();
+            }
+        }
+
+        const navSystem = new NavigationSystem();
+
+        // ── GOF PATTERN: PROXY (AccessProxy) ──────────────────────────────
+        const AccessProxy = {
+            goTo: function(view, data = null) {
+                const session = SessionManager.getInstance();
+                console.log(`Petición de acceso a: ${view}`);
+
+                if (view === 'dashboard' && !session.isLoggedIn()) {
+                    console.warn("Acceso denegado al Dashboard. Redirigiendo a Login...");
+                    navSystem.transitionTo('login');
+                    return;
+                }
+
+                navSystem.transitionTo(view, data);
+            }
+        };
+
+        // ── Manejadores de Eventos Refactorizados ───────────────────────
+
+        function checkSession() {
+            const session = SessionManager.getInstance();
+            if (session.isLoggedIn()) {
+                AccessProxy.goTo('dashboard', session.getUser());
+            } else {
+                AccessProxy.goTo('login');
+            }
+        }
+
+        function toggleAuth(view) {
+            AccessProxy.goTo(view);
+            document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
+            document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('register-error').style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const correo = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            const session = SessionManager.getInstance();
+
+            try {
+                console.log("Intentando login para:", correo);
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, password })
+                });
+
+                console.log("Status del login:", response.status);
+                const result = await response.json();
+                console.log("Resultado del login:", result);
+
+                if (response.ok) {
+                    session.setUser(result);
+                    AccessProxy.goTo('dashboard', result);
+                    showToast('¡Bienvenido de nuevo!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Credenciales incorrectas";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error en handleLogin:", err);
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const apellido = document.getElementById('reg-apellido').value.trim();
+            const correo = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            const confirm = document.getElementById('reg-pass-confirm').value.trim();
+            const errorDiv = document.getElementById('register-error');
+
+            if (password !== confirm) {
+                errorDiv.textContent = "Las contraseñas no coinciden";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    AccessProxy.goTo('login');
+                    showToast('Registro exitoso. ¡Inicia sesión!');
+                } else {
+                    errorDiv.textContent = result.mensaje || "Error en el registro";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // --- MANEJADORES RECUPERACIÓN (HU-26) ---
+
+        async function handleRecover(e) {
+            e.preventDefault();
+            const email = document.getElementById('recover-email').value.trim();
+            const errorDiv = document.getElementById('recover-error');
+            const successDiv = document.getElementById('recover-success');
+            const btn = document.getElementById('btn-recover');
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            try {
+                const res = await fetch(`${API}/auth/recuperar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: email })
+                });
+
+                if (res.ok) {
+                    successDiv.textContent = "Si el correo está registrado, recibirás un enlace pronto.";
+                    successDiv.style.display = 'block';
+                    document.getElementById('recover-email').value = '';
+                } else {
+                    errorDiv.textContent = "Hubo un error al procesar tu solicitud.";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "No se pudo conectar con el servidor.";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Enlace';
+            }
+        }
+
+        async function handleReset(e) {
+            e.preventDefault();
+            const pass = document.getElementById('reset-pass').value;
+            const confirm = document.getElementById('reset-pass-confirm').value;
+            const errorDiv = document.getElementById('reset-error');
+            const successDiv = document.getElementById('reset-success');
+            const btn = document.getElementById('btn-reset');
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (pass !== confirm) {
+                errorDiv.textContent = "Las contraseñas no coinciden.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Actualizando...';
+
+            try {
+                const res = await fetch(`${API}/auth/restablecer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, password: pass })
+                });
+
+                if (res.ok) {
+                    successDiv.textContent = "¡Contraseña actualizada! Ya puedes iniciar sesión.";
+                    successDiv.style.display = 'block';
+                    document.getElementById('reset-final-actions').style.display = 'block';
+                    btn.style.display = 'none';
+                } else {
+                    const data = await res.json();
+                    errorDiv.textContent = data.mensaje || "El enlace es inválido o ha expirado.";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error de conexión.";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                if (btn.style.display !== 'none') btn.textContent = 'Actualizar Contraseña';
+            }
+        }
+
+        // --- DETECCIÓN DE TOKEN AL CARGAR ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('token')) {
+                toggleAuth('reset');
+            }
+        });
+
+        function showDashboard(user) {
+            document.getElementById('auth-container').style.display = 'none';
+            document.querySelector('.app-container').style.display = 'grid';
+            document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido}`;
+            document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+            document.querySelector('.profile-id').dataset.userId = user.id;
+        }
+
+        function showAuth() {
+            document.getElementById('auth-container').style.display = 'flex';
+            document.querySelector('.app-container').style.display = 'none';
+        }
+
+        function logout() {
+            openLogoutModal();
+        }
+
+        // Agregar EventListener al avatar para cerrar sesión
+        document.querySelector('.profile-avatar').style.cursor = 'pointer';
+        document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
+        document.querySelector('.profile-avatar').onclick = logout;
+
+
+        // ========================================== //
+        // ======== SPRINT 7: APUNTES LOGIC ========= //
+        // ========================================== //
+        
+        const API_APUNTES = 'http://localhost:8080/apuntes';
+        const apuntesView = document.getElementById('apuntes-view');
+        
+        document.getElementById('nav-apuntes').addEventListener('click', () => {
+            navigateSafe(() => {
+                hideAllViews();
+                apuntesView.classList.add('active');
+                syncNavbar('nav-apuntes');
+                loadNotes();
+>>>>>>> Stashed changes
             });
         }
 

@@ -6,22 +6,22 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "password_reset_tokens")
 public class PasswordResetToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String token;
+    private String token; // Token ya hasheado (SHA-256)
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = Usuario.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "usuario_id")
     private Usuario usuario;
 
     @Column(nullable = false)
     private LocalDateTime fechaExpiracion;
 
-    @Column(nullable = false)
-    private boolean usado;
+    private boolean usado = false;
 
     public PasswordResetToken() {}
 
@@ -29,17 +29,21 @@ public class PasswordResetToken {
         this.token = token;
         this.usuario = usuario;
         this.fechaExpiracion = fechaExpiracion;
-        this.usado = false;
     }
 
+    // Getters y Setters
     public Long getId() { return id; }
-    public String getToken() { return token; }
-    public Usuario getUsuario() { return usuario; }
-    public LocalDateTime getFechaExpiracion() { return fechaExpiracion; }
-    public boolean isUsado() { return usado; }
-<<<<<<< HEAD
+    public void setId(Long id) { this.id = id; }
 
-=======
->>>>>>> 42816759bd69e3a5b7f4c91254944bc82ef70c62
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
+
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
+    public LocalDateTime getFechaExpiracion() { return fechaExpiracion; }
+    public void setFechaExpiracion(LocalDateTime fechaExpiracion) { this.fechaExpiracion = fechaExpiracion; }
+
+    public boolean isUsado() { return usado; }
     public void setUsado(boolean usado) { this.usado = usado; }
 }

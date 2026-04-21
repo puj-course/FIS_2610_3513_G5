@@ -1,72 +1,81 @@
 package com.studyhub.controller;
 
-import com.studyhub.dto.RecuperarRequest;
-import com.studyhub.dto.RestablecerRequest;
 import com.studyhub.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< HEAD
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-=======
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
->>>>>>> 42816759bd69e3a5b7f4c91254944bc82ef70c62
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/auth")
-<<<<<<< HEAD
-@CrossOrigin(origins = "*", maxAge = 3600)
+@RequestMapping("/auth")
 public class AuthController {
 
-=======
-@CrossOrigin(origins = "*")
-public class AuthController {
->>>>>>> 42816759bd69e3a5b7f4c91254944bc82ef70c62
     @Autowired
     private AuthService authService;
 
+    // --- Endpoints Existentes en Main ---
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody(required = false) Map<String, Object> body) {
+        try {
+            Long usuarioId = null;
+            if (authHeader != null && !authHeader.isBlank()) {
+                usuarioId = Long.valueOf(authHeader.trim());
+            } else if (body != null && body.get("usuarioId") != null) {
+                usuarioId = Long.valueOf(body.get("usuarioId").toString());
+            }
+            if (usuarioId == null) {
+                return ResponseEntity.badRequest().body(Map.of("mensaje", "Se requiere identificador de usuario"));
+            }
+            authService.invalidarSesion(usuarioId);
+            return ResponseEntity.ok(Map.of("exito", true, "mensaje", "Sesión cerrada"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("mensaje", "Error al cerrar sesión"));
+        }
+    }
+
+    @GetMapping("/validar-sesion")
+    public ResponseEntity<?> validarSesion(
+            @RequestParam Long usuarioId,
+            @RequestParam String loginAt) {
+        try {
+            LocalDateTime loginAtDt = LocalDateTime.parse(loginAt);
+            boolean valida = authService.esSesionValida(usuarioId, loginAtDt);
+            return ResponseEntity.ok(Map.of("valida", valida, "usuarioId", usuarioId));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "Formato de fecha inválido"));
+        }
+    }
+
+    // --- NUEVOS Endpoints de Recuperación (HU-26) ---
+
     @PostMapping("/recuperar")
-    public ResponseEntity<Map<String, String>> recuperar(@RequestBody RecuperarRequest request) {
-<<<<<<< HEAD
-        // Ejecutamos la lógica de forma asíncrona o sincrónica (sincrónica en este caso simple)
-        // El issue requiere retornar SIEMPRE HTTP 200 con mensaje genérico
-        authService.solicitarRecuperacion(request.getCorreo());
-        
-        Map<String, String> response = new HashMap<>();
-        response.put("mensaje", "Si el correo existe en nuestro sistema, enviaremos un mensaje con las instrucciones para recuperar tu contraseña.");
-        
-=======
-        authService.solicitarRecuperacion(request.getCorreo());
-        Map<String, String> response = new HashMap<>();
-        response.put("mensaje", "Si el correo es válido, recibirá un enlace en breve.");
->>>>>>> 42816759bd69e3a5b7f4c91254944bc82ef70c62
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> solicitarRecuperacion(@RequestBody Map<String, String> body) {
+        String correo = body.get("correo");
+        if (correo == null || correo.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El correo es obligatorio"));
+        }
+        authService.solicitarRecuperacion(correo);
+        return ResponseEntity.ok(Map.of("mensaje", "Si el correo existe, se enviará un enlace de recuperación."));
     }
 
     @PostMapping("/restablecer")
-    public ResponseEntity<Map<String, String>> restablecer(@RequestBody RestablecerRequest request) {
-        boolean exito = authService.restablecerPassword(request.getToken(), request.getNuevaPassword());
-        Map<String, String> response = new HashMap<>();
-<<<<<<< HEAD
-        
+    public ResponseEntity<?> restablecerPassword(@RequestBody Map<String, String> body) {
+        String token = body.get("token");
+        String nuevaPassword = body.get("password");
+        if (token == null || nuevaPassword == null || nuevaPassword.length() < 6) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "Token inválido o contraseña demasiado corta."));
+        }
+        boolean exito = authService.restablecerPassword(token, nuevaPassword);
         if (exito) {
-            response.put("mensaje", "Contraseña restablecida exitosamente.");
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada con éxito."));
         } else {
-            response.put("error", "El token es inválido, ya fue usado o ha expirado.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El enlace ha expirado o es inválido."));
         }
-=======
-        if (exito) {
-            response.put("mensaje", "Contraseña restablecida exitosamente.");
-            return ResponseEntity.ok(response);
-        }
-        response.put("error", "El token es inválido o ha expirado.");
-        return ResponseEntity.badRequest().body(response);
->>>>>>> 42816759bd69e3a5b7f4c91254944bc82ef70c62
     }
 }
