@@ -26,7 +26,7 @@ jobs:
           echo "Buscando Proyecto #$PROJECT_NUMBER en $ORGANIZATION..."
           
           # 1. Obtener el ID global del proyecto
-          PROJECT_ID=$(gh project list --owner "$ORGANIZATION" --format json --jq ".[] | select(.number == $PROJECT_NUMBER) | .id")
+          PROJECT_ID=$(gh project list --owner "$ORGANIZATION" --format json | jq -r ".[] | select(.number == $PROJECT_NUMBER) | .id")
           
           if [ -z "$PROJECT_ID" ]; then
             echo "Error: No se encontró el proyecto con número $PROJECT_NUMBER"
@@ -34,9 +34,9 @@ jobs:
           fi
 
           # 2. Obtener el ID del item (issue) dentro del proyecto
-          ITEM_ID=$(gh project item-list $PROJECT_NUMBER --owner "$ORGANIZATION" --format json --jq ".items[] | select(.content.id == \"$ISSUE_ID\") | .id")
+          ITEM_ID=$(gh project item-list $PROJECT_NUMBER --owner "$ORGANIZATION" --format json | jq -r ".items[] | select(.content.id == \"$ISSUE_ID\") | .id")
 
-          if [ -z "$ITEM_ID" ]; then
+          if [ -z "$ITEM_ID" ] || [ "$ITEM_ID" = "null" ]; then
             echo "Aviso: El issue no está vinculado a este proyecto o ya fue procesado."
             exit 0
           fi
@@ -44,9 +44,10 @@ jobs:
           # 3. Obtener el ID del campo 'Status' y el ID de la opción 'Done'
           FIELD_DATA=$(gh project field-list $PROJECT_NUMBER --owner "$ORGANIZATION" --format json)
           STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
-          DONE_OPTION_ID=$(echo "$FIELD_DATA" | jq -r ".fields[] | select(.name == \"Status\") | .options[] | select(.name == \"Done\") | .id")
+          DONE_OPTION_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .options[]? | select(.name == "Done") | .id')
 
           # 4. Actualizar el estado del item a 'Done'
           gh project item-edit --id "$ITEM_ID" --project-id "$PROJECT_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
           
           echo "¡Éxito! Issue #${{ github.event.issue.number }} movido a Done."
+
