@@ -37,6 +37,9 @@ public class PasswordResetToken {
     public Usuario getUsuario() { return usuario; }
     public LocalDateTime getFechaExpiracion() { return fechaExpiracion; }
     public boolean isUsado() { return usado; }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 42816759bd69e3a5b7f4c91254944bc82ef70c62
     public void setUsado(boolean usado) { this.usado = usado; }
 }

@@ -26,7 +26,7 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Genera un hash SHA-256 para almacenar el token
+    // Genera un hash SHA-256 para almacenar el token de forma segura
     private String hashToken(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -51,7 +51,7 @@ public class AuthService {
             Usuario usuario = userOpt.get();
             String rawToken = UUID.randomUUID().toString();
             String hashedToken = hashToken(rawToken);
-            String url = "http://localhost:5500/src/Front-End/restablecer.html?token=" + rawToken;
+            String url = "http://localhost:5500/src/Front-End/index.html?token=" + rawToken;
 
             PasswordResetToken resetToken = new PasswordResetToken(
                     hashedToken,
@@ -72,7 +72,6 @@ public class AuthService {
             System.out.println("O usa este token directamente: " + rawToken);
             System.out.println("==========================================================");
         }
-        // Si no existe, no hacemos nada ni revelamos que no existe.
     }
 
     public boolean restablecerPassword(String rawToken, String nuevaPassword) {
