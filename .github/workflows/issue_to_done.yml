@@ -21,12 +21,11 @@ jobs:
           ORGANIZATION: ${{ github.repository_owner }}
           PROJECT_NUMBER: 63
           ISSUE_ID: ${{ github.event.issue.node_id }}
-          GH_DEBUG: api
         run: |
           echo "Buscando Proyecto #$PROJECT_NUMBER en $ORGANIZATION..."
           
           # 1. Obtener el ID global del proyecto
-          PROJECT_ID=$(gh project list --owner "$ORGANIZATION" --format json | jq -r ".[] | select(.number == $PROJECT_NUMBER) | .id")
+          PROJECT_ID=$(gh project view $PROJECT_NUMBER --owner "$ORGANIZATION" --format json | jq -r ".id")
           
           if [ -z "$PROJECT_ID" ]; then
             echo "Error: No se encontró el proyecto con número $PROJECT_NUMBER"
