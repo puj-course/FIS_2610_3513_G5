@@ -2732,7 +2732,10 @@ sol
     </div>
 
     <script>
-        const API = 'http://localhost:8080';
+        // URL de la API en Render
+        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:8080' 
+                    : 'https://studyhub-backend.onrender.com';
 
         // ── Lógica SPA (Navegación Interna) ─────────────────────────────
         function navigateMainView(viewId) {
@@ -3504,9 +3507,9 @@ sol
                     ${data.dias || ''} ${data.horaInicio || ''} - ${data.horaFin || ''}
                 </div>
                 <div class="subject-progress">
-                    <div class="subject-progress-bar" style="background:${color.gradient};width:0%"></div>
+                    <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso || 0}%"></div>
                 </div>
-                <div class="subject-progress-label">0% del curso completado</div>
+                <div class="subject-progress-label">${Math.round(data.progreso || 0)}% del curso completado</div>
             `;
             subjectsGrid.appendChild(card);
         }
@@ -3688,9 +3691,12 @@ sol
         });
 
         // ── Eliminar tarjeta ───────────────────────────────────────────
-        function deleteCard(btn) {
+        async function deleteCard(btn) {
             const card = btn.closest('.subject-card');
+            const dbId = card.dataset.id;
             const name = card.querySelector('.subject-name')?.textContent || 'Materia';
+
+            if (!confirm(`¿Estás seguro de que deseas eliminar "${name}"?`)) return;
 
             try {
                 const res = await fetch(`${API}/asignaturas/${dbId}`, {
@@ -4076,7 +4082,9 @@ sol
         // ======== SPRINT 7: APUNTES LOGIC ========= //
         // ========================================== //
         
-        const API_APUNTES = 'http://localhost:8080/apuntes';
+        const API_APUNTES = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                            ? 'http://localhost:8080/apuntes' 
+                            : 'https://studyhub-backend.onrender.com/apuntes';
         const apuntesView = document.getElementById('apuntes-view');
         
         document.getElementById('nav-apuntes').addEventListener('click', () => {
