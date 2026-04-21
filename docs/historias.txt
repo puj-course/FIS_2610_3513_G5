@@ -1,4 +1,1 @@
-# Agrega aquí tus títulos de historias de usuario (uno por línea)
-# Ejemplo:
-# Implementar login con Google
-# Crear vista de perfil de usuario
+# Personalización de perfil, foto, carrera, colores de la página
