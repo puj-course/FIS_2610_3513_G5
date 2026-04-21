@@ -1,0 +1,43 @@
+name: AI User Stories Generation
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'docs/historias.txt'
+  workflow_dispatch:
+
+jobs:
+  generate-stories:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run HU Generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/generate_hu.py
+
+      - name: Clear stories file
+        run: |
+          # Opcional: Limpiar el archivo para no re-procesar las mismas historias
+          # echo "" > docs/historias.txt
+          # git config user.name "github-actions[bot]"
+          # git config user.email "github-actions[bot]@users.noreply.github.com"
+          # git add docs/historias.txt
+          # git commit -m "docs: clear processed stories" || echo "No changes to commit"
+          # git push

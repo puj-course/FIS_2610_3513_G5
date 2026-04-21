@@ -103,6 +103,8 @@ jobs:
         id: issues
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPRINT_START: ${{ steps.commits.outputs.sprint_start }}
+          SPRINT_END: ${{ steps.commits.outputs.sprint_end }}
         run: |
           SPRINT_START="${{ steps.commits.outputs.sprint_start }}"
           SPRINT_END="${{ steps.commits.outputs.sprint_end }}"
@@ -115,13 +117,14 @@ jobs:
 
           python3 - <<'EOF'
           import json
+          import os
           from datetime import datetime, timezone
 
           with open("issues_raw.json") as f:
               issues = json.load(f)
 
-          start = datetime.fromisoformat("$SPRINT_START").replace(tzinfo=timezone.utc)
-          end   = datetime.fromisoformat("$SPRINT_END").replace(tzinfo=timezone.utc)
+          start = datetime.fromisoformat(os.environ["SPRINT_START"]).replace(tzinfo=timezone.utc)
+          end   = datetime.fromisoformat(os.environ["SPRINT_END"]).replace(tzinfo=timezone.utc)
 
           sprint_issues = []
           for issue in issues:
