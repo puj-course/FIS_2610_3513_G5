@@ -2755,9 +2755,17 @@ sol
         }
 
         function logout() {
-            // Aquí podrías limpiar tokens/sesión local
+            // Limpiar sesión
+            localStorage.removeItem('user'); 
+            localStorage.clear();
+            
+            // Volver al inicio limpio
             navigateMainView('auth');
             showAuthScreen('screen-login');
+            
+            // Limpiar datos visuales
+            subjectsGrid.innerHTML = '';
+            document.querySelectorAll('.schedule-block').forEach(el => el.remove());
         }
 
         // ── Manejo de Formularios Auth ───────────────────────────────
@@ -3120,19 +3128,21 @@ sol
         // ══════════════════════════════════════════════════════════════
 
         function showView(viewId) {
-            // Ocultar todas las vistas principales
-            dashboardView.classList.add('hidden');
-            gradesView.classList.remove('active');
-            const forumView = document.getElementById('forum-view');
-            if (forumView) forumView.classList.remove('active');
+            // Ocultar todas las sub-vistas del dashboard
+            const subViews = ['dashboard-view', 'grades-view', 'forum-view', 'apuntes-view'];
+            subViews.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.remove('active');
+                    el.classList.add('hidden');
+                }
+            });
 
             // Mostrar la seleccionada
-            if (viewId === 'dashboard') {
-                dashboardView.classList.remove('hidden');
-            } else if (viewId === 'grades') {
-                gradesView.classList.add('active');
-            } else if (viewId === 'forum') {
-                if (forumView) forumView.classList.add('active');
+            const selected = document.getElementById(viewId.includes('view') ? viewId : `${viewId}-view`);
+            if (selected) {
+                selected.classList.remove('hidden');
+                selected.classList.add('active');
             }
         }
 
@@ -3770,52 +3780,32 @@ sol
         class LoginState {
             constructor(system) { this.system = system; }
             render() {
-                document.getElementById('auth-container').style.display = 'flex';
-                document.querySelector('.app-container').style.display = 'none';
-                document.getElementById('login-view').style.display = 'block';
-                document.getElementById('register-view').style.display = 'none';
-                document.getElementById('login-error').style.display = 'none';
+                navigateMainView('auth');
+                showAuthScreen('screen-login');
             }
         }
 
         class RegisterState {
             constructor(system) { this.system = system; }
             render() {
-                document.getElementById('auth-container').style.display = 'flex';
-                document.querySelector('.app-container').style.display = 'none';
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('register-view').style.display = 'block';
-                document.getElementById('recover-view').style.display = 'none';
-                document.getElementById('reset-view').style.display = 'none';
-                document.getElementById('register-error').style.display = 'none';
+                navigateMainView('auth');
+                showAuthScreen('screen-register');
             }
         }
 
         class RecoverState {
             constructor(system) { this.system = system; }
             render() {
-                document.getElementById('auth-container').style.display = 'flex';
-                document.querySelector('.app-container').style.display = 'none';
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('register-view').style.display = 'none';
-                document.getElementById('recover-view').style.display = 'block';
-                document.getElementById('reset-view').style.display = 'none';
-                document.getElementById('recover-error').style.display = 'none';
-                document.getElementById('recover-success').style.display = 'none';
+                navigateMainView('auth');
+                showAuthScreen('screen-recover');
             }
         }
 
         class ResetState {
             constructor(system) { this.system = system; }
             render() {
-                document.getElementById('auth-container').style.display = 'flex';
-                document.querySelector('.app-container').style.display = 'none';
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('register-view').style.display = 'none';
-                document.getElementById('recover-view').style.display = 'none';
-                document.getElementById('reset-view').style.display = 'block';
-                document.getElementById('reset-error').style.display = 'none';
-                document.getElementById('reset-success').style.display = 'none';
+                navigateMainView('auth');
+                showAuthScreen('screen-reset');
             }
         }
 
@@ -4068,11 +4058,7 @@ sol
             document.querySelector('.app-container').style.display = 'none';
         }
 
-        function logout() {
-            openLogoutModal();
-        }
-
-        // Agregar EventListener al avatar para cerrar sesión
+        // El logout ya está definido arriba
         document.querySelector('.profile-avatar').style.cursor = 'pointer';
         document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
         document.querySelector('.profile-avatar').onclick = logout;
@@ -4088,14 +4074,10 @@ sol
         const apuntesView = document.getElementById('apuntes-view');
         
         document.getElementById('nav-apuntes').addEventListener('click', () => {
-            navigateSafe(() => {
-                hideAllViews();
-                apuntesView.classList.add('active');
-                syncNavbar('nav-apuntes');
-                loadNotes();
->>>>>>> Stashed changes
-            });
-        }
+            showView('apuntes');
+            setNavActive('nav-apuntes');
+            // Aquí iría loadNotes() si existiera, por ahora solo mostramos la vista
+        });
 
         // ── Horario y Carga de Subjects ────────────────────────────────
         const dayColumns = { 'Lun': 1, 'Mar': 2, 'Mié': 3, 'Jue': 4, 'Vie': 5, 'Sáb': 6, 'Dom': 7 };
@@ -4182,10 +4164,10 @@ sol
                 showAuthScreen('screen-login');
             }
 
-            loadSubjects();
+            // Solo cargar lógica si entramos directamente al dashboard (por ahora login manda)
+            // loadSubjects();
             renderReviews();
             initForumLogic();
-            setNavActive('nav-dashboard');
         });
 
     </script>
