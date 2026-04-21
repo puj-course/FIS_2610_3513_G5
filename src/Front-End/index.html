@@ -2640,6 +2640,9 @@
                     <label class="form-label">Contraseña</label>
                     <input type="password" id="login-pass" class="form-input" placeholder="••••••••" required>
                 </div>
+                <div class="form-group" style="text-align: right; margin-top: -10px;">
+                    <span class="auth-link" onclick="toggleAuth('recover')" style="font-size: 12px;">¿Olvidaste tu contraseña?</span>
+                </div>
                 <button type="submit" class="auth-btn">Iniciar Sesión</button>
             </form>
             <p class="auth-switch">¿No tienes cuenta? <span class="auth-link" onclick="toggleAuth('register')">Regístrate</span></p>
@@ -2677,6 +2680,46 @@
                 <button type="submit" class="auth-btn">Crear Cuenta</button>
             </form>
             <p class="auth-switch">¿Ya tienes cuenta? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
+        </div>
+
+        <!-- RECOVER VIEW (HU-26) -->
+        <div id="recover-view" class="auth-card" style="display: none;">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">lock_reset</span></div>
+                <h2 class="auth-title">Recuperar Acceso</h2>
+                <p class="auth-subtitle">Ingresa tu correo y te enviaremos un enlace de recuperación</p>
+            </div>
+            <div id="recover-error" class="error-message"></div>
+            <div id="recover-success" class="error-message" style="background:#E8F5E9; color:#2E7D32; border-left-color:#4CAF50;"></div>
+            <form class="auth-form" onsubmit="handleRecover(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="recover-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                </div>
+                <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
+            </form>
+            <p class="auth-switch">¿Recordaste tu contraseña? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
+        </div>
+
+        <!-- RESET VIEW (HU-26) -->
+        <div id="reset-view" class="auth-card" style="display: none;">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">vpn_key</span></div>
+                <h2 class="auth-title">Nueva Contraseña</h2>
+                <p class="auth-subtitle">Ingresa tu nueva clave para recuperar el acceso</p>
+            </div>
+            <div id="reset-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleReset(event)">
+                <div class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input type="password" id="reset-pass" class="form-input" placeholder="••••••••" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="reset-pass-confirm" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="btn-reset" class="auth-btn">Actualizar Contraseña</button>
+            </form>
         </div>
     </div>
 
@@ -5666,8 +5709,92 @@
             AccessProxy.goTo(view);
             document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
             document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
+            document.getElementById('recover-view').style.display = view === 'recover' ? 'block' : 'none';
+            document.getElementById('reset-view').style.display = view === 'reset' ? 'block' : 'none';
+            
             document.getElementById('login-error').style.display = 'none';
             document.getElementById('register-error').style.display = 'none';
+            document.getElementById('recover-error').style.display = 'none';
+            document.getElementById('recover-success').style.display = 'none';
+            document.getElementById('reset-error').style.display = 'none';
+        }
+
+        async function handleRecover(e) {
+            e.preventDefault();
+            const correo = document.getElementById('recover-email').value.trim();
+            const btn = document.getElementById('btn-recover');
+            const errorDiv = document.getElementById('recover-error');
+            const successDiv = document.getElementById('recover-success');
+
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/recuperar?correo=${encodeURIComponent(correo)}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    successDiv.textContent = "¡Enlace enviado! Revisa tu bandeja de entrada.";
+                    successDiv.style.display = 'block';
+                } else {
+                    errorDiv.textContent = result.mensaje || "Error al procesar la solicitud";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Enlace';
+            }
+        }
+
+        async function handleReset(e) {
+            e.preventDefault();
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            const password = document.getElementById('reset-pass').value;
+            const confirm = document.getElementById('reset-pass-confirm').value;
+            const btn = document.getElementById('btn-reset');
+            const errorDiv = document.getElementById('reset-error');
+
+            if (password !== confirm) {
+                errorDiv.textContent = "Las contraseñas no coinciden";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Actualizando...';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/restablecer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, password })
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('¡Contraseña actualizada! Ya puedes iniciar sesión.');
+                    toggleAuth('login');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } else {
+                    errorDiv.textContent = result.mensaje || "Error al restablecer la contraseña";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error al conectar con el servidor";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Actualizar Contraseña';
+            }
         }
 
         async function handleLogin(e) {
@@ -5763,6 +5890,11 @@
         document.querySelector('.profile-avatar').title = 'Cerrar Sesión';
         document.querySelector('.profile-avatar').onclick = logout;
 
+
+        // --- Detección de Token HU-26 ---
+        if (new URLSearchParams(window.location.search).has('token')) {
+            toggleAuth('reset');
+        }
 
         // ========================================== //
         // ======== SPRINT 7: APUNTES LOGIC ========= //
