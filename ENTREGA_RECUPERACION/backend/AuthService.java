@@ -1,15 +1,12 @@
 package com.studyhub.service;
 
 import com.studyhub.model.PasswordResetToken;
-import com.studyhub.model.SesionInvalidada;
 import com.studyhub.model.Usuario;
 import com.studyhub.repository.PasswordResetTokenRepository;
-import com.studyhub.repository.SesionInvalidadaRepository;
 import com.studyhub.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
@@ -20,9 +17,6 @@ import java.util.UUID;
 public class AuthService {
 
     @Autowired
-    private SesionInvalidadaRepository sesionInvalidadaRepository;
-
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -30,23 +24,6 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    /** Registra el logout del usuario en la blacklist. */
-    public SesionInvalidada invalidarSesion(Long usuarioId) {
-        return sesionInvalidadaRepository.save(new SesionInvalidada(usuarioId));
-    }
-
-    /**
-     * Retorna true si la sesión con ese loginAt sigue vigente.
-     * Es inválida si existe un logout registrado DESPUÉS de ese loginAt.
-     */
-    public boolean esSesionValida(Long usuarioId, LocalDateTime loginAt) {
-        if (loginAt == null) return false;
-        return !sesionInvalidadaRepository
-                .existsByUsuarioIdAndFechaLogoutAfter(usuarioId, loginAt);
-    }
-
-    // ========== FUNCIONES DE RECUPERACIÓN (HU-26) ==========
 
     private String hashToken(String token) {
         try {
@@ -59,9 +36,7 @@ public class AuthService {
                 hexString.append(hex);
             }
             return hexString.toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Error hashing token", e);
-        }
+        } catch (Exception e) { throw new RuntimeException(e); }
     }
 
     public void solicitarRecuperacion(String correo) {
@@ -70,21 +45,15 @@ public class AuthService {
             Usuario usuario = userOpt.get();
             String rawToken = UUID.randomUUID().toString();
             String hashedToken = hashToken(rawToken);
-            String url = "http://localhost:5500/src/Front-End/index.html?token=" + rawToken;
+            String url = "http://localhost:5500/src/Front-End/restablecer.html?token=" + rawToken;
 
             PasswordResetToken resetToken = new PasswordResetToken(
-                    hashedToken,
-                    usuario,
-                    LocalDateTime.now().plusMinutes(30)
-            );
+                    hashedToken, usuario, LocalDateTime.now().plusMinutes(30));
             tokenRepository.save(resetToken);
 
-            // Simulación en consola (Sprint 8: Simulación de Email)
-            System.out.println("==========================================================");
-            System.out.println("SIMULACIÓN DE ENVÍO DE CORREO - STUDYHUB");
-            System.out.println("Para: " + correo);
-            System.out.println("Enlace de recuperación: " + url);
-            System.out.println("==========================================================");
+            System.out.println("=== ENLACE GENERADO ===");
+            System.out.println("URL: " + url);
+            System.out.println("=======================");
         }
     }
 
@@ -93,12 +62,8 @@ public class AuthService {
         Optional<PasswordResetToken> tokenOpt = tokenRepository.findByToken(hashedToken);
 
         if (tokenOpt.isEmpty()) return false;
-
         PasswordResetToken resetToken = tokenOpt.get();
-
-        if (resetToken.isUsado() || resetToken.getFechaExpiracion().isBefore(LocalDateTime.now())) {
-            return false;
-        }
+        if (resetToken.isUsado() || resetToken.getFechaExpiracion().isBefore(LocalDateTime.now())) return false;
 
         Usuario usuario = resetToken.getUsuario();
         usuario.setPassword(passwordEncoder.encode(nuevaPassword));
@@ -106,7 +71,6 @@ public class AuthService {
 
         resetToken.setUsado(true);
         tokenRepository.save(resetToken);
-
         return true;
     }
 }
