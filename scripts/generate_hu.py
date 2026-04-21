@@ -54,6 +54,7 @@ def generate_story_with_ai(title):
 def create_github_issue(title, body):
     # El título debe empezar con HU - como pidió el usuario
     hu_title = f"HU - {title}"
+    print(f"Preparando para crear issue: {hu_title}")
     
     # Asegurarnos de que el cuerpo incluya el título original y esté completo
     full_body = f"# {title}\n\n{body}"
@@ -64,6 +65,10 @@ def create_github_issue(title, body):
         with open(temp_file, "w", encoding="utf-8") as f:
             f.write(full_body)
         
+        # Primero intentamos asegurar que la etiqueta existe
+        print("Verificando/Creando etiqueta 'historia-usuario'...")
+        subprocess.run(["gh", "label", "create", "historia-usuario", "--color", "f29513"], capture_output=True)
+
         # Usamos subprocess.run con una lista para evitar problemas con comillas y caracteres especiales
         cmd = [
             "gh", "issue", "create",
@@ -72,24 +77,48 @@ def create_github_issue(title, body):
             "--label", "historia-usuario"
         ]
         
+        print(f"Ejecutando: {' '.join(cmd)}")
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
-            print(f"Éxito: {result.stdout.strip()}")
+            print(f"✅ Éxito: {result.stdout.strip()}")
         else:
-            print(f"Error ejecutanzo gh: {result.stderr}")
+            print(f"❌ Error ejecutando gh issue create: {result.stderr}")
+            # Intento sin la etiqueta por si acaso falló por eso
+            print("Reintentando sin etiqueta...")
+            cmd_no_label = ["gh", "issue", "create", "--title", hu_title, "--body-file", temp_file]
+            result_retry = subprocess.run(cmd_no_label, capture_output=True, text=True)
+            if result_retry.returncode == 0:
+                print(f"✅ Éxito (sin etiqueta): {result_retry.stdout.strip()}")
+            else:
+                print(f"❌ Error definitivo: {result_retry.stderr}")
         
         if os.path.exists(temp_file):
             os.remove(temp_file)
     except Exception as e:
-        print(f"Error creando el issue: {e}")
+        print(f"💥 Error excepcional creando el issue: {e}")
 
 def main():
     if not os.path.exists("docs/historias.txt"):
-        print("Archivo docs/historias.txt no encontrado.")
+        print("❌ Archivo docs/historias.txt no encontrado.")
         return
 
-    with open("docs/historias.txt", "r", encoding="utf-8") as f:
-        lines = f.readlines()
+    # Intentar leer con diferentes codificaciones por si acaso
+    content = ""
+    for enc in ['utf-8', 'latin-1', 'utf-16']:
+        try:
+            with open("docs/historias.txt", "r", encoding=enc) as f:
+                content = f.read()
+            print(f"Lectura exitosa con codificación: {enc}")
+            break
+        except Exception:
+            continue
+    
+    if not content:
+        print("❌ No se pudo leer el archivo docs/historias.txt con ninguna codificación.")
+        return
+
+    lines = content.splitlines()
+    print(f"Se encontraron {len(lines)} líneas en historias.txt")
 
     for line in lines:
         raw_line = line.strip()
@@ -100,11 +129,13 @@ def main():
         # Si la línea empieza con #, quitarle los # y espacios iniciales
         title = raw_line.lstrip("#").strip()
             
-        print(f"Generando HU para: {title}...")
+        print(f"\n--- Procesando: {title} ---")
         body = generate_story_with_ai(title)
         if body:
             create_github_issue(title, body)
-            print(f"Issue creada: HU - {title}")
+        else:
+            print("⚠️ No se generó contenido para esta historia.")
 
 if __name__ == "__main__":
+    print("🚀 Iniciando generador de Historias de Usuario...")
     main()
