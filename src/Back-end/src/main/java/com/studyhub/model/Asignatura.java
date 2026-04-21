@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "asignaturas")
@@ -20,9 +19,7 @@ public class Asignatura {
     private String nombre;
     private String codigo;
     private String profesor;
-    private String dias;
-    private LocalTime horaInicio;
-    private LocalTime horaFin;
+    private String horario;
     private int creditos;
     private String periodo;
     private String horarioTexto;
@@ -39,13 +36,11 @@ public class Asignatura {
     }
 
     public Asignatura(String nombre, String codigo, String profesor,
-                      String dias, LocalTime horaInicio, LocalTime horaFin, int creditos, String periodo, Usuario usuario) {
+                      String horario, int creditos, String periodo, Usuario usuario) {
         this.nombre = nombre;
         this.codigo = codigo;
         this.profesor = profesor;
-        this.dias = dias;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
+        this.horario = horario;
         this.creditos = creditos;
         this.periodo = periodo;
         this.usuario = usuario;
@@ -63,14 +58,8 @@ public class Asignatura {
     public String getProfesor() { return profesor; }
     public void setProfesor(String profesor) { this.profesor = profesor; }
 
-    public String getDias() { return dias; }
-    public void setDias(String dias) { this.dias = dias; }
-
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
-
-    public LocalTime getHoraFin() { return horaFin; }
-    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
+    public String getHorario() { return horario; }
+    public void setHorario(String horario) { this.horario = horario; }
 
     public int getCreditos() { return creditos; }
     public void setCreditos(int creditos) { this.creditos = creditos; }
@@ -94,9 +83,7 @@ public class Asignatura {
                 ", nombre='" + nombre + '\'' +
                 ", codigo='" + codigo + '\'' +
                 ", profesor='" + profesor + '\'' +
-                ", dias='" + dias + '\'' +
-                ", horaInicio=" + horaInicio +
-                ", horaFin=" + horaFin +
+                ", horario='" + horario + '\'' +
                 ", creditos=" + creditos +
                 ", periodo='" + periodo + '\'' +
                 ", usuario=" + (usuario != null ? usuario.getId() : "null") +
