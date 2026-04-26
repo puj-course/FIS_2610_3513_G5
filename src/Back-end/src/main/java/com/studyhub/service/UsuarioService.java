@@ -1,7 +1,13 @@
+package com.studyhub.service;
+
 import com.studyhub.dto.AsignaturaResumenDTO;
 import com.studyhub.dto.ResumenAcademicoDTO;
 import com.studyhub.dto.TareaResumenDTO;
+import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.EstadisticasDTO;
+import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
+import com.studyhub.model.Usuario;
 import com.studyhub.repository.TareaRepository;
 import com.studyhub.repository.UsuarioRepository;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
@@ -9,8 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 
 @Service
 public class UsuarioService {
@@ -21,19 +35,20 @@ public class UsuarioService {
     private final AsignaturaService asignaturaService;
     private final NotaService notaService;
     private final TareaRepository tareaRepository;
-
-    // CORREGIDO: PasswordEncryptionStrategy ahora existe (ver BCryptEncryptionStrategy)
     private final PasswordEncryptionStrategy encryptionStrategy;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy, 
-                          AsignaturaService asignaturaService, 
+    public UsuarioService(PasswordEncryptionStrategy encryptionStrategy,
+                          AsignaturaService asignaturaService,
                           NotaService notaService,
-                          TareaRepository tareaRepository) {
+                          TareaRepository tareaRepository,
+                          ObjectMapper objectMapper) {
         this.encryptionStrategy = encryptionStrategy;
-        this.asignaturaService = asignaturaService;
-        this.notaService = notaService;
-        this.tareaRepository = tareaRepository;
+        this.asignaturaService  = asignaturaService;
+        this.notaService        = notaService;
+        this.tareaRepository    = tareaRepository;
+        this.objectMapper       = objectMapper;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -50,22 +65,76 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
     }
 
-    // NUEVO: método requerido por UsuarioController
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
+    }
+
+    /**
+     * Actualiza los campos de perfil editables de un usuario:
+     * nombre, apellido, carrera y semestre.
+     *
+     * Validaciones:
+     *  - El usuario debe existir (404 si no).
+     *  - nombre y apellido son obligatorios y no pueden estar vacíos (400).
+     *  - carrera y semestre son opcionales.
+     *
+     * @param id     ID del usuario a actualizar
+     * @param campos Mapa con los campos: nombre, apellido, carrera, semestre
+     * @return El usuario actualizado y persistido
+     * @throws RuntimeException con mensaje descriptivo si falla la validación
+     */
+    public Usuario actualizarPerfil(Long id, Map<String, Object> campos) {
+        // Buscar usuario — lanza excepción si no existe (se convierte en 404)
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+
+        // Validar nombre (obligatorio)
+        String nombre = campos.get("nombre") != null ? campos.get("nombre").toString().trim() : "";
+        if (nombre.isEmpty()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+
+        // Validar apellido (obligatorio)
+        String apellido = campos.get("apellido") != null ? campos.get("apellido").toString().trim() : "";
+        if (apellido.isEmpty()) {
+            throw new IllegalArgumentException("El apellido es obligatorio");
+        }
+
+        // Aplicar cambios obligatorios
+        usuario.setNombre(nombre);
+        usuario.setApellido(apellido);
+
+        // Aplicar campos opcionales si vienen en el body
+        if (campos.containsKey("carrera")) {
+            String carrera = campos.get("carrera") != null ? campos.get("carrera").toString().trim() : null;
+            usuario.setCarrera(carrera.isEmpty() ? null : carrera);
+        }
+
+        if (campos.containsKey("semestre")) {
+            try {
+                Integer semestre = campos.get("semestre") != null
+                        ? Integer.parseInt(campos.get("semestre").toString())
+                        : null;
+                if (semestre != null && (semestre < 1 || semestre > 12)) {
+                    throw new IllegalArgumentException("El semestre debe estar entre 1 y 12");
+                }
+                usuario.setSemestre(semestre);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El semestre debe ser un número entero válido");
+            }
+        }
+
+        return usuarioRepository.save(usuario);
     }
 
     public UsuarioResumenDTO obtenerResumenUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
 
-        // Obtener asignaturas registradas
         List<Asignatura> asignaturas = asignaturaService.findByUserId(id);
         int totalAsignaturas = asignaturas.size();
 
         double sumaPromedios = 0.0;
-        
-        // El promedio ponderado global será el promedio simple de los promedios individuales por requerimiento.
         for (Asignatura asignatura : asignaturas) {
             double promedioAsignatura = notaService.calcularPromedio(asignatura.getId());
             sumaPromedios += promedioAsignatura;
@@ -75,8 +144,7 @@ public class UsuarioService {
         if (totalAsignaturas > 0) {
             promedioGlobal = sumaPromedios / totalAsignaturas;
         }
-        
-        // Redondear a 2 decimales
+
         promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
         return new UsuarioResumenDTO(
@@ -91,7 +159,6 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 1. Obtener asignaturas con sus notas y promedios
         List<Asignatura> asignaturasRaw = asignaturaService.findByUserId(usuarioId);
         List<AsignaturaResumenDTO> asignaturasResumen = new ArrayList<>();
         double sumaPromedios = 0;
@@ -109,7 +176,6 @@ public class UsuarioService {
         double promedioGlobal = asignaturasRaw.isEmpty() ? 0 : sumaPromedios / asignaturasRaw.size();
         promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
-        // 2. Obtener tareas pendientes
         List<Tarea> tareasRaw = tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
         List<TareaResumenDTO> tareasResumen = tareasRaw.stream()
             .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega()))
@@ -121,5 +187,92 @@ public class UsuarioService {
             asignaturasResumen,
             tareasResumen
         );
+    }
+
+    public String generarTokenRecuperacion(String correo) {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese correo"));
+        
+        String token = UUID.randomUUID().toString();
+        usuario.setTokenRecuperacion(token);
+        usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
+        usuarioRepository.save(usuario);
+        return token;
+    }
+
+    public void restablecerPassword(String token, String nuevaPassword) {
+        Usuario usuario = usuarioRepository.findByTokenRecuperacion(token)
+                .orElseThrow(() -> new RuntimeException("Token de recuperación inválido"));
+        
+        if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("El token ha expirado");
+        }
+        
+        usuario.setPassword(encryptionStrategy.encrypt(nuevaPassword));
+        usuario.setTokenRecuperacion(null);
+        usuario.setTokenExpiracion(null);
+        usuarioRepository.save(usuario);
+    }
+
+    public EstadisticasDTO obtenerEstadisticas(Long usuarioId) {
+        List<Asignatura> asignaturas = asignaturaService.findByUserId(usuarioId);
+        
+        int totalMaterias = asignaturas.size();
+        int totalCreditos = 0;
+        int materiasEnRiesgo = 0;
+        double sumaPromedios = 0.0;
+        Map<String, Double> promediosPorMateria = new HashMap<>();
+
+        for (Asignatura asig : asignaturas) {
+            double promedio = notaService.calcularPromedio(asig.getId());
+            promediosPorMateria.put(asig.getNombre(), promedio);
+            
+            sumaPromedios += promedio;
+            totalCreditos += asig.getCreditos();
+            
+            if (promedio < 3.0 && promedio > 0) {
+                materiasEnRiesgo++;
+            }
+        }
+
+        double promedioGlobal = totalMaterias > 0 ? (sumaPromedios / totalMaterias) : 0.0;
+
+        return new EstadisticasDTO(
+            Math.round(promedioGlobal * 100.0) / 100.0,
+            totalMaterias,
+            materiasEnRiesgo,
+            totalCreditos,
+            promediosPorMateria
+        );
+    }
+
+    public Map<String, Object> obtenerPreferencias(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+        
+        String prefs = usuario.getPreferencias();
+        if (prefs == null || prefs.trim().isEmpty()) {
+            return new HashMap<>(); // Preferencias por defecto
+        }
+        
+        try {
+            return objectMapper.readValue(prefs, new TypeReference<Map<String, Object>>() {});
+        } catch (JsonProcessingException e) {
+            System.err.println("Error al parsear preferencias JSON: " + e.getMessage());
+            return new HashMap<>();
+        }
+    }
+
+    public void guardarPreferencias(Long usuarioId, Map<String, Object> preferencias) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+        
+        try {
+            String prefsJson = objectMapper.writeValueAsString(preferencias);
+            usuario.setPreferencias(prefsJson);
+            usuarioRepository.save(usuario);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error al serializar preferencias JSON", e);
+        }
     }
 }

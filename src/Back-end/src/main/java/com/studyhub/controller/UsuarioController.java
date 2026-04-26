@@ -1,15 +1,19 @@
 package com.studyhub.controller;
 
 import com.studyhub.model.Usuario;
-import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.*;
 import com.studyhub.service.UsuarioService;
+import com.studyhub.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -19,8 +23,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // CORREGIDO: se eliminaron las referencias a AuthFacade, AuthResponse, LoginRequest
-    // y RegistroRequest (clases que no existen). Se usa directamente UsuarioService.
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
@@ -32,15 +36,21 @@ public class UsuarioController {
         }
     }
 
-    // CORREGIDO: se eliminó el segundo @PostMapping("/login") duplicado.
-    // Solo existe un endpoint de login ahora.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
         try {
-            String correo = credenciales.get("correo");
+            String correo   = credenciales.get("correo");
             String password = credenciales.get("password");
             Usuario usuario = usuarioService.login(correo, password);
-            return ResponseEntity.ok(usuario);
+            String loginAt = java.time.LocalDateTime.now().toString();
+            return ResponseEntity.ok(Map.of(
+                "id",       usuario.getId(),
+                "nombre",   usuario.getNombre(),
+                "apellido", usuario.getApellido(),
+                "correo",   usuario.getCorreo(),
+                "rol",      usuario.getRol(),
+                "loginAt",  loginAt          // timestamp del login para el guard
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("mensaje", e.getMessage()));
@@ -68,6 +78,92 @@ public class UsuarioController {
             return ResponseEntity.ok(usuarioService.obtenerResumenAcademico(id));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Actualiza los campos de perfil editables de un usuario.
+     *
+     * Campos aceptados en el body:
+     *  - nombre    (String, obligatorio)
+     *  - apellido  (String, obligatorio)
+     *  - carrera   (String, opcional)
+     *  - semestre  (Integer 1-12, opcional)
+     *
+     * Respuestas:
+     *  - 200 OK           → usuario actualizado correctamente
+     *  - 400 Bad Request  → campos obligatorios vacíos o semestre inválido
+     *  - 404 Not Found    → no existe un usuario con ese ID
+     *
+     * @param id     ID del usuario a actualizar
+     * @param campos Mapa con los campos del perfil
+     * @return El usuario actualizado o un mensaje de error
+     */
+    @PutMapping("/{id}/perfil")
+    public ResponseEntity<?> actualizarPerfil(@PathVariable Long id,
+                                              @RequestBody Map<String, Object> campos) {
+        try {
+            Usuario actualizado = usuarioService.actualizarPerfil(id, campos);
+            return ResponseEntity.ok(Map.of(
+                    "mensaje", "Perfil actualizado exitosamente",
+                    "usuario", actualizado
+            ));
+        } catch (IllegalArgumentException e) {
+            // Validación fallida → 400
+            return ResponseEntity.badRequest()
+                    .body(Map.of("mensaje", e.getMessage()));
+        } catch (RuntimeException e) {
+            // Usuario no encontrado → 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/recuperar")
+    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {
+        try {
+            String token = usuarioService.generarTokenRecuperacion(correo);
+            String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            String enlace = baseUri + "/index.html?token=" + token;
+            emailService.enviarCorreoRecuperacion(correo, enlace);
+            return ResponseEntity.ok(Map.of("mensaje", "Enlace enviado exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/restablecer")
+    public ResponseEntity<?> restablecerPassword(@RequestBody RestablecerRequest request) {
+        try {
+            usuarioService.restablecerPassword(request.getToken(), request.getNuevaPassword());
+            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/estadisticas")
+    public ResponseEntity<EstadisticasDTO> obtenerEstadisticas(@PathVariable Long id) {
+        EstadisticasDTO estadisticas = usuarioService.obtenerEstadisticas(id);
+        return ResponseEntity.ok(estadisticas);
+    }
+
+    @GetMapping("/{id}/preferencias")
+    public ResponseEntity<?> obtenerPreferencias(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(usuarioService.obtenerPreferencias(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/preferencias")
+    public ResponseEntity<?> guardarPreferencias(@PathVariable Long id, @RequestBody Map<String, Object> preferencias) {
+        try {
+            usuarioService.guardarPreferencias(id, preferencias);
+            return ResponseEntity.ok(Map.of("mensaje", "Preferencias guardadas exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
         }
     }
 }

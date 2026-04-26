@@ -15,6 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
+
+    
     <style>
         /* ========== RESET & BASE ========== */
         *,
@@ -561,6 +563,101 @@
             font-size: 18px;
         }
 
+        /* ========== STATISTICS SECTION (HU-374) ========== */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card.primary .stat-card-icon { background: var(--blue-50); color: var(--blue-600); }
+        .stat-card.warning .stat-card-icon { background: #FFF3E0; color: #EF6C00; }
+        .stat-card.success .stat-card-icon { background: #E8F5E9; color: #2E7D32; }
+
+        .stat-card-info h3 {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-card-info p {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gray-700);
+        }
+
+        .risk-alerts-container {
+            margin-bottom: 32px;
+            background: #FFF5F5;
+            border: 1px solid #FEB2B2;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: none; /* Hidden by default */
+        }
+
+        .risk-alerts-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #C53030;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .risk-item {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            font-size: 13px;
+            border-left: 4px solid #C53030;
+        }
+
+        .chart-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 32px;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
         /* ========== RIGHT SIDEBAR ========== */
         .sidebar-right {
             background: var(--white);
@@ -805,6 +902,147 @@
             height: 4px;
             border-radius: 50%;
             background: var(--blue-400);
+        }
+
+        /* ========== VISTA DE RESEÑAS (FORO) ========== */
+        .resenas-view {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .resenas-view.active {
+            display: flex;
+        }
+
+        .resenas-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .resenas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .resena-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .resena-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--blue-200);
+        }
+
+        .resena-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .resena-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--blue-50);
+            color: var(--blue-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resena-user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .resena-date {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .resena-rating {
+            display: flex;
+            gap: 2px;
+            color: #FFB300;
+            margin-bottom: 8px;
+        }
+
+        .resena-rating .material-icons-round {
+            font-size: 18px;
+        }
+
+        .resena-content {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .resena-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .resena-delete-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--gray-300);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .resena-delete-btn:hover {
+            color: #E53935;
+        }
+
+        .resena-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background: var(--blue-50);
+            color: var(--blue-600);
+        }
+
+        .pagination-btn.active {
+            background: var(--blue-500);
+            color: var(--white);
+            border-color: var(--blue-500);
         }
 
         /* ========== Animaciones ========== */
@@ -1461,7 +1699,7 @@
             pointer-events: none;
         }
 
-        /* ── Footer de la tabla: botón + promedio ── */
+        /* ÔöÇÔöÇ Footer de la tabla: botón + promedio ÔöÇÔöÇ */
         .grades-table-footer {
             display: flex;
             align-items: center;
@@ -2388,6 +2626,87 @@
             gap: 6px;
             cursor: pointer;
         }
+        
+        /* ========== MODAL LOGOUT CONFIRMACIÓN — Sub-issue 3 HU 27 ========== */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 71, 161, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 6000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: all 0.25s ease;
+        }
+        .logout-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .logout-modal {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            width: 380px; max-width: 90vw;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .logout-modal-overlay.active .logout-modal {
+            transform: scale(1) translateY(0);
+        }
+        .logout-modal-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: #FFF3E0;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .logout-modal-icon .material-icons-round { font-size: 28px; color: #E65100; }
+        .logout-modal h3 {
+            font-size: 18px; font-weight: 700;
+            color: var(--gray-700); margin-bottom: 8px;
+        }
+        .logout-modal p {
+            font-size: 14px; color: var(--gray-500);
+            margin-bottom: 28px; line-height: 1.5;
+        }
+        .logout-modal-actions { display: flex; gap: 12px; }
+        .logout-modal-actions .btn-cancel-logout {
+            flex: 1; padding: 12px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            background: var(--white); color: var(--gray-600);
+            font-size: 14px; font-weight: 500;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .logout-modal-actions .btn-cancel-logout:hover { background: var(--gray-100); }
+        .logout-modal-actions .btn-confirm-logout {
+            flex: 1; padding: 12px; border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, #E53935, #C62828);
+            color: white; font-size: 14px; font-weight: 600;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(229,57,53,0.3);
+        }
+        .logout-modal-actions .btn-confirm-logout:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(229,57,53,0.4);
+        }
+
+        /* Botón en el sidebar */
+        .nav-item.logout-btn {
+            color: #C62828;
+            border: 1px solid #FFCDD2;
+            margin-top: 8px;
+        }
+        .nav-item.logout-btn:hover {
+            background: #FFEBEE;
+            color: #B71C1C;
+        }
+        .nav-item.logout-btn .material-icons-round { color: #E53935; }
 
     </style>
 
@@ -2418,8 +2737,13 @@
                     <label class="form-label">Contraseña</label>
                     <input type="password" id="login-pass" class="form-input" placeholder="••••••••" required>
                 </div>
+                <div class="form-group" style="text-align: right; margin-top: -10px;">
+                    <span class="auth-link" onclick="toggleAuth('recover')" style="font-size: 12px;">¿Olvidaste tu contraseña?</span>
+                </div>
                 <button type="submit" class="auth-btn">Iniciar Sesión</button>
             </form>
+
+
             <p class="auth-switch">¿No tienes cuenta? <span class="auth-link" onclick="toggleAuth('register')">Regístrate</span></p>
         </div>
 
@@ -2456,6 +2780,46 @@
             </form>
             <p class="auth-switch">¿Ya tienes cuenta? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
         </div>
+
+        <!-- RECOVER VIEW (HU-26) -->
+        <div id="recover-view" class="auth-card" style="display: none;">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">lock_reset</span></div>
+                <h2 class="auth-title">Recuperar Acceso</h2>
+                <p class="auth-subtitle">Ingresa tu correo y te enviaremos un enlace de recuperación</p>
+            </div>
+            <div id="recover-error" class="error-message"></div>
+            <div id="recover-success" class="error-message" style="background:#E8F5E9; color:#2E7D32; border-left-color:#4CAF50;"></div>
+            <form class="auth-form" onsubmit="handleRecover(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" id="recover-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                </div>
+                <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
+            </form>
+            <p class="auth-switch">¿Recordaste tu contraseña? <span class="auth-link" onclick="toggleAuth('login')">Inicia Sesión</span></p>
+        </div>
+
+        <!-- RESET VIEW (HU-26) -->
+        <div id="reset-view" class="auth-card" style="display: none;">
+            <div class="auth-header">
+                <div class="auth-logo"><span class="material-icons-round">vpn_key</span></div>
+                <h2 class="auth-title">Nueva Contraseña</h2>
+                <p class="auth-subtitle">Ingresa tu nueva clave para recuperar el acceso</p>
+            </div>
+            <div id="reset-error" class="error-message"></div>
+            <form class="auth-form" onsubmit="handleReset(event)">
+                <div class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input type="password" id="reset-pass" class="form-input" placeholder="••••••••" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="reset-pass-confirm" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="btn-reset" class="auth-btn">Actualizar Contraseña</button>
+            </form>
+        </div>
     </div>
 
     <!-- ========== DASHBOARD LAYER (#189 Restricted) ========== -->
@@ -2488,14 +2852,14 @@
                     </div>
                 </div>
 
-                <nav class="sidebar-nav">
+                <nav class="sidebar-nav">   
                     <div class="nav-item active" id="nav-dashboard">
                         <span class="material-icons-round">dashboard</span>
                         Dashboard
                     </div>
                     <div class="nav-item" id="nav-apuntes">
                         <span class="material-icons-round">edit_note</span>
-                        Mis Notas
+                        Mis Notas Rápidas
                     </div>
                     <div class="nav-item" id="nav-subjects">
                         <span class="material-icons-round">menu_book</span>
@@ -2507,19 +2871,23 @@
                     </div>
                     <div class="nav-item" id="nav-calculadora">
                         <span class="material-icons-round">calculate</span>
-                        Calculadora de Notas
+                        Calculadora de Promedios
                     </div>
                     <div class="nav-item export-btn" id="nav-export" onclick="exportarInformePDF()">
                         <span class="material-icons-round">picture_as_pdf</span>
                         Generar Informe PDF
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-resenas">
                         <span class="material-icons-round">rate_review</span>
                         Reseñas
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-config">
                         <span class="material-icons-round">settings</span>
                         Configuración
+                    </div>
+                    <div class="nav-item logout-btn" id="nav-logout" onclick="openLogoutModal()">
+                        <span class="material-icons-round">logout</span>
+                        Cerrar Sesión
                     </div>
                 </nav>
             </div>
@@ -2558,33 +2926,62 @@
                     </div>
                 </div>
 
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <div class="summary-icon" style="background: var(--blue-50); color: var(--blue-600);">
-                            <span class="material-icons-round">trending_up</span>
+                <!-- Estadísticas Globales (HU-374) -->
+                <div class="stats-container">
+                    <div class="stat-card primary">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">analytics</span>
                         </div>
-                        <div class="summary-info">
-                            <div class="summary-value" id="dash-avg">-</div>
-                            <div class="summary-label">Promedio Global</div>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-icon" style="background: #FFF3E0; color: #E65100;">
-                            <span class="material-icons-round">assignment_late</span>
-                        </div>
-                        <div class="summary-info">
-                            <div class="summary-value" id="dash-tasks-count">0</div>
-                            <div class="summary-label">Tareas Pendientes</div>
+                        <div class="stat-card-info">
+                            <h3>Promedio Global</h3>
+                            <p id="stat-avg">0.0</p>
                         </div>
                     </div>
-                    <div class="summary-card">
-                        <div class="summary-icon" style="background: #E8F5E9; color: #2E7D32;">
+                    <div class="stat-card success">
+                        <div class="stat-card-icon">
                             <span class="material-icons-round">menu_book</span>
                         </div>
-                        <div class="summary-info">
-                            <div class="summary-value" id="dash-subjects-count">0</div>
-                            <div class="summary-label">Materias Activas</div>
+                        <div class="stat-card-info">
+                            <h3>Materias Activas</h3>
+                            <p id="stat-subjects">0</p>
                         </div>
+                    </div>
+                    <div class="stat-card primary">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">stars</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Créditos</h3>
+                            <p id="stat-credits">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">report_problem</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>En Riesgo</h3>
+                            <p id="stat-risk">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas de Riesgo (HU-377) -->
+                <div id="risk-alerts" class="risk-alerts-container">
+                    <div class="risk-alerts-header">
+                        <span class="material-icons-round">warning</span>
+                        Materias que requieren atención (Promedio < 3.0)
+                    </div>
+                    <div id="risk-list"></div>
+                </div>
+
+                <!-- Gráfico de Promedios (HU-378) -->
+                <div class="chart-section animated">
+                    <div class="section-header">
+                        <h3 class="section-title" style="font-size: 16px;">Rendimiento por Materia</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="averageChart"></canvas>
                     </div>
                 </div>
 
@@ -2593,7 +2990,7 @@
                         <div class="dashboard-tasks-card">
                             <div class="section-header" style="margin-bottom: 0;">
                                 <h3 class="section-title" style="font-size: 16px;">Próximas Entregas</h3>
-                                <button class="btn-text" onclick="document.getElementById('nav-tasks').click()">Ver todas</button>
+                                <span class="widget-action" onclick="document.getElementById('nav-tasks').click()" style="cursor:pointer;">Ver todas</span>
                             </div>
                             <div id="dash-mini-tasks" class="mini-task-list">
                                 <!-- Se cargan vía JS -->
@@ -2633,12 +3030,15 @@
 
             <!-- Vista: Mis Materias (Solo Cuadrícula) -->
             <div class="subjects-view" id="subjects-view">
-                <div class="section-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Mis Materias</h2>
-                        <p class="section-subtitle" id="subjects-count-label">Cargando materias...</p>
+                        <h2 class="grades-view-title">Mis Materias</h2>
+                        <p class="grades-view-subtitle" id="subjects-count-label">Cargando materias...</p>
                     </div>
-                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openModal()">
+                    <button class="grades-add-btn" style="margin-top:0;margin-left:auto;" onclick="openModal()">
                         <span class="material-icons-round">add</span>
                         Nueva Materia
                     </button>
@@ -2711,7 +3111,7 @@
                         <span class="material-icons-round">arrow_back</span>
                     </button>
                     <div>
-                        <div class="grades-view-title">Calculadora de Nota Mínima</div>
+                        <div class="grades-view-title">Calculadora de Promedios</div>
                         <div class="grades-view-subtitle">Selecciona una materia para calcular</div>
                     </div>
                 </div>
@@ -2726,7 +3126,7 @@
                         <span class="material-icons-round">arrow_back</span>
                     </button>
                     <div>
-                        <div class="grades-view-title" id="calc-view-title">Calculadora de Nota Mínima</div>
+                        <div class="grades-view-title" id="calc-view-title">Calculadora de Promedios</div>
                         <div class="grades-view-subtitle" id="calc-view-subtitle"></div>
                     </div>
                 </div>
@@ -2828,12 +3228,15 @@
 
             <!-- ══════ VISTA: MIS NOTAS ══════ -->
             <div class="apuntes-view" id="apuntes-view">
-                <div class="section-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Mis Notas rápidas</h2>
-                        <p class="section-subtitle">Apunta ideas y recordatorios importantes</p>
+                        <h2 class="grades-view-title">Mis Notas Rápidas</h2>
+                        <p class="grades-view-subtitle">Apunta ideas y recordatorios importantes</p>
                     </div>
-                    <button class="grades-add-btn" style="margin-top: 0;" onclick="openNewNoteModal()">
+                    <button class="grades-add-btn" style="margin-top:0;margin-left:auto;" onclick="openNewNoteModal()">
                         <span class="material-icons-round">add</span>
                         Nueva nota
                     </button>
@@ -2850,11 +3253,18 @@
             </div>
             <!-- Vista: Mis Tareas -->
             <div class="tasks-view" id="tasks-view">
-                <div class="section-header">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
                     <div>
-                        <h2 class="section-title">Mis Tareas y Pendientes</h2>
-                        <p class="section-subtitle" id="tasks-subtitle">Organiza tus actividades académicas</p>
+                        <h2 class="grades-view-title">Mis Tareas y Pendientes</h2>
+                        <p class="grades-view-subtitle" id="tasks-subtitle">Organiza tus actividades académicas</p>
                     </div>
+                    <button id="tasks-add-btn" class="grades-add-btn" style="margin-top:0;margin-left:auto;display:none;" onclick="openTaskModal()">
+                        <span class="material-icons-round">add</span>
+                        Agregar Tarea
+                    </button>
                 </div>
 
                 <div id="tasks-empty" class="grades-empty" style="display: none;">
@@ -2872,6 +3282,38 @@
                     <!-- Las tareas se cargarán aquí dinámicamente -->
                 </div>
             </div><!-- /.tasks-view -->
+
+            <!-- Vista: Foro de Reseñas -->
+            <div class="resenas-view" id="resenas-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <h2 class="grades-view-title">Foro de Reseñas</h2>
+                        <p class="grades-view-subtitle">Comparte y lee opiniones sobre materias y profesores</p>
+                    </div>
+                    <button class="grades-add-btn" style="margin-top:0;margin-left:auto;" onclick="openResenaModal()">
+                        <span class="material-icons-round">add_comment</span>
+                        Escribir Reseña
+                    </button>
+                </div>
+
+                <div id="resenas-empty" class="grades-empty" style="display: none;">
+                    <div class="grades-empty-icon">
+                        <span class="material-icons-round">rate_review</span>
+                    </div>
+                    <p class="grades-empty-text">No hay reseñas disponibles. ¡Sé el primero en compartir!</p>
+                </div>
+
+                <div id="resenas-list" class="resenas-list">
+                    <!-- Las reseñas se cargarán aquí dinámicamente -->
+                </div>
+
+                <div id="resenas-pagination" class="resena-pagination">
+                    <!-- Paginación dinámica -->
+                </div>
+            </div><!-- /.resenas-view -->
 
         </main>
 
@@ -3093,11 +3535,11 @@
                         <div class="modal-subtitle">Registra una tarea o parcial</div>
                     </div>
                 </div>
-                <button class="modal-close" id="task-modal-close">
+                <button class="modal-close" id="task-modal-close" type="button">
                     <span class="material-icons-round">close</span>
                 </button>
             </div>
-            <form id="task-form">
+            <div id="task-form">
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Título de la Tarea</label>
@@ -3105,18 +3547,18 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Asignatura</label>
-                        <select class="form-select" id="task-subject" required>
+                        <select class="form-select" id="task-subject">
                             <option value="">Selecciona una materia</option>
                         </select>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Fecha de entrega</label>
-                            <input class="form-input" type="date" id="task-date" required>
+                            <input class="form-input" type="date" id="task-date">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Hora</label>
-                            <input class="form-input" type="time" id="task-time" required>
+                            <input class="form-input" type="time" id="task-time">
                         </div>
                     </div>
                     <div class="form-group">
@@ -3126,12 +3568,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" id="task-btn-cancel">Cancelar</button>
-                    <button type="submit" class="btn-save">
+                    <button type="button" class="btn-save" id="task-save-btn">
                         <span class="material-icons-round">save</span>
                         Guardar Tarea
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -3175,7 +3617,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="grade-score">
-                                Nota <span class="required">*</span>
+                                Nota
                             </label>
                             <input class="form-input" type="number" id="grade-score"
                                 placeholder="Opcional" min="0" max="5" step="0.1">
@@ -3201,14 +3643,137 @@
             </form>
         </div>
     </div>
-
+    
+    <!-- ===== MODAL: CONFIRMACIÓN CERRAR SESIÓN — Sub-issue 3 HU-27===== -->
+    <div class="logout-modal-overlay" id="logout-modal-overlay">
+        <div class="logout-modal">
+            <div class="logout-modal-icon">
+                <span class="material-icons-round">logout</span>
+            </div>
+            <h3>¿Cerrar sesión?</h3>
+            <p>Tu sesión se cerrará y serás redirigido a la pantalla de inicio de sesión.</p>
+            <div class="logout-modal-actions">
+                <button class="btn-cancel-logout" onclick="closeLogoutModal()">Cancelar</button>
+                <button class="btn-confirm-logout" id="btn-confirm-logout" onclick="confirmLogout()">
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== MODAL: CONFIGURACIÓN DE TEMA ===== -->
+    <div class="modal-overlay" id="config-modal-overlay">
+        <div class="modal" style="max-width: 450px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon" style="background: var(--blue-50); color: var(--blue-600);">
+                        <span class="material-icons-round">palette</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Apariencia</div>
+                        <div class="modal-subtitle">Personaliza los colores del dashboard</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="config-modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Tema</label>
+                    <select id="config-tema" class="form-input">
+                        <option value="claro">Claro</option>
+                        <option value="oscuro">Oscuro</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">Color Primario</label>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;" id="config-color-swatches">
+                        <button class="color-swatch active" data-color="#1E88E5" style="background: #1E88E5; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                        <button class="color-swatch" data-color="#43A047" style="background: #43A047; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                        <button class="color-swatch" data-color="#8E24AA" style="background: #8E24AA; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                        <button class="color-swatch" data-color="#F4511E" style="background: #F4511E; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn" style="background: transparent; color: var(--gray-600);" id="config-btn-reset">Restablecer</button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" id="config-btn-cancel">Cancelar</button>
+                    <button class="btn btn-primary" id="config-btn-save">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
         <span id="toast-text">Materia agregada exitosamente</span>
     </div>
 
+    <!-- ===== MODAL: AGREGAR RESEÑA ===== -->
+    <div class="modal-overlay" id="resena-modal-overlay">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <span class="material-icons-round">rate_review</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Escribir Reseña</div>
+                        <div class="modal-subtitle">Tu opinión ayuda a otros estudiantes</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="resena-modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form id="resena-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">¿Sobre qué quieres opinar?</label>
+                        <div style="display: flex; gap: 12px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="radio" name="resena-tipo" value="MATERIA" checked> Materia
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer;">
+                                <input type="radio" name="resena-tipo" value="PROFESOR"> Profesor
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="resena-objetivo">Nombre de la Materia / Profesor</label>
+                        <input class="form-input" id="resena-objetivo" placeholder="Ej: Cálculo Diferencial o Carlos Ramírez" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Calificación</label>
+                        <div id="star-rating" style="display: flex; gap: 8px; color: #DEE2E6; cursor: pointer;">
+                            <span class="material-icons-round" data-value="1">star</span>
+                            <span class="material-icons-round" data-value="2">star</span>
+                            <span class="material-icons-round" data-value="3">star</span>
+                            <span class="material-icons-round" data-value="4">star</span>
+                            <span class="material-icons-round" data-value="5">star</span>
+                        </div>
+                        <input type="hidden" id="resena-rating-value" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="resena-comentario">Tu Reseña</label>
+                        <textarea class="form-input" id="resena-comentario" rows="4" placeholder="Cuéntanos tu experiencia..." maxlength="500" style="resize: none;" required></textarea>
+                        <div style="text-align: right; font-size: 11px; color: var(--gray-400); margin-top: 4px;" id="resena-char-count">0 / 500</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="resena-btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">
+                        <span class="material-icons-round">send</span>
+                        Publicar Reseña
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        const API      = 'http://localhost:8080'; // URL base del backend — cambiar aquí si el puerto varía
+        const API      = window.location.origin; 
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
 
         /**
@@ -3220,7 +3785,7 @@
             return document.querySelector('.profile-id')?.dataset.userId ?? null;
         }
 
-        // ── Referencias al DOM ──────────────────────────────────────────
+        // ÔöÇÔöÇ Referencias al DOM ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const modalOverlay      = document.getElementById('modal-overlay');
         const modalClose        = document.getElementById('modal-close');
         const btnCancel         = document.getElementById('btn-cancel');
@@ -3237,7 +3802,7 @@
         const taskForm          = document.getElementById('task-form');
         const taskSubjectSelect = document.getElementById('task-subject');
 
-        // ── Referencias: Modal Calificación ────────────────────────────
+        // ÔöÇÔöÇ Referencias: Modal Calificación ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const gradeModal          = document.getElementById('grade-modal-overlay');
         const gradeModalClose     = document.getElementById('grade-modal-close');
         const gradeBtnCancel      = document.getElementById('grade-btn-cancel');
@@ -3247,7 +3812,7 @@
         const gradePercentBar     = document.getElementById('grade-percent-bar');
         const gradePercentValue   = document.getElementById('grade-percent-value');
 
-        // ── Referencias: Vista de calificaciones ───────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de calificaciones ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const dashboardView          = document.getElementById('dashboard-view');
         const gradesView             = document.getElementById('grades-view');
         const gradesViewTitle        = document.getElementById('grades-view-title');
@@ -3260,7 +3825,7 @@
         const gradesAddInlineBtn     = document.getElementById('grades-add-inline-btn');
         const gradesBackBtn          = document.getElementById('grades-back-btn');
 
-        // ── Referencias: Vista calculadora ─────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista calculadora ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const calcView            = document.getElementById('calc-view');
         const calcSelectorView    = document.getElementById('calc-selector-view');
         const calcSelectorGrid    = document.getElementById('calc-selector-grid');
@@ -3274,18 +3839,30 @@
         const calcInlineEditBtn   = document.getElementById('calc-inline-edit-btn');
         const calcSaveBtn         = document.getElementById('calc-save-btn');
 
-        // ── Referencias: Vista de tareas ───────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de tareas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const tasksView           = document.getElementById('tasks-view');
         const tasksGrid           = document.getElementById('tasks-grid');
         const tasksEmpty          = document.getElementById('tasks-empty');
         const tasksSubtitle       = document.getElementById('tasks-subtitle');
 
-        // ── Referencias: Vista de materias ─────────────────────────────
+        // ÔöÇÔöÇ Referencias: Vista de materias ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const subjectsView        = document.getElementById('subjects-view');
+
+        // ÔöÇÔöÇ Referencias: Vista de reseñas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+        const resenasView           = document.getElementById('resenas-view');
+        const resenasList           = document.getElementById('resenas-list');
+        const resenasEmpty          = document.getElementById('resenas-empty');
+        const resenaModal           = document.getElementById('resena-modal-overlay');
+        const resenaForm            = document.getElementById('resena-form');
+        const resenaModalClose      = document.getElementById('resena-modal-close');
+        const resenaBtnCancel       = document.getElementById('resena-btn-cancel');
+        const starRating            = document.getElementById('star-rating');
+        const resenaRatingValue     = document.getElementById('resena-rating-value');
+        const resenasPagination     = document.getElementById('resenas-pagination');
 
         const META_APROBACION  = 3.0;
 
-        // ── Estado ─────────────────────────────────────────────────────
+        // ÔöÇÔöÇ Estado ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         let activeCardForGrade = null;
         let activeCardForView  = null;
         const gradesStore      = {};   // gradeKey → [{ nombre, nota, porcentaje }]
@@ -3293,8 +3870,10 @@
         // 'grades' = se abrió desde vista de calificaciones
         // 'calc'   = se abrió desde la calculadora
         let gradeModalOrigin   = 'grades';
+        // Rastrea la vista activa para evitar side effects de llamadas async
+        let currentView        = 'dashboard';
 
-        // ── Colores e iconos para tarjetas ─────────────────────────────
+        // ÔöÇÔöÇ Colores e iconos para tarjetas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const cardColors = [
             { gradient: 'linear-gradient(90deg, #7C4DFF, #651FFF)', bg: '#EDE7F6', text: '#5E35B1', icon: '#7C4DFF' },
             { gradient: 'linear-gradient(90deg, #26A69A, #00897B)', bg: '#E0F2F1', text: '#00695C', icon: '#26A69A' },
@@ -3854,17 +4433,17 @@
             const subEl  = document.getElementById('calc-min-sub');
             const barEl  = document.getElementById('calc-min-bar');
 
-            // ── Caso 1: no hay cortes pendientes ──────────────────────────
+            // ÔöÇÔöÇ Caso 1: no hay cortes pendientes ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             if (pctPending <= 0) {
                 showToast('No hay cortes pendientes por evaluar.');
                 return;
             }
 
-            // ── Caso 2: promedio ya asegurado ─────────────────────────────
+            // ÔöÇÔöÇ Caso 2: promedio ya asegurado ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             // Si incluso sacando 0 en todo lo pendiente el promedio supera la meta,
             // el estudiante ya tiene el promedio asegurado.
             if (promedioActual >= META_APROBACION) {
-                minEl.textContent  = '✓ Asegurado';
+                minEl.textContent  = 'Ô£ô Asegurado';
                 minEl.style.color  = '#2E7D32';
                 subEl.textContent  = `Con tus notas actuales ya superas ${META_APROBACION.toFixed(1)}, sin importar lo pendiente.`;
                 barEl.style.width  = '100%';
@@ -3882,12 +4461,12 @@
                 return;
             }
 
-            // ── Casos 3 y 4: calcular nota mínima requerida ───────────────
+            // ÔöÇÔöÇ Casos 3 y 4: calcular nota mínima requerida ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             // Nota mínima uniforme que debe sacarse en cada corte pendiente
             const notaMin        = (META_APROBACION - promedioActual) / (pctPending / 100);
             const notaMinRounded = Math.max(0, notaMin);
 
-            // ── Caso 3: matemáticamente imposible ────────────────────────
+            // ÔöÇÔöÇ Caso 3: matemáticamente imposible ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             if (notaMinRounded > 5) {
                 minEl.textContent  = 'Imposible';
                 minEl.style.color  = '#C62828';
@@ -3906,7 +4485,7 @@
                 return;
             }
 
-            // ── Caso 4: cálculo normal ────────────────────────────────────
+            // ÔöÇÔöÇ Caso 4: cálculo normal ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             // Colorear según dificultad de la nota requerida
             if (notaMinRounded >= 4) {
                 minEl.style.color  = '#E65100';
@@ -3928,7 +4507,7 @@
                 cell.innerHTML = `
                     <span class="badge-min ${badgeCls}">
                         <span class="material-icons-round" style="font-size:12px;">${icon}</span>
-                        ≥ ${notaMinRounded.toFixed(2)}
+                        ÔëÑ ${notaMinRounded.toFixed(2)}
                     </span>
                 `;
             });
@@ -3951,7 +4530,7 @@
             openGradeModal(card, 'calc');
         });
 
-        // ── Edición inline de la columna Nota en la tabla de la calculadora ──
+        // ÔöÇÔöÇ Edición inline de la columna Nota en la tabla de la calculadora ÔöÇÔöÇ
 
         let calcEditingMode = false; // Estado: si la tabla está en modo edición
 
@@ -3970,7 +4549,7 @@
             calcTableBody.querySelectorAll('tr').forEach(tr => {
                 if (tr.querySelector('td[colspan]')) return;
 
-                // ── Columna Nota ──────────────────────────────────────
+                // ÔöÇÔöÇ Columna Nota ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
                 const notaCell = tr.querySelector('td:nth-child(2)');
                 if (notaCell) {
                     const badge  = notaCell.querySelector('.grade-score-badge');
@@ -3979,12 +4558,12 @@
                     notaCell.innerHTML = `
                         <input class="grade-inline-input number-input calc-nota-input"
                                type="number" min="0" max="5" step="0.1"
-                               value="${numVal}" placeholder="0.0 – 5.0"
+                               value="${numVal}" placeholder="0.0 ÔÇô 5.0"
                                style="max-width:80px;margin:0 auto;display:block;">
                     `;
                 }
 
-                // ── Columna Porcentaje ────────────────────────────────
+                // ÔöÇÔöÇ Columna Porcentaje ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
                 const pctCell = tr.querySelector('td:nth-child(3)');
                 if (pctCell) {
                     const pill   = pctCell.querySelector('.grade-percent-pill');
@@ -4025,7 +4604,7 @@
             const pendientes  = grades.filter(g => g.nota == null);
             const allGrades   = [...registradas, ...pendientes];
 
-            // ── Validar notas ─────────────────────────────────────────
+            // ÔöÇÔöÇ Validar notas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             editableRows.forEach(({ notaInput }) => {
                 if (!notaInput) return;
                 const val = notaInput.value.trim();
@@ -4039,7 +4618,7 @@
                 }
             });
 
-            // ── Validar porcentajes individualmente ───────────────────
+            // ÔöÇÔöÇ Validar porcentajes individualmente ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             editableRows.forEach(({ pctInput }) => {
                 if (!pctInput) return;
                 const val = pctInput.value.trim();
@@ -4057,7 +4636,7 @@
                 return;
             }
 
-            // ── Validar suma total de porcentajes ≤ 100 ───────────────
+            // ÔöÇÔöÇ Validar suma total de porcentajes Ôëñ 100 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             const totalPct = editableRows.reduce((sum, { pctInput }) => {
                 if (!pctInput) return sum;
                 return sum + parseInt(pctInput.value.trim(), 10);
@@ -4072,7 +4651,7 @@
                 return;
             }
 
-            // ── Enviar cambios al backend ─────────────────────────────
+            // ÔöÇÔöÇ Enviar cambios al backend ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             for (let i = 0; i < editableRows.length; i++) {
                 const { notaInput, pctInput } = editableRows[i];
                 const gradeObj = allGrades[i];
@@ -4110,7 +4689,7 @@
                 }
             }
 
-            // ── Salir del modo edición y re-renderizar ────────────────
+            // ÔöÇÔöÇ Salir del modo edición y re-renderizar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
             calcEditingMode = false;
             calcInlineEditBtn.style.display = 'flex';
             calcSaveBtn.style.display       = 'none';
@@ -4122,36 +4701,57 @@
 
         // Nav "Dashboard" — cierra cualquier vista secundaria activa
         document.getElementById('nav-dashboard').addEventListener('click', () => {
-            hideAllViews();
-            dashboardView.classList.add('active');
-            syncNavbar('nav-dashboard');
-            document.querySelector('.sidebar-right').style.display = '';
-            document.querySelector('.app-container').style.gridTemplateColumns = '';
-            renderDashboardSummary();
+            navigateSafe(() => {
+                hideAllViews();
+                dashboardView.classList.add('active');
+                syncNavbar('nav-dashboard');
+                currentView = 'dashboard';
+                document.querySelector('.sidebar-right').style.display = '';
+                document.querySelector('.app-container').style.gridTemplateColumns = '';
+                renderDashboardSummary();
+            });
         });
 
         // Nav "Mis Materias"
         document.getElementById('nav-subjects').addEventListener('click', () => {
-            hideAllViews();
-            subjectsView.classList.add('active');
-            syncNavbar('nav-subjects');
-            document.querySelector('.sidebar-right').style.display = '';
-            document.querySelector('.app-container').style.gridTemplateColumns = '';
+            navigateSafe(() => {
+                hideAllViews();
+                subjectsView.classList.add('active');
+                syncNavbar('nav-subjects');
+                currentView = 'subjects';
+                document.querySelector('.sidebar-right').style.display = '';
+                document.querySelector('.app-container').style.gridTemplateColumns = '';
+            });
         });
 
         // Nav "Mis Tareas"
         document.getElementById('nav-tasks').addEventListener('click', () => {
-            hideAllViews();
-            tasksView.classList.add('active');
-            syncNavbar('nav-tasks');
-            fetchTareasBackend();
+            navigateSafe(() => {
+                hideAllViews();
+                tasksView.classList.add('active');
+                syncNavbar('nav-tasks');
+                currentView = 'tasks';
+                fetchTareasBackend();
+            });
+        });
+
+        // Nav "Reseñas"
+        document.getElementById('nav-resenas').addEventListener('click', () => {
+            navigateSafe(() => {
+                hideAllViews();
+                resenasView.classList.add('active');
+                syncNavbar('nav-resenas');
+                currentView = 'resenas';
+                fetchResenasBackend();
+            });
         });
 
         function hideAllViews() {
-            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView];
-            views.forEach(v => v.classList.remove('active'));
+            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView];
+            views.forEach(v => { if (v) v.classList.remove('active'); });
             // Reset nav active class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            currentView = '';
         }
 
         function syncNavbar(activeId) {
@@ -4161,18 +4761,20 @@
             });
         }
 
-        // Nav "Calculadora de Notas"
+        // Nav "Calculadora de Promedios"
         document.getElementById('nav-calculadora').addEventListener('click', () => {
-            if (calcView.classList.contains('active')) {
-                closeCalcView();
-            } else if (calcSelectorView.classList.contains('active')) {
-                // Si ya estamos en el selector, volver al dashboard
-                document.getElementById('nav-dashboard').click();
-            } else {
-                hideAllViews();
-                syncNavbar('nav-calculadora');
-                openCalcSelector();
-            }
+            navigateSafe(() => {
+                if (calcView.classList.contains('active')) {
+                    closeCalcView();
+                } else if (calcSelectorView.classList.contains('active')) {
+                    // Si ya estamos en el selector, volver al dashboard
+                    document.getElementById('nav-dashboard').click();
+                } else {
+                    hideAllViews();
+                    syncNavbar('nav-calculadora');
+                    openCalcSelector();
+                }
+            });
         });
 
         // ══════════════════════════════════════════════════════════════
@@ -4214,7 +4816,12 @@
         function closeTaskModal() {
             taskModal.classList.remove('active');
             document.body.style.overflow = '';
-            taskForm.reset();
+            // Reset manual de campos ya que no es un form
+            document.getElementById('task-title').value = '';
+            document.getElementById('task-subject').value = '';
+            document.getElementById('task-date').value = '';
+            document.getElementById('task-time').value = '';
+            document.getElementById('task-description').value = '';
         }
 
         // ══════════════════════════════════════════════════════════════
@@ -4292,7 +4899,7 @@
             // Si el origen es 'grades', no hacemos nada — el usuario ya está en esa vista
         }
 
-        // ── FAB ────────────────────────────────────────────────────────
+        // ÔöÇÔöÇ FAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         fabAdd.addEventListener('click', (e) => {
             e.stopPropagation();
             fabMenu.classList.toggle('active');
@@ -4304,7 +4911,7 @@
             if (!e.target.closest('.fab-container')) fabMenu.classList.remove('active');
         });
 
-        // ── Cerrar modales ─────────────────────────────────────────────
+        // ÔöÇÔöÇ Cerrar modales ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         modalClose.addEventListener('click', closeModal);
         btnCancel.addEventListener('click', closeModal);
         modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
@@ -4316,22 +4923,29 @@
         gradeBtnCancel.addEventListener('click', closeGradeModal);
         gradeModal.addEventListener('click', (e) => { if (e.target === gradeModal) closeGradeModal(); });
 
+        resenaModalClose.addEventListener('click', closeResenaModal);
+        resenaBtnCancel.addEventListener('click', closeResenaModal);
+        resenaModal.addEventListener('click', (e) => { if (e.target === resenaModal) closeResenaModal(); });
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (modalOverlay.classList.contains('active')) closeModal();
                 if (taskModal.classList.contains('active'))    closeTaskModal();
                 if (gradeModal.classList.contains('active'))   closeGradeModal();
+                if (resenaModal.classList.contains('active'))  closeResenaModal();
+                if (document.getElementById('logout-modal-overlay')
+                        .classList.contains('active')) closeLogoutModal();
             }
         });
 
-        // ── Acciones rápidas ───────────────────────────────────────────
+        // ÔöÇÔöÇ Acciones rápidas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         document.querySelectorAll('.action-chip').forEach(chip => {
             if (chip.textContent.trim().includes('Agregar Materia')) {
                 chip.addEventListener('click', openModal);
             }
         });
 
-        // ── Validación Asignatura ──────────────────────────────────────
+        // ÔöÇÔöÇ Validación Asignatura ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function clearErrors() {
             document.querySelectorAll('.form-error').forEach(el => el.classList.remove('visible'));
             document.querySelectorAll('.form-input, .form-select').forEach(el => el.classList.remove('error'));
@@ -4373,7 +4987,7 @@
             return isValid;
         }
 
-        // ── Crear tarjeta en el DOM ────────────────────────────────────
+        // ÔöÇÔöÇ Crear tarjeta en el DOM ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function createSubjectCard(data, dbId) {
             const color = cardColors[colorIndex % cardColors.length];
             const icon  = cardIcons[Math.floor(Math.random() * cardIcons.length)];
@@ -4395,7 +5009,7 @@
                         </button>
                         <button class="card-dropdown-item" onclick="openCalcView(this.closest('.subject-card'))">
                             <span class="material-icons-round">calculate</span>
-                            Calculadora de Notas
+                            Calculadora de Promedios
                         </button>
                         <div class="card-dropdown-divider"></div>
                         <button class="card-dropdown-item delete" onclick="deleteCard(this)">
@@ -4416,7 +5030,7 @@
                 </div>
                 <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
                     <span class="material-icons-round" style="font-size:16px">schedule</span>
-                    ${data.horario}
+                    ${data.horarioTexto}
                 </div>
                 <div class="subject-progress">
                     <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso}%"></div>
@@ -4444,7 +5058,186 @@
             if (progressLabel) progressLabel.textContent = progress.toFixed(0) + '% del curso completado';
         }
 
-        // ── Toast ──────────────────────────────────────────────────────
+        // ÔöÇÔöÇ Lógica de Reseñas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+        function openResenaModal() {
+            resenaModal.classList.add('active');
+            resenaForm.reset();
+            resetStars();
+            document.body.style.overflow = 'hidden';
+            document.getElementById('resena-char-count').textContent = "0 / 500";
+        }
+
+        function closeResenaModal() {
+            resenaModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Star Rating Logic
+        starRating.querySelectorAll('.material-icons-round').forEach(star => {
+            star.addEventListener('click', () => {
+                const val = parseInt(star.dataset.value);
+                resenaRatingValue.value = val;
+                updateStars(val);
+            });
+            star.addEventListener('mouseover', () => {
+                const val = parseInt(star.dataset.value);
+                updateStars(val, true);
+            });
+            star.addEventListener('mouseout', () => {
+                const val = parseInt(resenaRatingValue.value);
+                updateStars(val);
+            });
+        });
+
+        function updateStars(val, isHover = false) {
+            starRating.querySelectorAll('.material-icons-round').forEach(star => {
+                const starVal = parseInt(star.dataset.value);
+                if (starVal <= val) {
+                    star.style.color = isHover ? '#FFE082' : '#FFB300';
+                } else {
+                    star.style.color = '#DEE2E6';
+                }
+            });
+        }
+
+        function resetStars() {
+            resenaRatingValue.value = "0";
+            updateStars(0);
+        }
+
+        document.getElementById('resena-comentario').addEventListener('input', function() {
+            document.getElementById('resena-char-count').textContent = `${this.value.length} / 500`;
+        });
+
+        resenaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tipo = resenaForm.querySelector('input[name="resena-tipo"]:checked').value;
+            const objetivo = document.getElementById('resena-objetivo').value.trim();
+            const rating = parseInt(resenaRatingValue.value);
+            const comentario = document.getElementById('resena-comentario').value.trim();
+            const userId = getUserId();
+
+            if (rating === 0) {
+                showToast('Por favor selecciona una calificación');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/api/resenas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tipo,
+                        objetivo,
+                        calificacion: rating,
+                        comentario,
+                        usuario: { id: parseInt(userId) }
+                    })
+                });
+
+                if (res.ok) {
+                    closeResenaModal();
+                    showToast('¡Reseña publicada!');
+                    fetchResenasBackend();
+                } else {
+                    const error = await res.json();
+                    showToast(error.mensaje || 'Error al publicar reseña');
+                }
+            } catch (err) {
+                showToast('Error de conexión');
+            }
+        });
+
+        async function fetchResenasBackend(page = 0) {
+            try {
+                const res = await fetch(`${API}/api/resenas?page=${page}&size=10`);
+                if (res.ok) {
+                    const data = await res.json();
+                    renderResenas(data.content);
+                    renderPagination(data);
+                }
+            } catch (err) {
+                console.error("Error fetching resenas:", err);
+            }
+        }
+
+        function renderResenas(resenas) {
+            resenasList.innerHTML = '';
+            if (resenas.length === 0) {
+                resenasEmpty.style.display = 'flex';
+                return;
+            }
+            resenasEmpty.style.display = 'none';
+
+            resenas.forEach(r => {
+                const date = new Date(r.fechaCreacion).toLocaleDateString();
+                const stars = 'star'.repeat(r.calificacion).split('').map(() => 
+                    `<span class="material-icons-round">star</span>`
+                ).join('') + 'star'.repeat(5 - r.calificacion).split('').map(() => 
+                    `<span class="material-icons-round" style="color: #DEE2E6">star</span>`
+                ).join('');
+
+                const isAuthor = r.usuario.id === parseInt(getUserId());
+
+                const card = document.createElement('div');
+                card.className = 'resena-card';
+                card.innerHTML = `
+                    ${isAuthor ? `<span class="material-icons-round resena-delete-btn" onclick="deleteResena(${r.id})">delete_outline</span>` : ''}
+                    <div class="resena-user-info">
+                        <div class="resena-user-avatar">
+                            <span class="material-icons-round">person</span>
+                        </div>
+                        <div>
+                            <div class="resena-user-name">${r.usuario.nombre} ${r.usuario.apellido}</div>
+                            <div class="resena-date">${date}</div>
+                        </div>
+                    </div>
+                    <div class="resena-rating">${stars}</div>
+                    <div class="resena-content">${r.comentario}</div>
+                    <div class="resena-tag">
+                        <span class="material-icons-round" style="font-size: 14px;">${r.tipo === 'MATERIA' ? 'menu_book' : 'person'}</span>
+                        ${r.objetivo}
+                    </div>
+                `;
+                resenasList.appendChild(card);
+            });
+        }
+
+        function renderPagination(data) {
+            resenasPagination.innerHTML = '';
+            if (data.totalPages <= 1) return;
+
+            for (let i = 0; i < data.totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = `pagination-btn ${i === data.number ? 'active' : ''}`;
+                btn.textContent = i + 1;
+                btn.onclick = () => fetchResenasBackend(i);
+                resenasPagination.appendChild(btn);
+            }
+        }
+
+        async function deleteResena(id) {
+            if (!confirm('¿Estás seguro de eliminar esta reseña?')) return;
+            const userId = getUserId();
+
+            try {
+                const res = await fetch(`${API}/api/resenas/${id}?usuarioId=${userId}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    showToast('Reseña eliminada');
+                    fetchResenasBackend();
+                } else {
+                    const error = await res.json();
+                    showToast(error.mensaje || 'Error al eliminar');
+                }
+            } catch (err) {
+                showToast('Error de conexión');
+            }
+        }
+
+        // ÔöÇÔöÇ Toast ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function showToast(message) {
             document.getElementById('toast-text').textContent = message;
             toast.classList.add('show');
@@ -4456,7 +5249,7 @@
             const subtitleEl = document.getElementById('subjects-count-label');
             if (subtitleEl) subtitleEl.textContent = `Semestre actual · ${count} materias inscritas`;
             fetchResumenUsuario();
-            if (!dashboardView.classList.contains('hidden')) renderDashboardSummary();
+            if (currentView === 'dashboard') renderDashboardSummary();
         }
 
         function fetchResumenUsuario() {
@@ -4558,16 +5351,19 @@
             const tasksGrid = document.getElementById('tasks-grid');
             const tasksEmpty = document.getElementById('tasks-empty');
             const tasksSubtitle = document.getElementById('tasks-subtitle');
+            const tasksAddBtn = document.getElementById('tasks-add-btn');
             
             tasksGrid.innerHTML = '';
             
             if (tareas.length === 0) {
                 tasksEmpty.style.display = 'flex';
+                tasksAddBtn.style.display = 'none';
                 tasksSubtitle.textContent = 'No tienes tareas pendientes';
                 return;
             }
             
             tasksEmpty.style.display = 'none';
+            tasksAddBtn.style.display = 'flex';
             tasksSubtitle.textContent = `Tienes ${tareas.length} tareas registradas`;
             
             tareas.forEach(tarea => {
@@ -4622,14 +5418,13 @@
         }
 
         async function deleteTask(id) {
-            if (!confirm('¿Estás seguro de eliminar esta tarea?')) return;
             try {
                 const res = await fetch(`${API}/api/tareas/${id}`, { method: 'DELETE' });
                 if (!res.ok) throw new Error('Error al eliminar');
                 fetchTareasBackend();
                 showToast('Tarea eliminada');
-                // Si estamos en el dashboard, refrescar resumen
-                if (!dashboardView.classList.contains('hidden')) renderDashboardSummary();
+                // Refrescar resumen del dashboard solo si está activo
+                if (dashboardView.classList.contains('active')) renderDashboardSummary();
             } catch (err) {
                 console.error(err);
                 showToast('Error al eliminar tarea');
@@ -4726,7 +5521,7 @@
             }
         }
 
-        // ── Submit: Guardar Asignatura ─────────────────────────────────
+        // ÔöÇÔöÇ Submit: Guardar Asignatura ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         subjectForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!validateSubjectForm()) return;
@@ -4762,9 +5557,9 @@
             }
         });
 
-        // ── Submit: Guardar Tarea ──────────────────────────────────────
-        taskForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ÔöÇÔöÇ Submit: Guardar Tarea ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+        // ÔöÇÔöÇ Guardar Tarea (botón, no form submit) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+        document.getElementById('task-save-btn').addEventListener('click', async () => {
 
             const titulo       = document.getElementById('task-title').value.trim();
             const asignaturaId = document.getElementById('task-subject').value;
@@ -4809,7 +5604,7 @@
             }
         });
 
-        // ── Submit: Guardar Calificación ───────────────────────────────
+        // ÔöÇÔöÇ Submit: Guardar Calificación ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         gradeForm.addEventListener('submit', async function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -4909,7 +5704,7 @@
             }
         });
 
-        // ── Menú tarjeta ───────────────────────────────────────────────
+        // ÔöÇÔöÇ Menú tarjeta ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         function toggleCardMenu(btn) {
             document.querySelectorAll('.card-dropdown.open').forEach(d => {
                 if (d !== btn.nextElementSibling) d.classList.remove('open');
@@ -4922,7 +5717,7 @@
                 document.querySelectorAll('.card-dropdown.open').forEach(d => d.classList.remove('open'));
         });
 
-        // ── Eliminar tarjeta ───────────────────────────────────────────
+        // ÔöÇÔöÇ Eliminar tarjeta ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         async function deleteCard(btn) {
             const card = btn.closest('.subject-card');
             const dbId = card.dataset.id;
@@ -4946,7 +5741,7 @@
             }
         }
 
-        // ── GOF PATTERN: SINGLETON (SessionManager) ───────────────────────
+        // ÔöÇÔöÇ GOF PATTERN: SINGLETON (SessionManager) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const SessionManager = (function() {
             let instance;
 
@@ -4975,13 +5770,14 @@
             };
         })();
 
-        // ── GOF PATTERN: STATE (NavigationSystem) ──────────────────────────
+        // ÔöÇÔöÇ GOF PATTERN: STATE (NavigationSystem) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         class NavigationSystem {
             constructor() {
                 this.states = {
                     login: new LoginState(this),
                     register: new RegisterState(this),
-                    dashboard: new DashboardState(this)
+                    dashboard: new DashboardState(this),
+                    resenas: new ResenasState(this)
                 };
                 this.currentState = null;
             }
@@ -5028,15 +5824,33 @@
                 hideAllViews();
                 dashboardView.classList.add('active');
                 syncNavbar('nav-dashboard');
+                currentView = 'dashboard';
                 
                 fetchAsignaturasBackend();
                 renderDashboardSummary();
+                iniciarGuardDeSesion();
+            }
+        }
+
+        class ResenasState {
+            constructor(system) { this.system = system; }
+            render(user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'grid';
+                document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
+                document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
+                document.querySelector('.profile-id').dataset.userId = user.id;
+
+                hideAllViews();
+                resenasView.classList.add('active');
+                syncNavbar('nav-resenas');
+                fetchResenasBackend();
             }
         }
 
         const navSystem = new NavigationSystem();
 
-        // ── GOF PATTERN: PROXY (AccessProxy) ──────────────────────────────
+        // ÔöÇÔöÇ GOF PATTERN: PROXY (AccessProxy) ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
         const AccessProxy = {
             goTo: function(view, data = null) {
                 const session = SessionManager.getInstance();
@@ -5052,14 +5866,22 @@
             }
         };
 
-        // ── Manejadores de Eventos Refactorizados ───────────────────────
+        // ÔöÇÔöÇ Manejadores de Eventos Refactorizados ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
         function checkSession() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            if (token) {
+                toggleAuth('reset');
+                return;
+            }
+
             const session = SessionManager.getInstance();
             if (session.isLoggedIn()) {
                 AccessProxy.goTo('dashboard', session.getUser());
             } else {
                 AccessProxy.goTo('login');
+
             }
         }
 
@@ -5067,8 +5889,102 @@
             AccessProxy.goTo(view);
             document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
             document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
+            document.getElementById('recover-view').style.display = view === 'recover' ? 'block' : 'none';
+            document.getElementById('reset-view').style.display = view === 'reset' ? 'block' : 'none';
+            
             document.getElementById('login-error').style.display = 'none';
             document.getElementById('register-error').style.display = 'none';
+            document.getElementById('recover-error').style.display = 'none';
+            document.getElementById('recover-success').style.display = 'none';
+            document.getElementById('reset-error').style.display = 'none';
+
+            if (view === 'login') {
+
+            }
+        }
+
+
+
+        async function handleRecover(e) {
+            e.preventDefault();
+            const correo = document.getElementById('recover-email').value.trim();
+            const btn = document.getElementById('btn-recover');
+            const errorDiv = document.getElementById('recover-error');
+            const successDiv = document.getElementById('recover-success');
+
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                // Endpoint POST /api/usuarios/recuperar?correo=...
+                const response = await fetch(`${API_BASE}/recuperar?correo=${encodeURIComponent(correo)}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    successDiv.textContent = "¡Enlace enviado! Revisa tu bandeja de entrada y sigue las instrucciones.";
+                    successDiv.style.display = 'block';
+                    document.getElementById('recover-email').value = '';
+                } else {
+                    errorDiv.textContent = result.mensaje || "El correo no está registrado en el sistema";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "Error de red al intentar recuperar la cuenta";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Enlace';
+            }
+        }
+
+        async function handleReset(e) {
+            e.preventDefault();
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            const password = document.getElementById('reset-pass').value;
+            const confirm = document.getElementById('reset-pass-confirm').value;
+            const btn = document.getElementById('btn-reset');
+            const errorDiv = document.getElementById('reset-error');
+
+            if (password !== confirm) {
+                errorDiv.textContent = "Las contraseñas no coinciden";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Actualizando...';
+            errorDiv.style.display = 'none';
+
+            try {
+                // Endpoint POST /api/usuarios/restablecer con JSON { token, nuevaPassword }
+                const response = await fetch(`${API_BASE}/restablecer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token, nuevaPassword: password })
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('¡Contraseña actualizada con éxito! Ya puedes entrar.');
+                    toggleAuth('login');
+                    // Limpiar el token de la URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } else {
+                    errorDiv.textContent = result.mensaje || "El enlace es inválido o ha expirado";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = "No se pudo conectar para restablecer la contraseña";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Actualizar Contraseña';
+            }
         }
 
         async function handleLogin(e) {
@@ -5156,13 +6072,7 @@
         }
 
         function logout() {
-            SessionManager.getInstance().clear();
-            // Limpiar datos de asignaturas y notas al cerrar sesión
-            for (const key in gradesStore) delete gradesStore[key];
-            subjectsGrid.innerHTML = '';
-            
-            AccessProxy.goTo('login');
-            showToast('Sesión cerrada');
+            openLogoutModal();
         }
 
         // Agregar EventListener al avatar para cerrar sesión
@@ -5171,18 +6081,25 @@
         document.querySelector('.profile-avatar').onclick = logout;
 
 
+        // --- Detección de Token HU-26 ---
+        if (new URLSearchParams(window.location.search).has('token')) {
+            toggleAuth('reset');
+        }
+
         // ========================================== //
         // ======== SPRINT 7: APUNTES LOGIC ========= //
         // ========================================== //
         
-        const API_APUNTES = 'http://localhost:8080/apuntes';
+        const API_APUNTES = `${API}/apuntes`;
         const apuntesView = document.getElementById('apuntes-view');
         
         document.getElementById('nav-apuntes').addEventListener('click', () => {
-            hideAllViews();
-            apuntesView.classList.add('active');
-            syncNavbar('nav-apuntes');
-            loadNotes();
+            navigateSafe(() => {
+                hideAllViews();
+                apuntesView.classList.add('active');
+                syncNavbar('nav-apuntes');
+                loadNotes();
+            });
         });
         
         async function loadNotes() {
@@ -5293,7 +6210,226 @@
                 console.error("Error al eliminar nota:", err);
             }
         }
+        
+        // =====================================================
+// GUARD DE RUTAS — Sub-issue 2 HU-27
+// Verifica en cada cambio de vista que la sesión
+// sigue siendo válida contra el back-end.
+// =====================================================
 
+let sessionGuardInterval = null;
+
+/**
+ * Llama a GET /auth/validar-sesion con el usuarioId y loginAt
+ * guardados en localStorage. Si el back-end responde { valida: false }
+ * (porque hubo un logout posterior), limpia el estado local y
+ * redirige a login sin mostrar contenido protegido.
+ *
+ * @returns {boolean} true si la sesión es válida, false si fue invalidada
+ */
+async function verificarSesionActiva() {
+    const session = SessionManager.getInstance();
+
+    // 1. Si no hay sesión local → redirigir directamente
+    if (!session.isLoggedIn()) {
+        navSystem.transitionTo('login');
+        return false;
+    }
+
+    const user = session.getUser();
+
+    // 2. Sesión heredada sin loginAt (antes de este sprint) → forzar re-login
+    if (!user.loginAt) {
+        console.warn('[Guard] Sesión sin loginAt — re-login requerido');
+        session.clear();
+        navSystem.transitionTo('login');
+        return false;
+    }
+
+    try {
+        // LocalDateTime.toString() en Java puede incluir nanosegundos;
+        // el parser del back-end solo acepta segundos → truncar
+        const loginAtClean = user.loginAt.split('.')[0];
+
+        const res = await fetch(
+            `${API}/auth/validar-sesion` +
+            `?usuarioId=${user.id}` +
+            `&loginAt=${encodeURIComponent(loginAtClean)}`
+        );
+
+        // Error de red o servidor → asumir válida (no cortar sesión por problema externo)
+        if (!res.ok) return true;
+
+        const data = await res.json();
+
+        if (!data.valida) {
+            console.warn('[Guard] Sesión invalidada por el servidor');
+            // Limpiar solo localmente (el back-end ya la marcó como inválida)
+            session.clear();
+            for (const key in gradesStore) delete gradesStore[key];
+            navSystem.transitionTo('login');
+            showToast('Tu sesión fue cerrada. Vuelve a iniciar sesión.');
+            return false;
+        }
+
+        return true;
+
+    } catch (err) {
+        // Sin conexión → no forzar logout para no romper uso offline
+        console.warn('[Guard] No se pudo verificar sesión (sin conexión):', err);
+        return true;
+    }
+}
+
+/**
+ * Inicia un polling cada 60 s que verifica la sesión activa.
+ * Llama a esto justo después del login exitoso.
+ * Sirve para detectar logouts hechos desde otra pestaña o dispositivo.
+ */
+function iniciarGuardDeSesion() {
+    if (sessionGuardInterval) clearInterval(sessionGuardInterval);
+    sessionGuardInterval = setInterval(async () => {
+        const session = SessionManager.getInstance();
+        if (!session.isLoggedIn()) {
+            clearInterval(sessionGuardInterval);
+            return;
+        }
+        await verificarSesionActiva();
+    }, 60000); // 60 segundos
+}
+
+/** Detiene el polling. Llamar siempre al hacer logout. */
+function detenerGuardDeSesion() {
+    if (sessionGuardInterval) {
+        clearInterval(sessionGuardInterval);
+        sessionGuardInterval = null;
+    }
+}
+
+// ÔöÇÔöÇ Interceptar el botón Atrás/Adelante del navegador ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// Crea una entrada en el historial para que la SPA pueda capturar popstate.
+history.pushState(null, '', window.location.href);
+
+window.addEventListener('popstate', async () => {
+    const session = SessionManager.getInstance();
+    if (!session.isLoggedIn()) {
+        // Usuario intentó volver atrás luego de cerrar sesión → bloquear
+        history.pushState(null, '', window.location.href);
+        navSystem.transitionTo('login');
+        return;
+    }
+    // Si hay sesión activa, verificar que siga siendo válida
+    await verificarSesionActiva();
+});
+
+// ÔöÇÔöÇ Detectar logout desde otras pestañas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// El evento 'storage' se dispara cuando OTRA pestaña modifica localStorage.
+window.addEventListener('storage', (e) => {
+    if (e.key === 'studyhub_user' && e.newValue === null) {
+        // Otra pestaña borró la sesión
+        const session = SessionManager.getInstance();
+        if (!session.isLoggedIn()) return; // ya estamos en login, ignorar
+        console.warn('[Guard] Logout detectado en otra pestaña');
+        for (const key in gradesStore) delete gradesStore[key];
+        navSystem.transitionTo('login');
+        showToast('Sesión cerrada desde otra pestaña');
+    }
+});
+
+        // ÔöÇÔöÇ MODAL LOGOUT — Sub-issue 3 HU-27 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+        /** Abre el modal de confirmación. No hace ningún logout todavía. */
+        function openLogoutModal() {
+            document.getElementById('logout-modal-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        /** Cierra el modal sin hacer nada. */
+        function closeLogoutModal() {
+            document.getElementById('logout-modal-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // ÔöÇÔöÇ LÓGICA DE LOGOUT — Sub-issue 4 HU-27 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+        /**
+         * Se ejecuta al hacer clic en "Confirmar" del modal.
+         * 1. Llama a POST /auth/logout para registrar la invalidación en el back-end.
+         * 2. Sin importar si el back-end falla, limpia el estado local y redirige.
+         */
+        async function confirmLogout() {
+            const btn = document.getElementById('btn-confirm-logout');
+            btn.textContent = 'Cerrando...';
+            btn.disabled = true;
+
+            const session = SessionManager.getInstance();
+            const user    = session.getUser();
+
+            try {
+                if (user && user.id) {
+                    // Notificar al back-end para que invalide la sesión en la blacklist
+                    await fetch(`${API}/auth/logout`, {
+                        method:  'POST',
+                        headers: {
+                            'Content-Type':  'application/json',
+                            'Authorization': String(user.id)   // el back-end acepta el id como "token"
+                        },
+                        body: JSON.stringify({ usuarioId: user.id })
+                    });
+                }
+            } catch (err) {
+                // El back-end no respondió, pero el front SIEMPRE limpia la sesión local
+                console.warn('[Logout] No se pudo notificar al servidor:', err);
+            } finally {
+                performLocalLogout();
+            }
+        }
+
+        /**
+         * Limpia completamente el estado del cliente:
+         *  - Detiene el guard de polling
+         *  - Borra localStorage (sesión del usuario)
+         *  - Limpia el estado en memoria (gradesStore, DOM del grid)
+         *  - Cierra el modal y redirige al login
+         */
+        function performLocalLogout() {
+            // 1. Detener el polling del guard para no dejar intervalos colgados
+            detenerGuardDeSesion();
+
+            // 2. Eliminar todos los datos del usuario del almacenamiento local
+            SessionManager.getInstance().clear();
+
+            // 3. Limpiar estado global en memoria
+            for (const key in gradesStore) delete gradesStore[key];
+            if (subjectsGrid) subjectsGrid.innerHTML = '';
+
+            // 4. Restaurar el botón del modal (por si se vuelve a abrir en otra sesión)
+            const btn = document.getElementById('btn-confirm-logout');
+            if (btn) { btn.textContent = 'Cerrar sesión'; btn.disabled = false; }
+
+            // 5. Cerrar modal y restaurar scroll
+            closeLogoutModal();
+            document.body.style.overflow = '';
+
+            // 6. Redirigir a la vista de login
+            navSystem.transitionTo('login');
+            // Reemplazar la entrada actual del historial para que el botón Atrás
+            // no pueda volver a una vista protegida tras el logout
+            history.replaceState(null, '', window.location.href);
+            showToast('Sesión cerrada correctamente');
+        }
+        
+        // ÔöÇÔöÇ CASOS LÍMITE — Sub-issue 5 HU-27 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+
+        /**
+         * Wrapper que verifica la sesión antes de ejecutar cualquier cambio de vista.
+         * Si la sesión es inválida, verificarSesionActiva() ya redirige a login.
+         * @param {Function} navFn - Función que ejecuta el cambio de vista
+         */
+        async function navigateSafe(navFn) {
+            const isValid = await verificarSesionActiva();
+            if (isValid) navFn();
+        }
 
         // ========================================== //
         // ======= SPRINT 8: PDF EXPORT LOGIC ======= //
@@ -5312,7 +6448,7 @@
             btn.innerHTML = '<span class="material-icons-round">sync</span> Generando...';
             
             try {
-                const response = await fetch(`${API_BASE}/usuarios/${userId}/informe-academico`);
+                const response = await fetch(`${API_BASE}/${userId}/informe-academico`);
                 if (!response.ok) throw new Error("No se pudo obtener el informe");
                 
                 const data = await response.json();
@@ -5469,5 +6605,23 @@
             </div>
         </div>
     </div>
+    <script>
+        // Desactiva el Live Reload de Live Server cerrando su WebSocket
+        // Esto evita recargas automáticas no deseadas durante las pruebas
+        (function disableLiveReload() {
+            const _WebSocket = window.WebSocket;
+            window.WebSocket = function(url, protocols) {
+                if (url && url.toString().indexOf('5500') !== -1) {
+                    console.log('[LiveReload] Conexión bloqueada para evitar recargas automáticas.');
+                    const fakeWs = { send: () => {}, close: () => {}, addEventListener: () => {} };
+                    return fakeWs;
+                }
+                return new _WebSocket(url, protocols);
+            };
+            window.WebSocket.prototype = _WebSocket.prototype;
+        })();
+    </script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/configuracion.js"></script>
 </body>
 </html>
