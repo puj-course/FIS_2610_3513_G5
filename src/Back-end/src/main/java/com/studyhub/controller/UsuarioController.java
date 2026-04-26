@@ -147,4 +147,23 @@ public class UsuarioController {
         EstadisticasDTO estadisticas = usuarioService.obtenerEstadisticas(id);
         return ResponseEntity.ok(estadisticas);
     }
+
+    @GetMapping("/{id}/preferencias")
+    public ResponseEntity<?> obtenerPreferencias(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(usuarioService.obtenerPreferencias(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/preferencias")
+    public ResponseEntity<?> guardarPreferencias(@PathVariable Long id, @RequestBody Map<String, Object> preferencias) {
+        try {
+            usuarioService.guardarPreferencias(id, preferencias);
+            return ResponseEntity.ok(Map.of("mensaje", "Preferencias guardadas exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
+        }
+    }
 }

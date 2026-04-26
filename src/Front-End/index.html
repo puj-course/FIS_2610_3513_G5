@@ -2881,7 +2881,7 @@
                         <span class="material-icons-round">rate_review</span>
                         Reseñas
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-config">
                         <span class="material-icons-round">settings</span>
                         Configuración
                     </div>
@@ -2931,6 +2931,30 @@
                     <div class="stat-card primary">
                         <div class="stat-card-icon">
                             <span class="material-icons-round">analytics</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Promedio Global</h3>
+                            <p id="stat-avg">0.0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">menu_book</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Materias Activas</h3>
+                            <p id="stat-subjects">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card primary">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">stars</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Créditos</h3>
+                            <p id="stat-credits">0</p>
+                        </div>
+                    </div>
                         </div>
                         <div class="stat-card-info">
                             <h3>Promedio Global</h3>
@@ -3661,6 +3685,50 @@
         </div>
     </div>
     
+    <!-- ===== MODAL: CONFIGURACIÓN DE TEMA ===== -->
+    <div class="modal-overlay" id="config-modal-overlay">
+        <div class="modal" style="max-width: 450px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon" style="background: var(--blue-50); color: var(--blue-600);">
+                        <span class="material-icons-round">palette</span>
+                    </div>
+                    <div>
+                        <div class="modal-title">Apariencia</div>
+                        <div class="modal-subtitle">Personaliza los colores del dashboard</div>
+                    </div>
+                </div>
+                <button class="modal-close" id="config-modal-close">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Tema</label>
+                    <select id="config-tema" class="form-input">
+                        <option value="claro">Claro</option>
+                        <option value="oscuro">Oscuro</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">Color Primario</label>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;" id="config-color-swatches">
+                        <button class="color-swatch active" data-color="#1E88E5" style="background: #1E88E5; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                        <button class="color-swatch" data-color="#43A047" style="background: #43A047; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                        <button class="color-swatch" data-color="#8E24AA" style="background: #8E24AA; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                        <button class="color-swatch" data-color="#F4511E" style="background: #F4511E; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn" style="background: transparent; color: var(--gray-600);" id="config-btn-reset">Restablecer</button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" id="config-btn-cancel">Cancelar</button>
+                    <button class="btn btn-primary" id="config-btn-save">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
         <span id="toast-text">Materia agregada exitosamente</span>
@@ -6341,6 +6409,27 @@ window.addEventListener('storage', (e) => {
             }
         }
 
+
+            try {
+                if (user && user.id) {
+                    // Notificar al back-end para que invalide la sesión en la blacklist
+                    await fetch(`${API}/auth/logout`, {
+                        method:  'POST',
+                        headers: {
+                            'Content-Type':  'application/json',
+                            'Authorization': String(user.id)   // el back-end acepta el id como "token"
+                        },
+                        body: JSON.stringify({ usuarioId: user.id })
+                    });
+                }
+            } catch (err) {
+                // El back-end no respondió, pero el front SIEMPRE limpia la sesión local
+                console.warn('[Logout] No se pudo notificar al servidor:', err);
+            } finally {
+                performLocalLogout();
+            }
+        }
+
         /**
          * Limpia completamente el estado del cliente:
          *  - Detiene el guard de polling
@@ -6578,5 +6667,6 @@ window.addEventListener('storage', (e) => {
         })();
     </script>
     <script src="js/dashboard.js"></script>
+    <script src="js/configuracion.js"></script>
 </body>
 </html>
