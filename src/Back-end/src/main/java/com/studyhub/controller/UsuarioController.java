@@ -142,5 +142,9 @@ public class UsuarioController {
         }
     }
 
-
+    @GetMapping("/{id}/estadisticas")
+    public ResponseEntity<EstadisticasDTO> obtenerEstadisticas(@PathVariable Long id) {
+        EstadisticasDTO estadisticas = usuarioService.obtenerEstadisticas(id);
+        return ResponseEntity.ok(estadisticas);
+    }
 }
