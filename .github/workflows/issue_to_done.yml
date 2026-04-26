@@ -1,0 +1,60 @@
+name: Issue to Done Automation
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  move_to_done:
+    name: Move to Done
+    runs-on: ubuntu-latest
+    # Solo se ejecuta si NO tiene la etiqueta 'SCRUM'
+    if: "!contains(github.event.issue.labels.*.name, 'SCRUM')"
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Resolve Project Item and Move to Done
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_AUTOMATION_TOKEN }}
+          ORGANIZATION: ${{ github.repository_owner }}
+          PROJECT_NUMBER: 63
+          ISSUE_ID: ${{ github.event.issue.node_id }}
+        run: |
+          echo "Buscando Proyecto #$PROJECT_NUMBER en $ORGANIZATION..."
+          
+          # 1. Obtener el ID global del proyecto usando GraphQL (más robusto)
+          PROJECT_ID=$(gh api graphql -f query='
+            query($owner: String!, $number: Int!) {
+              organization(login: $owner) {
+                projectV2(number: $number) { id }
+              }
+              user(login: $owner) {
+                projectV2(number: $number) { id }
+              }
+            }' -f owner="$ORGANIZATION" -F number=$PROJECT_NUMBER --jq '.data.organization.projectV2.id // .data.user.projectV2.id')
+          
+          if [ -z "$PROJECT_ID" ]; then
+            echo "Error: No se encontró el proyecto con número $PROJECT_NUMBER"
+            exit 1
+          fi
+
+          # 2. Obtener el ID del item (issue) dentro del proyecto
+          ITEM_ID=$(gh project item-list $PROJECT_NUMBER --owner "$ORGANIZATION" --format json | jq -r ".items[] | select(.content.id == \"$ISSUE_ID\") | .id")
+
+          if [ -z "$ITEM_ID" ] || [ "$ITEM_ID" = "null" ]; then
+            echo "Aviso: El issue no está vinculado a este proyecto o ya fue procesado."
+            exit 0
+          fi
+
+          # 3. Obtener el ID del campo 'Status' y el ID de la opción 'Done'
+          FIELD_DATA=$(gh project field-list $PROJECT_NUMBER --owner "$ORGANIZATION" --format json)
+          STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
+          DONE_OPTION_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .options[]? | select(.name == "Done") | .id')
+
+          # 4. Actualizar el estado del item a 'Done'
+          gh project item-edit --id "$ITEM_ID" --project-id "$PROJECT_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
+          
+          echo "¡Éxito! Issue #${{ github.event.issue.number }} movido a Done."
+

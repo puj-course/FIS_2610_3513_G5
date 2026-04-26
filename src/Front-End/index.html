@@ -2955,6 +2955,30 @@
                             <p id="stat-credits">0</p>
                         </div>
                     </div>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Promedio Global</h3>
+                            <p id="stat-avg">0.0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">menu_book</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Materias Activas</h3>
+                            <p id="stat-subjects">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card primary">
+                        <div class="stat-card-icon">
+                            <span class="material-icons-round">stars</span>
+                        </div>
+                        <div class="stat-card-info">
+                            <h3>Total Créditos</h3>
+                            <p id="stat-credits">0</p>
+                        </div>
+                    </div>
                     <div class="stat-card warning">
                         <div class="stat-card-icon">
                             <span class="material-icons-round">report_problem</span>
@@ -6364,6 +6388,27 @@ window.addEventListener('storage', (e) => {
 
             const session = SessionManager.getInstance();
             const user    = session.getUser();
+
+            try {
+                if (user && user.id) {
+                    // Notificar al back-end para que invalide la sesión en la blacklist
+                    await fetch(`${API}/auth/logout`, {
+                        method:  'POST',
+                        headers: {
+                            'Content-Type':  'application/json',
+                            'Authorization': String(user.id)   // el back-end acepta el id como "token"
+                        },
+                        body: JSON.stringify({ usuarioId: user.id })
+                    });
+                }
+            } catch (err) {
+                // El back-end no respondió, pero el front SIEMPRE limpia la sesión local
+                console.warn('[Logout] No se pudo notificar al servidor:', err);
+            } finally {
+                performLocalLogout();
+            }
+        }
+
 
             try {
                 if (user && user.id) {

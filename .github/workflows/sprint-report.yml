@@ -32,15 +32,16 @@ jobs:
       # 3. Build y pruebas del proyecto
       - name: Build con Maven
         id: maven_build
+        shell: bash
         run: |
-          mvn clean verify --batch-mode --no-transfer-progress 2>&1 | tee maven_output.txt
-          echo "build_status=$?" >> $GITHUB_OUTPUT
+          mvn clean verify -f src/Back-end/pom.xml --batch-mode --no-transfer-progress 2>&1 | tee maven_output.txt
+          echo "build_status=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
 
       - name: Extraer resultados de pruebas
         id: test_results
         if: always()
         run: |
-          SUREFIRE_DIR="target/surefire-reports"
+          SUREFIRE_DIR="src/Back-end/target/surefire-reports"
           TESTS_RUN=0
           TESTS_FAILED=0
           TESTS_SKIPPED=0
@@ -66,6 +67,7 @@ jobs:
       # 4. Recopilar commits del sprint
       - name: Recopilar commits del período
         id: commits
+        if: always()
         run: |
           SPRINT_END=$(date +%Y-%m-%d)
           SPRINT_START=$(date -d "6 days ago" +%Y-%m-%d)
@@ -101,8 +103,11 @@ jobs:
       # 5. Recopilar issues cerrados (via GitHub API)
       - name: Obtener issues cerrados del sprint
         id: issues
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPRINT_START: ${{ steps.commits.outputs.sprint_start }}
+          SPRINT_END: ${{ steps.commits.outputs.sprint_end }}
         run: |
           SPRINT_START="${{ steps.commits.outputs.sprint_start }}"
           SPRINT_END="${{ steps.commits.outputs.sprint_end }}"
@@ -115,13 +120,14 @@ jobs:
 
           python3 - <<'EOF'
           import json
+          import os
           from datetime import datetime, timezone
 
           with open("issues_raw.json") as f:
               issues = json.load(f)
 
-          start = datetime.fromisoformat("$SPRINT_START").replace(tzinfo=timezone.utc)
-          end   = datetime.fromisoformat("$SPRINT_END").replace(tzinfo=timezone.utc)
+          start = datetime.fromisoformat(os.environ["SPRINT_START"]).replace(tzinfo=timezone.utc)
+          end   = datetime.fromisoformat(os.environ["SPRINT_END"]).replace(tzinfo=timezone.utc)
 
           sprint_issues = []
           for issue in issues:
@@ -148,6 +154,7 @@ jobs:
       # 6. Construir el cuerpo del issue de reporte
       - name: Construir reporte markdown
         id: build_report
+        if: always()
         run: |
           SPRINT_NAME="${{ steps.commits.outputs.sprint_name }}"
           START="${{ steps.commits.outputs.sprint_start }}"
@@ -204,14 +211,18 @@ jobs:
 
           echo "report_ready=true" >> $GITHUB_OUTPUT
 
-      # 7. Publicar como Issue en el repositorio
+      # 8. Publicar como Issue en el repositorio
       - name: Crear issue con el reporte
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SPRINT_NAME="${{ steps.commits.outputs.sprint_name }}"
           START="${{ steps.commits.outputs.sprint_start }}"
           END="${{ steps.commits.outputs.sprint_end }}"
+
+          # Asegurar que el label existe para que no falle el comando
+          gh label create "sprint-report" --color "EDEDED" --description "Reportes automáticos de Sprint" || true
 
           gh issue create \
             --title "Reporte de Sprint: ${SPRINT_NAME} (${START} / ${END})" \
