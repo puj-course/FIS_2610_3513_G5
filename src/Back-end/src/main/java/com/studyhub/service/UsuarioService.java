@@ -4,6 +4,7 @@ import com.studyhub.dto.AsignaturaResumenDTO;
 import com.studyhub.dto.ResumenAcademicoDTO;
 import com.studyhub.dto.TareaResumenDTO;
 import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.EstadisticasDTO;
 import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
 import com.studyhub.model.Usuario;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -206,5 +208,35 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    public EstadisticasDTO obtenerEstadisticas(Long usuarioId) {
+        List<Asignatura> asignaturas = asignaturaService.findByUserId(usuarioId);
+        
+        int totalMaterias = asignaturas.size();
+        int totalCreditos = 0;
+        int materiasEnRiesgo = 0;
+        double sumaPromedios = 0.0;
+        Map<String, Double> promediosPorMateria = new HashMap<>();
 
+        for (Asignatura asig : asignaturas) {
+            double promedio = notaService.calcularPromedio(asig.getId());
+            promediosPorMateria.put(asig.getNombre(), promedio);
+            
+            sumaPromedios += promedio;
+            totalCreditos += asig.getCreditos();
+            
+            if (promedio < 3.0 && promedio > 0) {
+                materiasEnRiesgo++;
+            }
+        }
+
+        double promedioGlobal = totalMaterias > 0 ? (sumaPromedios / totalMaterias) : 0.0;
+
+        return new EstadisticasDTO(
+            Math.round(promedioGlobal * 100.0) / 100.0,
+            totalMaterias,
+            materiasEnRiesgo,
+            totalCreditos,
+            promediosPorMateria
+        );
+    }
 }
