@@ -13,6 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const temaSelect = document.getElementById('config-tema');
     const swatches = document.querySelectorAll('.color-swatch');
 
+    // Si no existen los elementos necesarios, abortar para no romper otros scripts
+    if (!configBtn || !modalOverlay) {
+        console.warn('[Config] No se encontraron elementos de configuración en el DOM.');
+        return;
+    }
+
     // Preferencias locales temporales (para previsualización)
     let currentPrefs = {
         tema: 'claro',
@@ -22,9 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Preferencias guardadas en BD
     let savedPrefs = { ...currentPrefs };
 
-    // Obtener ID del usuario actual (mock: 1)
-    // En el futuro esto vendría del localStorage (ej. localStorage.getItem('usuarioId'))
-    const userId = 1;
+    // Obtener ID del usuario actual dinámicamente
+    const getActiveUserId = () => {
+        const user = JSON.parse(localStorage.getItem('studyhub_user'));
+        return user ? user.id : 1;
+    };
+
+    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'https://studyhub-c2ft.onrender.com/api' 
+                    : window.location.origin + '/api';
 
     // Cargar preferencias iniciales
     cargarPreferenciasBD();
@@ -73,7 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Guardar en BD
     btnSave.addEventListener('click', async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/usuarios/${userId}/preferencias`, {
+            const userId = getActiveUserId();
+            const response = await fetch(`${API_URL}/usuarios/${userId}/preferencias`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -100,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/api/usuarios/${userId}/preferencias`, {
+            const userId = getActiveUserId();
+            const response = await fetch(`${API_URL}/usuarios/${userId}/preferencias`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -126,7 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function cargarPreferenciasBD() {
         try {
-            const response = await fetch(`http://localhost:8080/api/usuarios/${userId}/preferencias`);
+            const userId = getActiveUserId();
+            const response = await fetch(`${API_URL}/usuarios/${userId}/preferencias`);
             if (response.ok) {
                 const prefs = await response.json();
                 if (prefs.tema && prefs.colorPrimario) {

@@ -3797,7 +3797,9 @@
     </div>
 
     <script>
-        const API      = window.location.origin; 
+        const API      = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                         ? 'https://studyhub-c2ft.onrender.com' 
+                         : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
 
         /**
@@ -6409,26 +6411,6 @@ window.addEventListener('storage', (e) => {
             }
         }
 
-
-            try {
-                if (user && user.id) {
-                    // Notificar al back-end para que invalide la sesión en la blacklist
-                    await fetch(`${API}/auth/logout`, {
-                        method:  'POST',
-                        headers: {
-                            'Content-Type':  'application/json',
-                            'Authorization': String(user.id)   // el back-end acepta el id como "token"
-                        },
-                        body: JSON.stringify({ usuarioId: user.id })
-                    });
-                }
-            } catch (err) {
-                // El back-end no respondió, pero el front SIEMPRE limpia la sesión local
-                console.warn('[Logout] No se pudo notificar al servidor:', err);
-            } finally {
-                performLocalLogout();
-            }
-        }
 
         /**
          * Limpia completamente el estado del cliente:
