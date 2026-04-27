@@ -94,31 +94,102 @@ function generarFilasHorario() {
 // ── Renderizado de bloques ──────────────────────────────────────────────────
 
 /**
- * renderBloqueMateria(sesion)
- * Crea y posiciona un bloque de materia en la celda correcta.
+ * detectarConflictos(sesiones)
+ * Agrupa las sesiones por día y detecta solapamientos de horario.
+ * Devuelve un Map: clave = "dia-horaInicio" → índice de columna dentro del conflicto.
  *
- * @param {Object} sesion - horarioDTO del backend:
- *   { nombreAsignatura, dia, horaInicio, horaFin, profesor }
+ * Ejemplo: si Cálculo y Física se solapan el Lunes,
+ * Cálculo queda en columna 0 de 2 y Física en columna 1 de 2.
+ *
+ * @param {Array} sesiones - Array de horarioDTO
+ * @returns {Map} conflictos: key = sesion → { col, totalCols }
  */
-function renderBloqueMateria(sesion) {
+function detectarConflictos(sesiones) {
+    // Resultado: Map de sesión → { col, totalCols }
+    const resultado = new Map();
+
+    // Agrupar sesiones por columna de día
+    const porDia = {};
+    sesiones.forEach(s => {
+        const diaKey = s.dia?.toLowerCase().trim();
+        const col = DIA_A_COL[diaKey];
+        if (!col) return;
+        if (!porDia[col]) porDia[col] = [];
+        porDia[col].push(s);
+    });
+
+    // Para cada día, encontrar grupos de sesiones que se solapan
+    Object.values(porDia).forEach(sesionesDelDia => {
+        // Ordenar por hora de inicio
+        sesionesDelDia.sort((a, b) => horaADecimal(a.horaInicio) - horaADecimal(b.horaInicio));
+
+        // Construir grupos de solapamiento
+        // Un grupo es un conjunto donde cada sesión solapa con al menos una del grupo
+        const visitados = new Set();
+
+        sesionesDelDia.forEach((s, i) => {
+            if (visitados.has(i)) return;
+
+            const grupo = [i];
+            visitados.add(i);
+
+            const finI = horaADecimal(s.horaFin);
+
+            // Comparar con todas las siguientes
+            for (let j = i + 1; j < sesionesDelDia.length; j++) {
+                const sj = sesionesDelDia[j];
+                const inicioJ = horaADecimal(sj.horaInicio);
+
+                // Hay solapamiento si el inicio de j es menor que el fin de i
+                if (inicioJ < finI) {
+                    grupo.push(j);
+                    visitados.add(j);
+                }
+            }
+
+            // Asignar posición dentro del grupo a cada sesión
+            grupo.forEach((idx, posEnGrupo) => {
+                resultado.set(sesionesDelDia[idx], {
+                    col:       posEnGrupo,
+                    totalCols: grupo.length
+                });
+            });
+        });
+    });
+
+    return resultado;
+}
+
+/**
+ * renderBloqueMateria(sesion, conflictoInfo)
+ * Crea y posiciona un bloque de materia en la celda correcta.
+ * Si hay conflicto, divide el ancho de la celda entre los bloques solapados.
+ *
+ * @param {Object} sesion        - horarioDTO: { nombreAsignatura, dia, horaInicio, horaFin, profesor }
+ * @param {Object} conflictoInfo - { col, totalCols } desde detectarConflictos()
+ */
+function renderBloqueMateria(sesion, conflictoInfo) {
     const diaKey = sesion.dia?.toLowerCase().trim();
     const colIdx = DIA_A_COL[diaKey];
-    if (!colIdx) return; // día no reconocido
+    if (!colIdx) return;
 
     const hInicio  = horaADecimal(sesion.horaInicio);
     const hFin     = horaADecimal(sesion.horaFin);
-    const filaBase = Math.floor(hInicio); // hora entera donde empieza el bloque
+    const filaBase = Math.floor(hInicio);
 
-    // La celda ancla es la de la hora de inicio
     const celdaAncla = document.getElementById(`celda-${filaBase}-${colIdx}`);
     if (!celdaAncla) return;
 
-    // Calcular posición y altura relativas a la hora de inicio
-    // Cada celda = 52px (height definido en CSS: .horario-dia-cell { height: 52px })
     const PX_POR_HORA = 52;
-    const offsetTop    = (hInicio - filaBase) * PX_POR_HORA;
-    const duracion     = Math.max(hFin - hInicio, 0.5); // mínimo medio bloque
-    const altura       = duracion * PX_POR_HORA;
+    const offsetTop   = (hInicio - filaBase) * PX_POR_HORA;
+    const duracion    = Math.max(hFin - hInicio, 0.5);
+    const altura      = duracion * PX_POR_HORA;
+
+    // ── Manejo de conflictos: dividir ancho ──
+    const totalCols  = conflictoInfo?.totalCols ?? 1;
+    const colBloque  = conflictoInfo?.col        ?? 0;
+    const anchoPct   = 100 / totalCols;          // % del ancho que ocupa este bloque
+    const leftPct    = anchoPct * colBloque;     // % desde la izquierda
 
     const color = obtenerColor(sesion.nombreAsignatura);
 
@@ -126,20 +197,24 @@ function renderBloqueMateria(sesion) {
     bloque.className = 'horario-bloque';
     bloque.title = `${sesion.nombreAsignatura}\n${sesion.horaInicio}–${sesion.horaFin}${sesion.profesor ? '\n' + sesion.profesor : ''}`;
 
+    // Indicador visual de conflicto: borde punteado cuando hay solapamiento
+    const esConflicto = totalCols > 1;
+
     bloque.style.cssText = `
         position: absolute;
         top: ${offsetTop}px;
-        left: 2px;
-        right: 2px;
+        left: calc(${leftPct}% + 2px);
+        width: calc(${anchoPct}% - 4px);
         height: ${altura - 2}px;
         background: ${color.bg};
         border-left: 3px solid ${color.border};
         border-radius: 4px;
         padding: 3px 5px;
         overflow: hidden;
-        z-index: 1;
+        z-index: ${1 + colBloque};
         cursor: default;
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        ${esConflicto ? `outline: 1.5px dashed ${color.border};` : ''}
     `;
 
     bloque.innerHTML = `
@@ -159,9 +234,15 @@ function renderBloqueMateria(sesion) {
             color: ${color.border};
             margin-top: 1px;
         ">${sesion.horaInicio}–${sesion.horaFin}</span>
+        ${esConflicto ? `<span style="
+            display: block;
+            font-size: 8px;
+            color: #E53935;
+            margin-top: 2px;
+            font-weight: 600;
+        ">⚠ Conflicto</span>` : ''}
     `;
 
-    // La celda ancla necesita position:relative para que el bloque se posicione dentro
     celdaAncla.style.position = 'relative';
     celdaAncla.appendChild(bloque);
 }
@@ -174,27 +255,28 @@ function renderBloqueMateria(sesion) {
  * @param {Array} sesiones - Array de horarioDTO
  */
 function renderHorario(sesiones) {
-    const emptyState   = document.getElementById('horario-empty');
-    const gridWrapper  = document.getElementById('horario-grid-wrapper');
+    const emptyState  = document.getElementById('horario-empty');
+    const gridWrapper = document.getElementById('horario-grid-wrapper');
 
     // Limpiar bloques previos
     document.querySelectorAll('.horario-bloque').forEach(b => b.remove());
+
     // Resetear colores para que coincidan en cada recarga
     Object.keys(colorPorMateria).forEach(k => delete colorPorMateria[k]);
     colorIndex = 0;
 
     if (!sesiones || sesiones.length === 0) {
-        // Estado vacío
         if (emptyState)  emptyState.style.display  = 'flex';
         if (gridWrapper) gridWrapper.style.display  = 'none';
         return;
     }
 
-    // Hay datos: mostrar grilla
     if (emptyState)  emptyState.style.display  = 'none';
     if (gridWrapper) gridWrapper.style.display  = '';
 
-    sesiones.forEach(sesion => renderBloqueMateria(sesion));
+    // Detectar conflictos antes de pintar para ajustar anchos
+    const conflictos = detectarConflictos(sesiones);
+    sesiones.forEach(sesion => renderBloqueMateria(sesion, conflictos.get(sesion)));
 }
 
 // ── Fetch de datos ──────────────────────────────────────────────────────────
