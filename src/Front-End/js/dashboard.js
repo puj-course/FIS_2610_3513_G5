@@ -2,7 +2,9 @@
  * Dashboard Logic for StudyHub (HU-374)
  */
 
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'https://studyhub-c2ft.onrender.com/api' 
+                    : window.location.origin + '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initial fetch of statistics
