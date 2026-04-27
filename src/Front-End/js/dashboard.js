@@ -1,120 +1,115 @@
 /**
- * Dashboard Logic for StudyHub (HU-374)
+ * Dashboard Enhancements for StudyHub
+ * This script extends Valeria's base dashboard logic with charts and risk alerts.
  */
 
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'https://studyhub-c2ft.onrender.com/api' 
-                    : window.location.origin + '/api';
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Initial fetch of statistics
-    // For now, using user ID 1 as placeholder
-    fetchGlobalStatistics(1);
-});
-
-async function fetchGlobalStatistics(userId) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/usuarios/${userId}/estadisticas`);
-        if (!response.ok) throw new Error('Error al obtener estadísticas');
-        
-        const data = await response.json();
-        updateStatsUI(data);
-    } catch (error) {
-        console.error('Fetch error:', error);
-        // Handle empty state or error UI
-        showEmptyState();
-    }
-}
-
-function updateStatsUI(data) {
-    // Update metric cards
-    document.getElementById('stat-avg').textContent = data.promedioGlobal.toFixed(1);
-    document.getElementById('stat-subjects').textContent = data.totalMaterias;
-    document.getElementById('stat-credits').textContent = data.totalCreditos;
-    document.getElementById('stat-risk').textContent = data.materiasEnRiesgo;
-
-    // Update risk alerts
-    const riskContainer = document.getElementById('risk-alerts');
-    const riskList = document.getElementById('risk-list');
-    riskList.innerHTML = '';
-
-    const subjectsAtRisk = Object.entries(data.promediosPorMateria)
-        .filter(([_, avg]) => avg < 3.0 && avg > 0);
-
-    if (subjectsAtRisk.length > 0) {
-        riskContainer.style.display = 'block';
-        subjectsAtRisk.forEach(([name, avg]) => {
-            const item = document.createElement('div');
-            item.className = 'risk-item';
-            item.innerHTML = `<span>${name}</span> <strong>${avg.toFixed(1)}</strong>`;
-            riskList.appendChild(item);
-        });
-    } else {
-        riskContainer.style.display = 'none';
-    }
-
-    // Render Chart
-    renderAverageChart(data.promediosPorMateria);
-}
-
-let averageChart = null;
-function renderAverageChart(promedios) {
-    const ctx = document.getElementById('averageChart').getContext('2d');
+(function() {
+    // Save reference to original function
+    const originalRender = window.renderDashboardSummary;
     
-    if (averageChart) {
-        averageChart.destroy();
+    // Override the global function
+    window.renderDashboardSummary = async function() {
+        // 1. Call original to populate basic cards and task list
+        if (typeof originalRender === 'function') {
+            await originalRender();
+        }
+        
+        // 2. Fetch enhanced statistics
+        const user = typeof session !== 'undefined' ? session.getUser() : null;
+        if (!user || !user.id) return;
+
+        try {
+            // API constant is global from index.html
+            const response = await fetch(`${API}/api/usuarios/${user.id}/estadisticas`);
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Update Valeria's IDs with precise data from backend
+                const avgElem = document.getElementById('dash-avg');
+                const countElem = document.getElementById('dash-subjects-count');
+                
+                if (avgElem) avgElem.textContent = data.promedioGlobal.toFixed(1);
+                if (countElem) countElem.textContent = data.totalMaterias;
+                
+                // 3. Render Risk Alerts (HU-377)
+                renderRiskAlerts(data.promediosPorMateria);
+                
+                // 4. Render Performance Chart (HU-374)
+                renderAverageChart(data.promediosPorMateria);
+            }
+        } catch (error) {
+            console.error("Dashboard enhancement error:", error);
+        }
+    };
+
+    function renderRiskAlerts(promedios) {
+        const riskContainer = document.getElementById('risk-alerts');
+        const riskList = document.getElementById('risk-list');
+        if (!riskContainer || !riskList) return;
+
+        riskList.innerHTML = '';
+        const subjectsAtRisk = Object.entries(promedios)
+            .filter(([_, avg]) => avg < 3.0 && avg > 0);
+            
+        if (subjectsAtRisk.length > 0) {
+            riskContainer.style.display = 'block';
+            subjectsAtRisk.forEach(([name, avg]) => {
+                const item = document.createElement('div');
+                item.style = "display: flex; justify-content: space-between; background: #fff; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #E65100; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+                item.innerHTML = `
+                    <span style="font-weight: 500; color: #37474F;">${name}</span> 
+                    <strong style="color: #d32f2f;">${avg.toFixed(1)}</strong>
+                `;
+                riskList.appendChild(item);
+            });
+        } else {
+            riskContainer.style.display = 'none';
+        }
     }
 
-    const labels = Object.keys(promedios);
-    const values = Object.values(promedios);
+    let averageChart = null;
+    function renderAverageChart(promedios) {
+        const canvas = document.getElementById('averageChart');
+        if (!canvas) return;
 
-    averageChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Promedio por Materia',
-                data: values,
-                backgroundColor: values.map(v => v < 3.0 ? 'rgba(229, 57, 53, 0.6)' : 'rgba(30, 136, 229, 0.6)'),
-                borderColor: values.map(v => v < 3.0 ? 'rgba(229, 57, 53, 1)' : 'rgba(30, 136, 229, 1)'),
-                borderWidth: 1,
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 5,
-                    ticks: {
-                        stepSize: 1
+        const ctx = canvas.getContext('2d');
+        if (averageChart) {
+            averageChart.destroy();
+        }
+
+        const labels = Object.keys(promedios);
+        const values = Object.values(promedios);
+
+        averageChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Promedio',
+                    data: values,
+                    backgroundColor: values.map(v => v < 3.0 ? 'rgba(229, 57, 53, 0.6)' : 'rgba(30, 136, 229, 0.6)'),
+                    borderColor: values.map(v => v < 3.0 ? 'rgba(229, 57, 53, 1)' : 'rgba(30, 136, 229, 1)'),
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
                     },
-                    grid: {
-                        display: true,
-                        color: 'rgba(0,0,0,0.05)'
+                    x: {
+                        grid: { display: false }
                     }
                 },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
+                plugins: {
+                    legend: { display: false }
                 }
             }
-        }
-    });
-}
-
-function showEmptyState() {
-    // Optional: Reset UI to neutral values if fetch fails
-    document.getElementById('stat-avg').textContent = '-';
-    document.getElementById('stat-subjects').textContent = '0';
-    document.getElementById('stat-credits').textContent = '0';
-    document.getElementById('stat-risk').textContent = '0';
-}
+        });
+    }
+})();
