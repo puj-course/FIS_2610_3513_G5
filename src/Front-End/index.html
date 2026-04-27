@@ -14,6 +14,7 @@
     <!-- PDF Generation Libraries (HU-27) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
 
     
@@ -561,101 +562,6 @@
 
         .action-chip .material-icons-round {
             font-size: 18px;
-        }
-
-        /* ========== STATISTICS SECTION (HU-374) ========== */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .stat-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-card.primary .stat-card-icon { background: var(--blue-50); color: var(--blue-600); }
-        .stat-card.warning .stat-card-icon { background: #FFF3E0; color: #EF6C00; }
-        .stat-card.success .stat-card-icon { background: #E8F5E9; color: #2E7D32; }
-
-        .stat-card-info h3 {
-            font-size: 12px;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .stat-card-info p {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--gray-700);
-        }
-
-        .risk-alerts-container {
-            margin-bottom: 32px;
-            background: #FFF5F5;
-            border: 1px solid #FEB2B2;
-            border-radius: var(--radius-md);
-            padding: 16px;
-            display: none; /* Hidden by default */
-        }
-
-        .risk-alerts-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #C53030;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .risk-item {
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 8px;
-            font-size: 13px;
-            border-left: 4px solid #C53030;
-        }
-
-        .chart-section {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-            margin-bottom: 32px;
-        }
-
-        .chart-container {
-            height: 300px;
-            position: relative;
         }
 
         /* ========== RIGHT SIDEBAR ========== */
@@ -2926,86 +2832,33 @@
                     </div>
                 </div>
 
-                <!-- Estadísticas Globales (HU-374) -->
-                <div class="stats-container">
-                    <div class="stat-card primary">
-                        <div class="stat-card-icon">
-                            <span class="material-icons-round">analytics</span>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-icon" style="background: var(--blue-50); color: var(--blue-600);">
+                            <span class="material-icons-round">trending_up</span>
                         </div>
-                        <div class="stat-card-info">
-                            <h3>Promedio Global</h3>
-                            <p id="stat-avg">0.0</p>
+                        <div class="summary-info">
+                            <div class="summary-value" id="dash-avg">-</div>
+                            <div class="summary-label">Promedio Global</div>
                         </div>
                     </div>
-                    <div class="stat-card success">
-                        <div class="stat-card-icon">
+                    <div class="summary-card">
+                        <div class="summary-icon" style="background: #FFF3E0; color: #E65100;">
+                            <span class="material-icons-round">assignment_late</span>
+                        </div>
+                        <div class="summary-info">
+                            <div class="summary-value" id="dash-tasks-count">0</div>
+                            <div class="summary-label">Tareas Pendientes</div>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon" style="background: #E8F5E9; color: #2E7D32;">
                             <span class="material-icons-round">menu_book</span>
                         </div>
-                        <div class="stat-card-info">
-                            <h3>Materias Activas</h3>
-                            <p id="stat-subjects">0</p>
+                        <div class="summary-info">
+                            <div class="summary-value" id="dash-subjects-count">0</div>
+                            <div class="summary-label">Materias Activas</div>
                         </div>
-                    </div>
-                    <div class="stat-card primary">
-                        <div class="stat-card-icon">
-                            <span class="material-icons-round">stars</span>
-                        </div>
-                        <div class="stat-card-info">
-                            <h3>Total Créditos</h3>
-                            <p id="stat-credits">0</p>
-                        </div>
-                    </div>
-                        </div>
-                        <div class="stat-card-info">
-                            <h3>Promedio Global</h3>
-                            <p id="stat-avg">0.0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card success">
-                        <div class="stat-card-icon">
-                            <span class="material-icons-round">menu_book</span>
-                        </div>
-                        <div class="stat-card-info">
-                            <h3>Materias Activas</h3>
-                            <p id="stat-subjects">0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card primary">
-                        <div class="stat-card-icon">
-                            <span class="material-icons-round">stars</span>
-                        </div>
-                        <div class="stat-card-info">
-                            <h3>Total Créditos</h3>
-                            <p id="stat-credits">0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card warning">
-                        <div class="stat-card-icon">
-                            <span class="material-icons-round">report_problem</span>
-                        </div>
-                        <div class="stat-card-info">
-                            <h3>En Riesgo</h3>
-                            <p id="stat-risk">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Alertas de Riesgo (HU-377) -->
-                <div id="risk-alerts" class="risk-alerts-container">
-                    <div class="risk-alerts-header">
-                        <span class="material-icons-round">warning</span>
-                        Materias que requieren atención (Promedio < 3.0)
-                    </div>
-                    <div id="risk-list"></div>
-                </div>
-
-                <!-- Gráfico de Promedios (HU-378) -->
-                <div class="chart-section animated">
-                    <div class="section-header">
-                        <h3 class="section-title" style="font-size: 16px;">Rendimiento por Materia</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="averageChart"></canvas>
                     </div>
                 </div>
 
@@ -3022,6 +2875,25 @@
                                     <p class="grades-empty-text">No hay tareas próximas</p>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Gráfico de Rendimiento (HU-374) -->
+                        <div class="dashboard-tasks-card" style="margin-top: 24px;">
+                            <div class="section-header">
+                                <h3 class="section-title" style="font-size: 16px;">Rendimiento por Materia</h3>
+                            </div>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="averageChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Alertas de Riesgo (HU-377) -->
+                        <div id="risk-alerts" class="risk-alerts-container" style="display: none; margin-top: 24px; background: #FFF3E0; border-radius: 12px; padding: 16px; border: 1px solid #FFE0B2;">
+                            <div class="risk-alerts-header" style="display: flex; align-items: center; gap: 8px; color: #E65100; font-weight: 600; margin-bottom: 12px;">
+                                <span class="material-icons-round">warning</span>
+                                Materias que requieren atención (Promedio < 3.0)
+                            </div>
+                            <div id="risk-list" class="risk-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
                         </div>
 
                         <!-- Acciones Rapidas (Simplificadas) -->
@@ -3685,50 +3557,6 @@
         </div>
     </div>
     
-    <!-- ===== MODAL: CONFIGURACIÓN DE TEMA ===== -->
-    <div class="modal-overlay" id="config-modal-overlay">
-        <div class="modal" style="max-width: 450px;">
-            <div class="modal-header">
-                <div class="modal-header-left">
-                    <div class="modal-header-icon" style="background: var(--blue-50); color: var(--blue-600);">
-                        <span class="material-icons-round">palette</span>
-                    </div>
-                    <div>
-                        <div class="modal-title">Apariencia</div>
-                        <div class="modal-subtitle">Personaliza los colores del dashboard</div>
-                    </div>
-                </div>
-                <button class="modal-close" id="config-modal-close">
-                    <span class="material-icons-round">close</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Tema</label>
-                    <select id="config-tema" class="form-input">
-                        <option value="claro">Claro</option>
-                        <option value="oscuro">Oscuro</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-top: 16px;">
-                    <label class="form-label">Color Primario</label>
-                    <div style="display: flex; gap: 12px; margin-top: 8px;" id="config-color-swatches">
-                        <button class="color-swatch active" data-color="#1E88E5" style="background: #1E88E5; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
-                        <button class="color-swatch" data-color="#43A047" style="background: #43A047; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
-                        <button class="color-swatch" data-color="#8E24AA" style="background: #8E24AA; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
-                        <button class="color-swatch" data-color="#F4511E" style="background: #F4511E; width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;"></button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer" style="justify-content: space-between;">
-                <button class="btn" style="background: transparent; color: var(--gray-600);" id="config-btn-reset">Restablecer</button>
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-secondary" id="config-btn-cancel">Cancelar</button>
-                    <button class="btn btn-primary" id="config-btn-save">Guardar Cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="toast" id="toast">
         <span class="material-icons-round">check_circle</span>
         <span id="toast-text">Materia agregada exitosamente</span>
@@ -6411,7 +6239,6 @@ window.addEventListener('storage', (e) => {
             }
         }
 
-
         /**
          * Limpia completamente el estado del cliente:
          *  - Detiene el guard de polling
@@ -6648,6 +6475,41 @@ window.addEventListener('storage', (e) => {
             window.WebSocket.prototype = _WebSocket.prototype;
         })();
     </script>
+    <!-- Modal Personalización (HU-31) -->
+    <div class="modal-overlay" id="config-modal-overlay">
+        <div class="modal-card customization-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Personalizar Dashboard</h3>
+                <button class="modal-close" id="config-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="config-section">
+                    <h4>Tema Visual</h4>
+                    <select id="config-tema" class="form-input">
+                        <option value="claro">Modo Claro</option>
+                        <option value="oscuro">Modo Oscuro</option>
+                    </select>
+                </div>
+                <div class="config-section">
+                    <h4>Color de Acento</h4>
+                    <div class="color-grid">
+                        <div class="color-swatch" data-color="#1E88E5" style="background: #1E88E5;"></div>
+                        <div class="color-swatch" data-color="#43A047" style="background: #43A047;"></div>
+                        <div class="color-swatch" data-color="#E53935" style="background: #E53935;"></div>
+                        <div class="color-swatch" data-color="#FB8C00" style="background: #FB8C00;"></div>
+                        <div class="color-swatch" data-color="#8E24AA" style="background: #8E24AA;"></div>
+                        <div class="color-swatch" data-color="#00ACC1" style="background: #00ACC1;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="config-btn-reset">Restablecer</button>
+                <button class="btn-cancel" id="config-btn-cancel">Cancelar</button>
+                <button class="btn-save" id="config-btn-save">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
 </body>
