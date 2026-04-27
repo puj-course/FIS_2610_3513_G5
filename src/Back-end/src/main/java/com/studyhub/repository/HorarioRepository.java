@@ -17,13 +17,25 @@ public class HorarioRepository {
 
         for (Asignatura asignatura : asignaturas) {
 
-            horarioDTO dto = new HorarioBuilder()
-                    .conAsignatura(asignatura.getNombre())
-                    .enDia("Lunes") // luego mejoramos con horario real
-                    .conFranja("08:00", "10:00") // temporal
-                    .build();
+            // Si no tiene días/horas configurados, se omite del horario
+            if (asignatura.getDiasClase() == null || asignatura.getDiasClase().isBlank()) {
+                continue;
+            }
 
-            horario.add(dto);
+            String[] dias = asignatura.getDiasClase().split(",");
+            for (String dia : dias) {
+                horarioDTO dto = new HorarioBuilder()
+                        .conAsignatura(asignatura.getNombre())
+                        .enDia(dia.trim())
+                        .conFranja(
+                            asignatura.getHoraInicio() != null ? asignatura.getHoraInicio() : "00:00",
+                            asignatura.getHoraFin()    != null ? asignatura.getHoraFin()    : "00:00"
+                        )
+                        .conProfesor(asignatura.getProfesor())
+                        .build();
+
+                horario.add(dto);
+            }
         }
 
         return horario;
