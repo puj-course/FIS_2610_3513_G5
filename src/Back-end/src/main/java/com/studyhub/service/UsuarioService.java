@@ -21,6 +21,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 
 
 @Service
@@ -33,16 +37,19 @@ public class UsuarioService {
     private final NotaService notaService;
     private final TareaRepository tareaRepository;
     private final PasswordEncryptionStrategy encryptionStrategy;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public UsuarioService(PasswordEncryptionStrategy encryptionStrategy,
                           AsignaturaService asignaturaService,
                           NotaService notaService,
-                          TareaRepository tareaRepository) {
+                          TareaRepository tareaRepository,
+                          ObjectMapper objectMapper) {
         this.encryptionStrategy = encryptionStrategy;
         this.asignaturaService  = asignaturaService;
         this.notaService        = notaService;
         this.tareaRepository    = tareaRepository;
+        this.objectMapper       = objectMapper;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -238,5 +245,35 @@ public class UsuarioService {
             totalCreditos,
             promediosPorMateria
         );
+    }
+
+    public Map<String, Object> obtenerPreferencias(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+        
+        String prefs = usuario.getPreferencias();
+        if (prefs == null || prefs.trim().isEmpty()) {
+            return new HashMap<>(); // Preferencias por defecto
+        }
+        
+        try {
+            return objectMapper.readValue(prefs, new TypeReference<Map<String, Object>>() {});
+        } catch (JsonProcessingException e) {
+            System.err.println("Error al parsear preferencias JSON: " + e.getMessage());
+            return new HashMap<>();
+        }
+    }
+
+    public void guardarPreferencias(Long usuarioId, Map<String, Object> preferencias) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+        
+        try {
+            String prefsJson = objectMapper.writeValueAsString(preferencias);
+            usuario.setPreferencias(prefsJson);
+            usuarioRepository.save(usuario);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error al serializar preferencias JSON", e);
+        }
     }
 }
