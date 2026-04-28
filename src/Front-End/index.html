@@ -5562,8 +5562,22 @@
                 const card = document.createElement('div');
                 card.className = `task-card ${tarea.estado ? '' : 'completed'}`;
                 card.innerHTML = `
-                    <div class="task-header">
-                        <span class="task-subject-tag">${tarea.asignatura?.nombre || 'General'}</span>
+                    <div class="task-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span class="task-subject-tag">${tarea.asignatura?.nombre || 'General'}</span>
+                            <span class="priority-badge" style="
+                                padding: 3px 8px;
+                                border-radius: 12px;
+                                font-size: 10px;
+                                font-weight: 700;
+                                text-transform: uppercase;
+                                background: ${tarea.prioridad === 'alta' ? '#FFEBEE' : tarea.prioridad === 'baja' ? '#E8F5E9' : '#FFF8E1'};
+                                color: ${tarea.prioridad === 'alta' ? '#D32F2F' : tarea.prioridad === 'baja' ? '#388E3C' : '#F57C00'};
+                                border: 1px solid ${tarea.prioridad === 'alta' ? '#FFCDD2' : tarea.prioridad === 'baja' ? '#C8E6C9' : '#FFE082'};
+                            ">
+                                ${tarea.prioridad === 'alta' ? 'Alta' : tarea.prioridad === 'baja' ? 'Baja' : 'Media'}
+                            </span>
+                        </div>
                         <div class="task-status-icon">
                             <span class="material-icons-round" style="color: ${tarea.estado ? '#FFA000' : '#4CAF50'}">
                                 ${tarea.estado ? 'pending_actions' : 'check_circle'}
@@ -7088,7 +7102,12 @@ window.addEventListener('storage', (e) => {
                     <div class="cal-popup-task">
                         <span class="cal-popup-priority ${t.prioridad || 'media'}"></span>
                         <div class="cal-popup-info">
-                            <strong>${t.titulo}</strong><br>
+                            <strong>${t.titulo}</strong>
+                            <span style="font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 6px; text-transform: uppercase;
+                                background: ${t.prioridad === 'alta' ? '#FFEBEE' : t.prioridad === 'baja' ? '#E8F5E9' : '#FFF8E1'};
+                                color: ${t.prioridad === 'alta' ? '#D32F2F' : t.prioridad === 'baja' ? '#388E3C' : '#F57C00'};
+                            ">${t.prioridad === 'alta' ? 'Alta' : t.prioridad === 'baja' ? 'Baja' : 'Media'}</span>
+                            <br>
                             ${t.asignatura?.nombre || ''} · ${t.horaEntrega || ''}
                         </div>
                     </div>
