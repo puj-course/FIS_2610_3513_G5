@@ -5218,7 +5218,7 @@
                 <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
                     <span class="material-icons-round" style="font-size:16px">schedule</span>
                     ${data.horarioTexto || data.horario || ''}
-                    <span class="subject-schedule" style="display:none">${data.horario || ''}</span>
+                    <span class="subject-schedule" style="display:none">${data.horario || data.horarioTexto || ''}</span>
                 </div>
                 <div class="subject-progress">
                     <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso}%"></div>
