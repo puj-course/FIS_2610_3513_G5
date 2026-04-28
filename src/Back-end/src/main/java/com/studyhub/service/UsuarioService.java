@@ -116,6 +116,11 @@ public class UsuarioService {
             }
         }
 
+        if (campos.containsKey("temaColor")) {
+            String temaColor = campos.get("temaColor") != null ? campos.get("temaColor").toString().trim() : null;
+            usuario.setTemaColor(temaColor == null || temaColor.isEmpty() ? null : temaColor);
+        }
+
         return usuarioRepository.save(usuario);
     }
 
@@ -161,7 +166,8 @@ public class UsuarioService {
             asignaturasResumen.add(new AsignaturaResumenDTO(
                 asig.getNombre(),
                 notaService.obtenerNotasPorAsignatura(asig.getId()),
-                promedio
+                promedio,
+                promedio < 3.0
             ));
         }
 

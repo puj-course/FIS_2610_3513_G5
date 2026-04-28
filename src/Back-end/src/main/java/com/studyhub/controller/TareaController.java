@@ -60,10 +60,23 @@ public class TareaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tarea>> listarTareas(@RequestParam(required = false) Long usuarioId) {
-        List<Tarea> tareas = usuarioId != null
-                ? tareaRepository.findByAsignatura_Usuario_Id(usuarioId)
-                : tareaRepository.findAll();
+    public ResponseEntity<List<Tarea>> listarTareas(
+            @RequestParam(required = false) Long usuarioId,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+        List<Tarea> tareas;
+        
+        if (usuarioId != null && startDate != null && endDate != null) {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+            tareas = tareaRepository.findByAsignatura_Usuario_IdAndFechaEntregaBetween(usuarioId, start, end);
+        } else if (usuarioId != null) {
+            tareas = tareaRepository.findByAsignatura_Usuario_Id(usuarioId);
+        } else {
+            tareas = tareaRepository.findAll();
+        }
+        
         return new ResponseEntity<>(tareas, HttpStatus.OK);
     }
 
