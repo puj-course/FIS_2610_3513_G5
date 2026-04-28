@@ -5218,7 +5218,7 @@
                 <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
                     <span class="material-icons-round" style="font-size:16px">schedule</span>
                     ${data.horarioTexto || data.horario || ''}
-                    <span class="subject-schedule" style="display:none">${data.horario || ''}</span>
+                    <span class="subject-schedule" style="display:none">${data.horario || data.horarioTexto || ''}</span>
                 </div>
                 <div class="subject-progress">
                     <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso}%"></div>
@@ -5562,8 +5562,22 @@
                 const card = document.createElement('div');
                 card.className = `task-card ${tarea.estado ? '' : 'completed'}`;
                 card.innerHTML = `
-                    <div class="task-header">
-                        <span class="task-subject-tag">${tarea.asignatura?.nombre || 'General'}</span>
+                    <div class="task-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span class="task-subject-tag">${tarea.asignatura?.nombre || 'General'}</span>
+                            <span class="priority-badge" style="
+                                padding: 3px 8px;
+                                border-radius: 12px;
+                                font-size: 10px;
+                                font-weight: 700;
+                                text-transform: uppercase;
+                                background: ${tarea.prioridad === 'alta' ? '#FFEBEE' : tarea.prioridad === 'baja' ? '#E8F5E9' : '#FFF8E1'};
+                                color: ${tarea.prioridad === 'alta' ? '#D32F2F' : tarea.prioridad === 'baja' ? '#388E3C' : '#F57C00'};
+                                border: 1px solid ${tarea.prioridad === 'alta' ? '#FFCDD2' : tarea.prioridad === 'baja' ? '#C8E6C9' : '#FFE082'};
+                            ">
+                                ${tarea.prioridad === 'alta' ? 'Alta' : tarea.prioridad === 'baja' ? 'Baja' : 'Media'}
+                            </span>
+                        </div>
                         <div class="task-status-icon">
                             <span class="material-icons-round" style="color: ${tarea.estado ? '#FFA000' : '#4CAF50'}">
                                 ${tarea.estado ? 'pending_actions' : 'check_circle'}
@@ -5620,6 +5634,104 @@
             } catch (err) {
                 console.error(err);
                 showToast('Error al eliminar tarea');
+            }
+        }
+
+        let myChart = null;
+
+        async function renderPerformanceChartAndAlerts() {
+            const userId = getUserId();
+            if (!userId) return;
+
+            try {
+                const res = await fetch(`${API}/api/usuarios/${userId}/informe-academico`);
+                if (!res.ok) throw new Error('Error al obtener informe académico');
+                const data = await res.json();
+
+                const subjects = data.asignaturas || [];
+                const labels = subjects.map(s => s.nombre);
+                const averages = subjects.map(s => s.promedio);
+
+                // 1. Renderizar el Gráfico
+                const ctx = document.getElementById('averageChart')?.getContext('2d');
+                if (ctx) {
+                    if (myChart) {
+                        myChart.destroy();
+                    }
+                    myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Promedio',
+                                data: averages,
+                                backgroundColor: 'rgba(30, 136, 229, 0.6)',
+                                borderColor: 'rgba(30, 136, 229, 1)',
+                                borderWidth: 1,
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    min: 0,
+                                    max: 5,
+                                    ticks: {
+                                        stepSize: 1
+                                    },
+                                    grid: {
+                                        color: 'rgba(0,0,0,0.05)'
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `Promedio: ${context.parsed.y.toFixed(2)}`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 2. Renderizar Alertas de Riesgo
+                const riskAlertsContainer = document.getElementById('risk-alerts');
+                const riskList = document.getElementById('risk-list');
+                if (riskAlertsContainer && riskList) {
+                    const riskSubjects = subjects.filter(s => s.enRiesgo || s.promedio < 3.0);
+                    riskList.innerHTML = '';
+                    if (riskSubjects.length > 0) {
+                        riskAlertsContainer.style.display = 'block';
+                        riskSubjects.forEach(s => {
+                            const item = document.createElement('div');
+                            item.className = 'risk-item';
+                            item.style = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 14px;';
+                            item.innerHTML = `
+                                <span style="font-weight: 600; color: #333;">${s.nombre}</span>
+                                <span style="color: #d32f2f; font-weight: 700; background: #FFEBEE; padding: 2px 8px; border-radius: 6px;">${s.promedio.toFixed(2)}</span>
+                            `;
+                            riskList.appendChild(item);
+                        });
+                    } else {
+                        riskAlertsContainer.style.display = 'none';
+                    }
+                }
+
+            } catch (err) {
+                console.error('Error rendering chart and alerts:', err);
             }
         }
 
@@ -5685,6 +5797,8 @@
                         miniList.appendChild(item);
                     });
                 }
+                // 4. Renderizar gráfico de rendimiento y alertas
+                renderPerformanceChartAndAlerts();
             } catch (err) {
                 console.error("Error al renderizar resumen:", err);
             }
@@ -5888,6 +6002,7 @@
                     });
                     
                     fetchResumenUsuario();
+                    if (typeof renderPerformanceChartAndAlerts === 'function') renderPerformanceChartAndAlerts();
                     updateCardInProgress(key);
                     closeGradeModal();
                     showToast('Calificación guardada con éxito');
@@ -6799,17 +6914,20 @@ window.addEventListener('storage', (e) => {
         function loadSettingsData() {
             const userId = getUserId();
             if (!userId) return;
-            fetch(`${API_BASE}/${userId}`)
+            fetch(`${API}/api/usuarios`)
                 .then(r => r.json())
-                .then(u => {
-                    document.getElementById('settings-nombre').value = u.nombre || '';
-                    document.getElementById('settings-apellido').value = u.apellido || '';
-                    document.getElementById('settings-carrera').value = u.carrera || '';
-                    // Apply stored theme
-                    const storedColor = u.temaColor || localStorage.getItem('studyhub-theme') || 'blue';
-                    document.querySelectorAll('.color-swatch').forEach(s => {
-                        s.classList.toggle('selected', s.dataset.color === storedColor);
-                    });
+                .then(users => {
+                    const u = users.find(user => user.id == userId);
+                    if (u) {
+                        document.getElementById('settings-nombre').value = u.nombre || '';
+                        document.getElementById('settings-apellido').value = u.apellido || '';
+                        document.getElementById('settings-carrera').value = u.carrera || '';
+                        // Apply stored theme
+                        const storedColor = u.temaColor || localStorage.getItem('studyhub-theme') || 'blue';
+                        document.querySelectorAll('.color-swatch').forEach(s => {
+                            s.classList.toggle('selected', s.dataset.color === storedColor);
+                        });
+                    }
                 })
                 .catch(err => console.error('Error cargando settings:', err));
         }
@@ -6823,16 +6941,17 @@ window.addEventListener('storage', (e) => {
             const temaColor = document.querySelector('.color-swatch.selected')?.dataset.color || 'blue';
 
             try {
-                const res = await fetch(`${API_BASE}/${userId}`, {
-                    method: 'PATCH',
+                const res = await fetch(`${API}/api/usuarios/${userId}/perfil`, {
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, apellido, carrera, temaColor }),
                 });
                 if (!res.ok) throw new Error('Error');
-                const updated = await res.json();
+                const data = await res.json();
+                const updated = data.usuario;
                 // Update sidebar name
                 const nameEl = document.querySelector('.profile-name');
-                if (nameEl) nameEl.textContent = (updated.nombre || '') + ' ' + (updated.apellido || '');
+                if (nameEl && updated) nameEl.textContent = (updated.nombre || '') + ' ' + (updated.apellido || '');
                 applyThemeColor(temaColor);
                 localStorage.setItem('studyhub-theme', temaColor);
                 showToast('Configuración guardada exitosamente');
@@ -6983,7 +7102,12 @@ window.addEventListener('storage', (e) => {
                     <div class="cal-popup-task">
                         <span class="cal-popup-priority ${t.prioridad || 'media'}"></span>
                         <div class="cal-popup-info">
-                            <strong>${t.titulo}</strong><br>
+                            <strong>${t.titulo}</strong>
+                            <span style="font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 6px; text-transform: uppercase;
+                                background: ${t.prioridad === 'alta' ? '#FFEBEE' : t.prioridad === 'baja' ? '#E8F5E9' : '#FFF8E1'};
+                                color: ${t.prioridad === 'alta' ? '#D32F2F' : t.prioridad === 'baja' ? '#388E3C' : '#F57C00'};
+                            ">${t.prioridad === 'alta' ? 'Alta' : t.prioridad === 'baja' ? 'Baja' : 'Media'}</span>
+                            <br>
                             ${t.asignatura?.nombre || ''} · ${t.horaEntrega || ''}
                         </div>
                     </div>
