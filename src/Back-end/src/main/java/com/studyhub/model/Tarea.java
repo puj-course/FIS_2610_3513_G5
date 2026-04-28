@@ -32,7 +32,7 @@ public class Tarea {
     private boolean estado;
 
     /** Prioridad de la tarea: alta, media, baja */
-    @Column(nullable = false)
+    @Column
     private String prioridad = "media";
 
     public Tarea() {
