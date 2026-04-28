@@ -6608,17 +6608,20 @@ window.addEventListener('storage', (e) => {
         function loadSettingsData() {
             const userId = getUserId();
             if (!userId) return;
-            fetch(`${API_BASE}/${userId}`)
+            fetch(`${API}/api/usuarios`)
                 .then(r => r.json())
-                .then(u => {
-                    document.getElementById('settings-nombre').value = u.nombre || '';
-                    document.getElementById('settings-apellido').value = u.apellido || '';
-                    document.getElementById('settings-carrera').value = u.carrera || '';
-                    // Apply stored theme
-                    const storedColor = u.temaColor || localStorage.getItem('studyhub-theme') || 'blue';
-                    document.querySelectorAll('.color-swatch').forEach(s => {
-                        s.classList.toggle('selected', s.dataset.color === storedColor);
-                    });
+                .then(users => {
+                    const u = users.find(user => user.id == userId);
+                    if (u) {
+                        document.getElementById('settings-nombre').value = u.nombre || '';
+                        document.getElementById('settings-apellido').value = u.apellido || '';
+                        document.getElementById('settings-carrera').value = u.carrera || '';
+                        // Apply stored theme
+                        const storedColor = u.temaColor || localStorage.getItem('studyhub-theme') || 'blue';
+                        document.querySelectorAll('.color-swatch').forEach(s => {
+                            s.classList.toggle('selected', s.dataset.color === storedColor);
+                        });
+                    }
                 })
                 .catch(err => console.error('Error cargando settings:', err));
         }
@@ -6632,16 +6635,17 @@ window.addEventListener('storage', (e) => {
             const temaColor = document.querySelector('.color-swatch.selected')?.dataset.color || 'blue';
 
             try {
-                const res = await fetch(`${API_BASE}/${userId}`, {
-                    method: 'PATCH',
+                const res = await fetch(`${API}/api/usuarios/${userId}/perfil`, {
+                    method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, apellido, carrera, temaColor }),
                 });
                 if (!res.ok) throw new Error('Error');
-                const updated = await res.json();
+                const data = await res.json();
+                const updated = data.usuario;
                 // Update sidebar name
                 const nameEl = document.querySelector('.profile-name');
-                if (nameEl) nameEl.textContent = (updated.nombre || '') + ' ' + (updated.apellido || '');
+                if (nameEl && updated) nameEl.textContent = (updated.nombre || '') + ' ' + (updated.apellido || '');
                 applyThemeColor(temaColor);
                 localStorage.setItem('studyhub-theme', temaColor);
                 showToast('Configuración guardada exitosamente');
