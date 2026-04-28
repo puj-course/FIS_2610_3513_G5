@@ -31,17 +31,22 @@ public class Tarea {
     @Column(nullable = false)
     private boolean estado;
 
+    /** Prioridad de la tarea: alta, media, baja */
+    @Column
+    private String prioridad = "media";
+
     public Tarea() {
     }
 
     public Tarea(String titulo, Asignatura asignatura, LocalDate fechaEntrega,
-                 LocalTime horaEntrega, String descripcion, boolean estado) {
+                 LocalTime horaEntrega, String descripcion, boolean estado, String prioridad) {
         this.titulo = titulo;
         this.asignatura = asignatura;
         this.fechaEntrega = fechaEntrega;
         this.horaEntrega = horaEntrega;
         this.descripcion = descripcion;
         this.estado = estado;
+        this.prioridad = prioridad != null ? prioridad : "media";
     }
 
     public Long getId() { return id; }
@@ -65,6 +70,9 @@ public class Tarea {
     public boolean isEstado() { return estado; }
     public void setEstado(boolean estado) { this.estado = estado; }
 
+    public String getPrioridad() { return prioridad; }
+    public void setPrioridad(String prioridad) { this.prioridad = prioridad != null ? prioridad : "media"; }
+
     @Override
     public String toString() {
         return "Tarea{" +
@@ -74,6 +82,7 @@ public class Tarea {
                 ", fechaEntrega=" + fechaEntrega +
                 ", horaEntrega=" + horaEntrega +
                 ", descripcion='" + descripcion + '\'' +
+                ", prioridad='" + prioridad + '\'' +
                 ", estado=" + estado +
                 '}';
     }
