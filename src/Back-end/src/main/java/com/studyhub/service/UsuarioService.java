@@ -4,6 +4,7 @@ import com.studyhub.dto.AsignaturaResumenDTO;
 import com.studyhub.dto.ResumenAcademicoDTO;
 import com.studyhub.dto.TareaResumenDTO;
 import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.EstadisticasDTO;
 import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
 import com.studyhub.model.Usuario;
@@ -14,11 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 
 
 @Service
@@ -31,16 +37,19 @@ public class UsuarioService {
     private final NotaService notaService;
     private final TareaRepository tareaRepository;
     private final PasswordEncryptionStrategy encryptionStrategy;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public UsuarioService(PasswordEncryptionStrategy encryptionStrategy,
                           AsignaturaService asignaturaService,
                           NotaService notaService,
-                          TareaRepository tareaRepository) {
+                          TareaRepository tareaRepository,
+                          ObjectMapper objectMapper) {
         this.encryptionStrategy = encryptionStrategy;
         this.asignaturaService  = asignaturaService;
         this.notaService        = notaService;
         this.tareaRepository    = tareaRepository;
+        this.objectMapper       = objectMapper;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -212,5 +221,65 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    public EstadisticasDTO obtenerEstadisticas(Long usuarioId) {
+        List<Asignatura> asignaturas = asignaturaService.findByUserId(usuarioId);
+        
+        int totalMaterias = asignaturas.size();
+        int totalCreditos = 0;
+        int materiasEnRiesgo = 0;
+        double sumaPromedios = 0.0;
+        Map<String, Double> promediosPorMateria = new HashMap<>();
 
+        for (Asignatura asig : asignaturas) {
+            double promedio = notaService.calcularPromedio(asig.getId());
+            promediosPorMateria.put(asig.getNombre(), promedio);
+            
+            sumaPromedios += promedio;
+            totalCreditos += asig.getCreditos();
+            
+            if (promedio < 3.0 && promedio > 0) {
+                materiasEnRiesgo++;
+            }
+        }
+
+        double promedioGlobal = totalMaterias > 0 ? (sumaPromedios / totalMaterias) : 0.0;
+
+        return new EstadisticasDTO(
+            Math.round(promedioGlobal * 100.0) / 100.0,
+            totalMaterias,
+            materiasEnRiesgo,
+            totalCreditos,
+            promediosPorMateria
+        );
+    }
+
+    public Map<String, Object> obtenerPreferencias(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+        
+        String prefs = usuario.getPreferencias();
+        if (prefs == null || prefs.trim().isEmpty()) {
+            return new HashMap<>(); // Preferencias por defecto
+        }
+        
+        try {
+            return objectMapper.readValue(prefs, new TypeReference<Map<String, Object>>() {});
+        } catch (JsonProcessingException e) {
+            System.err.println("Error al parsear preferencias JSON: " + e.getMessage());
+            return new HashMap<>();
+        }
+    }
+
+    public void guardarPreferencias(Long usuarioId, Map<String, Object> preferencias) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+        
+        try {
+            String prefsJson = objectMapper.writeValueAsString(preferencias);
+            usuario.setPreferencias(prefsJson);
+            usuarioRepository.save(usuario);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error al serializar preferencias JSON", e);
+        }
+    }
 }

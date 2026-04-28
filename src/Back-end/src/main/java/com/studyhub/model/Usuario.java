@@ -89,4 +89,10 @@ public class Usuario {
     public void setTokenRecuperacion(String tokenRecuperacion) { this.tokenRecuperacion = tokenRecuperacion; }
     public LocalDateTime getTokenExpiracion() { return tokenExpiracion; }
     public void setTokenExpiracion(LocalDateTime tokenExpiracion) { this.tokenExpiracion = tokenExpiracion; }
+
+    @Column(columnDefinition = "TEXT")
+    private String preferencias;
+
+    public String getPreferencias() { return preferencias; }
+    public void setPreferencias(String preferencias) { this.preferencias = preferencias; }
 }

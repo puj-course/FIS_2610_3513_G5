@@ -14,6 +14,7 @@
     <!-- PDF Generation Libraries (HU-27) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
 
     
@@ -1986,7 +1987,129 @@
             display: none;
             border-left: 4px solid #E53935;
         }
+        
+        /* ========== HORARIO SEMANAL (HU-30) ========== */
+        .horario-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            animation: fadeIn 0.4s ease;
+        }
 
+        .horario-view.active {
+            display: flex;
+        }
+
+        /* Contenedor con scroll horizontal para pantallas pequeñas */
+        .horario-scroll-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Grilla principal: primera columna fija para horas */
+        .horario-grid {
+            display: grid;
+            grid-template-columns: 56px repeat(6, 1fr);
+            min-width: 540px;
+            width: 100%;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        /* Cabecera de días */
+        .horario-header-cell {
+            padding: 10px 4px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--blue-100);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .horario-header-cell.hora-corner {
+            background: var(--gray-50);
+            border-right: 1px solid var(--gray-200);
+        }
+
+        /* Celda de hora (columna izquierda) */
+        .horario-hora-cell {
+            padding: 0 6px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--gray-400);
+            white-space: nowrap;
+            height: 52px;
+            padding-top: 6px;
+            border-right: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--gray-100);
+            background: var(--gray-50);
+        }
+
+        /* Celda de día (cuerpo de la grilla) */
+        .horario-dia-cell {
+            position: relative;
+            height: 52px;
+            border-bottom: 1px solid var(--gray-100);
+            border-right: 1px solid var(--gray-100);
+        }
+
+        .horario-dia-cell:last-child {
+            border-right: none;
+        }
+
+        /* Estado vacío de la grilla */
+        .horario-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .horario-empty .material-icons-round {
+            font-size: 48px;
+            color: var(--gray-300);
+        }
+
+        .horario-empty-text {
+            font-size: 14px;
+            color: var(--gray-400);
+            max-width: 260px;
+            line-height: 1.5;
+        }
+
+        /* Responsive: en móvil mostrar solo 3 días */
+        @media (max-width: 600px) {
+            .horario-grid {
+                grid-template-columns: 48px repeat(6, minmax(60px, 1fr));
+            }
+
+            .horario-header-cell {
+                font-size: 9px;
+                padding: 8px 2px;
+            }
+
+            .horario-hora-cell {
+                font-size: 9px;
+                padding-right: 4px;
+            }
+        }
+        
         /* ========== VISTAS PRINCIPALES ========== */
         .dashboard-view,
         .grades-view,
@@ -2865,6 +2988,10 @@
                         <span class="material-icons-round">menu_book</span>
                         Mis Materias
                     </div>
+                    <div class="nav-item" id="nav-horario">
+                        <span class="material-icons-round">calendar_view_week</span>
+                        Horario Semanal
+                    </div>
                     <div class="nav-item" id="nav-tasks">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
@@ -2969,6 +3096,25 @@
                                     <p class="grades-empty-text">No hay tareas próximas</p>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Gráfico de Rendimiento (HU-374) -->
+                        <div class="dashboard-tasks-card" style="margin-top: 24px;">
+                            <div class="section-header">
+                                <h3 class="section-title" style="font-size: 16px;">Rendimiento por Materia</h3>
+                            </div>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="averageChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Alertas de Riesgo (HU-377) -->
+                        <div id="risk-alerts" class="risk-alerts-container" style="display: none; margin-top: 24px; background: #FFF3E0; border-radius: 12px; padding: 16px; border: 1px solid #FFE0B2;">
+                            <div class="risk-alerts-header" style="display: flex; align-items: center; gap: 8px; color: #E65100; font-weight: 600; margin-bottom: 12px;">
+                                <span class="material-icons-round">warning</span>
+                                Materias que requieren atención (Promedio < 3.0)
+                            </div>
+                            <div id="risk-list" class="risk-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
                         </div>
 
                         <!-- Acciones Rapidas (Simplificadas) -->
@@ -3285,6 +3431,46 @@
                     <!-- Paginación dinámica -->
                 </div>
             </div><!-- /.resenas-view -->
+            <!-- ══════════════════════════════════════ -->
+            <!--  VISTA: HORARIO SEMANAL (HU-30)       -->
+            <!-- ══════════════════════════════════════ -->
+            <div class="horario-view grades-view" id="horario-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <h2 class="grades-view-title">Horario Semanal</h2>
+                        <p class="grades-view-subtitle">Visualiza tus materias distribuidas por día y hora</p>
+                    </div>
+                </div>
+
+                <!-- Estado vacío: visible cuando no hay datos -->
+                <div id="horario-empty" class="horario-empty" style="display: none;">
+                    <span class="material-icons-round">calendar_view_week</span>
+                    <p class="horario-empty-text">
+                        Aún no tienes materias con horario configurado.<br>
+                        Ve a <strong>Mis Materias</strong> y asigna días y horas a tus clases.
+                    </p>
+                </div>
+
+                <!-- Grilla del horario -->
+                <div class="horario-scroll-wrapper" id="horario-grid-wrapper">
+                    <div class="horario-grid" id="horario-grid">
+                        <!-- Cabecera: esquina vacía + días -->
+                        <div class="horario-header-cell hora-corner"></div>
+                        <div class="horario-header-cell">Lun</div>
+                        <div class="horario-header-cell">Mar</div>
+                        <div class="horario-header-cell">Mié</div>
+                        <div class="horario-header-cell">Jue</div>
+                        <div class="horario-header-cell">Vie</div>
+                        <div class="horario-header-cell">Sáb</div>
+
+                        <!-- Las filas de horas (6:00–22:00) se generan desde JS -->
+                        <!-- id="horario-filas" es el ancla donde se insertan -->
+                    </div>
+                </div>
+            </div><!-- /.horario-view -->
 
             <!-- Vista: Configuración -->
             <div class="settings-view" id="settings-view">
@@ -3760,7 +3946,9 @@
     </div>
 
     <script>
-        const API      = window.location.origin; 
+        const API      = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                         ? 'https://studyhub-c2ft.onrender.com' 
+                         : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
 
         /**
@@ -3846,6 +4034,7 @@
         const starRating            = document.getElementById('star-rating');
         const resenaRatingValue     = document.getElementById('resena-rating-value');
         const resenasPagination     = document.getElementById('resenas-pagination');
+        const horarioView = document.getElementById('horario-view');
 
         const META_APROBACION  = 3.0;
 
@@ -4779,6 +4968,8 @@
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
             subjectForm.reset();
+            // Limpiar checkboxes de días (HU-30)
+            document.querySelectorAll('.dia-checkbox').forEach(cb => cb.checked = false);
             clearErrors();
         }
 
@@ -6983,5 +7174,43 @@ window.addEventListener('storage', (e) => {
             window.WebSocket.prototype = _WebSocket.prototype;
         })();
     </script>
+    <!-- Modal Personalización (HU-31) -->
+    <div class="modal-overlay" id="config-modal-overlay">
+        <div class="modal-card customization-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Personalizar Dashboard</h3>
+                <button class="modal-close" id="config-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="config-section">
+                    <h4>Tema Visual</h4>
+                    <select id="config-tema" class="form-input">
+                        <option value="claro">Modo Claro</option>
+                        <option value="oscuro">Modo Oscuro</option>
+                    </select>
+                </div>
+                <div class="config-section">
+                    <h4>Color de Acento</h4>
+                    <div class="color-grid">
+                        <div class="color-swatch" data-color="#1E88E5" style="background: #1E88E5;"></div>
+                        <div class="color-swatch" data-color="#43A047" style="background: #43A047;"></div>
+                        <div class="color-swatch" data-color="#E53935" style="background: #E53935;"></div>
+                        <div class="color-swatch" data-color="#FB8C00" style="background: #FB8C00;"></div>
+                        <div class="color-swatch" data-color="#8E24AA" style="background: #8E24AA;"></div>
+                        <div class="color-swatch" data-color="#00ACC1" style="background: #00ACC1;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="config-btn-reset">Restablecer</button>
+                <button class="btn-cancel" id="config-btn-cancel">Cancelar</button>
+                <button class="btn-save" id="config-btn-save">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/configuracion.js"></script>
+    <script src="js/horario.js"></script>
 </body>
 </html>
