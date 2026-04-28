@@ -9,6 +9,8 @@ import com.studyhub.service.NotaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.studyhub.dto.horarioDTO;
+import com.studyhub.service.facade.horarioFacade;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,15 +25,17 @@ public class AsignaturaController {
     private final AsignaturaService asignaturaService;
     private final UsuarioRepository usuarioRepository;
     private final NotaService notaService;
+    private final horarioFacade horarioFacade;
 
     public AsignaturaController(AsignaturaRepository asignaturaRepository,
                                 AsignaturaService asignaturaService,
                                 UsuarioRepository usuarioRepository,
-                                NotaService notaService) {
+                                NotaService notaService, horarioFacade horarioFacade) {
         this.asignaturaRepository = asignaturaRepository;
         this.asignaturaService    = asignaturaService;
         this.usuarioRepository    = usuarioRepository;
         this.notaService          = notaService;
+        this.horarioFacade        = horarioFacade;
     }
 
     @PostMapping
@@ -58,6 +62,12 @@ public class AsignaturaController {
         asignatura.setCodigo(body.get("codigo").toString());
         asignatura.setProfesor(body.get("profesor").toString());
         asignatura.setHorarioTexto(body.get("horario").toString());
+        if (body.get("diasClase") != null)
+            asignatura.setDiasClase(body.get("diasClase").toString());
+        if (body.get("horaInicio") != null)
+            asignatura.setHoraInicio(body.get("horaInicio").toString());
+        if (body.get("horaFin") != null)
+            asignatura.setHoraFin(body.get("horaFin").toString());
         asignatura.setCreditos(Integer.parseInt(body.get("creditos").toString()));
         asignatura.setPeriodo(body.get("periodo").toString());
         asignatura.setUsuario(usuario);
@@ -116,5 +126,11 @@ public class AsignaturaController {
         respuesta.put("asignatura", asignatura.getNombre());
         respuesta.put("promedio", promedio);
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
+    
+    @GetMapping("/horario")
+    public ResponseEntity<List<horarioDTO>> obtenerHorario(@RequestParam Long usuarioId) {
+        List<horarioDTO> horario = horarioFacade.obtenerHorarioCompleto(usuarioId);
+        return new ResponseEntity<>(horario, HttpStatus.OK);
     }
 }
