@@ -1993,10 +1993,105 @@
         .calc-selector-view,
         .calc-view,
         .tasks-view,
-        .subjects-view {
+        .subjects-view,
+        .settings-view {
             display: none;
             animation: fadeIn 0.4s ease;
         }
+
+        /* ========== SETTINGS VIEW ========== */
+        .settings-view.active { display: flex; flex-direction: column; gap: 24px; }
+        .settings-card { background: var(--white); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
+        .settings-card h3 { font-size: 16px; font-weight: 700; color: var(--gray-700); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .settings-card h3 .material-icons-round { font-size: 22px; color: var(--blue-500); }
+        .settings-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .settings-form-group { margin-bottom: 16px; }
+        .settings-form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+        .settings-form-group input, .settings-form-group select {
+            width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm); font-size: 14px; font-family: 'Inter', sans-serif;
+            color: var(--gray-700); background: var(--gray-50); outline: none; transition: all 0.2s;
+        }
+        .settings-form-group input:focus, .settings-form-group select:focus {
+            border-color: var(--blue-400); background: var(--white); box-shadow: 0 0 0 3px rgba(66,165,245,0.15);
+        }
+        .color-palette { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        .color-swatch {
+            width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid transparent;
+            transition: all 0.25s ease; position: relative;
+        }
+        .color-swatch:hover { transform: scale(1.15); }
+        .color-swatch.selected { border-color: var(--gray-700); box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+        .color-swatch.selected::after {
+            content: '\\e876'; font-family: 'Material Icons Round'; font-size: 20px;
+            color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .settings-save-btn {
+            padding: 12px 28px; border: none; border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+            color: var(--white); font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif;
+            cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(21,101,192,0.35); margin-top: 8px;
+        }
+        .settings-save-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(21,101,192,0.45); }
+
+        /* ========== CALENDAR PRIORITY DOTS ========== */
+        .calendar-day.has-tasks { position: relative; cursor: pointer; }
+        .cal-dots { display: flex; gap: 2px; justify-content: center; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); }
+        .cal-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .cal-dot.alta { background: #E53935; }
+        .cal-dot.media { background: #FFB300; }
+        .cal-dot.baja { background: #43A047; }
+        .cal-day-popup {
+            position: fixed; z-index: 1100; background: var(--white); border-radius: var(--radius-md);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18); border: 1px solid var(--gray-200);
+            padding: 16px; min-width: 240px; max-width: 320px; animation: fadeInUp 0.2s ease;
+        }
+        .cal-day-popup h4 { font-size: 14px; font-weight: 700; color: var(--gray-700); margin-bottom: 10px; }
+        .cal-popup-task { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--gray-100); }
+        .cal-popup-task:last-child { border-bottom: none; }
+        .cal-popup-priority { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .cal-popup-priority.alta { background: #E53935; }
+        .cal-popup-priority.media { background: #FFB300; }
+        .cal-popup-priority.baja { background: #43A047; }
+        .cal-popup-info { font-size: 12px; color: var(--gray-600); }
+        .cal-popup-info strong { color: var(--gray-700); }
+        .cal-popup-close { position: absolute; top: 8px; right: 8px; background: none; border: none; cursor: pointer; color: var(--gray-400); }
+
+        /* ========== SCHEDULE COLORED CELLS ========== */
+        .schedule-cell {
+            font-size: 9px; font-weight: 600; border-radius: 4px; padding: 2px 4px;
+            background: var(--blue-50); color: var(--blue-700); line-height: 1.2; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; max-width: 60px;
+        }
+
+        /* ========== HORARIO SELECTORS IN MODAL ========== */
+        .days-checkbox-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .day-checkbox { display: none; }
+        .day-label {
+            padding: 8px 14px; border: 1.5px solid var(--gray-200); border-radius: 20px;
+            font-size: 12px; font-weight: 600; color: var(--gray-500); cursor: pointer;
+            transition: all 0.2s; font-family: 'Inter', sans-serif; user-select: none;
+        }
+        .day-checkbox:checked + .day-label {
+            background: var(--blue-500); color: var(--white); border-color: var(--blue-500);
+        }
+
+        /* ========== TASK PRIORITY SELECTOR ========== */
+        .priority-options { display: flex; gap: 10px; }
+        .priority-option { display: none; }
+        .priority-label {
+            display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+            border: 1.5px solid var(--gray-200); border-radius: 20px; font-size: 13px;
+            font-weight: 500; color: var(--gray-600); cursor: pointer; transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .priority-label .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .priority-label .dot.alta { background: #E53935; }
+        .priority-label .dot.media { background: #FFB300; }
+        .priority-label .dot.baja { background: #43A047; }
+        .priority-option:checked + .priority-label { border-color: var(--blue-500); background: var(--blue-50); color: var(--blue-700); }
 
         .dashboard-view.active { display: block; }
         .calc-view.active { display: block; }
@@ -2786,7 +2881,7 @@
                         <span class="material-icons-round">rate_review</span>
                         Reseñas
                     </div>
-                    <div class="nav-item">
+                    <div class="nav-item" id="nav-settings">
                         <span class="material-icons-round">settings</span>
                         Configuración
                     </div>
@@ -3191,6 +3286,71 @@
                 </div>
             </div><!-- /.resenas-view -->
 
+            <!-- Vista: Configuración -->
+            <div class="settings-view" id="settings-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <h2 class="grades-view-title">Configuración</h2>
+                        <p class="grades-view-subtitle">Personaliza tu perfil y la apariencia de StudyHub</p>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3><span class="material-icons-round">person</span> Información Personal</h3>
+                    <div class="settings-form-row">
+                        <div class="settings-form-group">
+                            <label for="settings-nombre">Nombre</label>
+                            <input type="text" id="settings-nombre" placeholder="Tu nombre">
+                        </div>
+                        <div class="settings-form-group">
+                            <label for="settings-apellido">Apellido</label>
+                            <input type="text" id="settings-apellido" placeholder="Tu apellido">
+                        </div>
+                    </div>
+                    <div class="settings-form-group">
+                        <label for="settings-carrera">Carrera</label>
+                        <select id="settings-carrera">
+                            <option value="">Selecciona tu carrera</option>
+                            <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+                            <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                            <option value="Ingeniería Civil">Ingeniería Civil</option>
+                            <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+                            <option value="Medicina">Medicina</option>
+                            <option value="Derecho">Derecho</option>
+                            <option value="Administración de Empresas">Administración de Empresas</option>
+                            <option value="Economía">Economía</option>
+                            <option value="Comunicación Social">Comunicación Social</option>
+                            <option value="Psicología">Psicología</option>
+                            <option value="Arquitectura">Arquitectura</option>
+                            <option value="Contaduría">Contaduría</option>
+                            <option value="Ciencia Política">Ciencia Política</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                    </div>
+                    <button class="settings-save-btn" id="settings-save-profile" onclick="saveSettingsProfile()">
+                        <span class="material-icons-round">save</span> Guardar Cambios
+                    </button>
+                </div>
+
+                <div class="settings-card">
+                    <h3><span class="material-icons-round">palette</span> Color del Tema</h3>
+                    <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Elige un color para personalizar tu interfaz</p>
+                    <div class="color-palette" id="color-palette">
+                        <div class="color-swatch selected" data-color="blue" style="background: linear-gradient(135deg, #1565C0, #1E88E5);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="purple" style="background: linear-gradient(135deg, #7B1FA2, #AB47BC);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="green" style="background: linear-gradient(135deg, #2E7D32, #43A047);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="orange" style="background: linear-gradient(135deg, #E65100, #FB8C00);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="red" style="background: linear-gradient(135deg, #C62828, #EF5350);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="teal" style="background: linear-gradient(135deg, #00695C, #26A69A);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="pink" style="background: linear-gradient(135deg, #AD1457, #EC407A);" onclick="selectThemeColor(this)"></div>
+                        <div class="color-swatch" data-color="dark" style="background: linear-gradient(135deg, #212121, #424242);" onclick="selectThemeColor(this)"></div>
+                    </div>
+                </div>
+            </div><!-- /.settings-view -->
+
         </main>
 
         <aside class="sidebar-right">
@@ -3237,7 +3397,7 @@
                     </button>
                 </div>
                 <div class="schedule-container">
-                    <table class="schedule-table">
+                    <table class="schedule-table" id="schedule-table">
                         <thead>
                             <tr>
                                 <th>Hora</th>
@@ -3248,15 +3408,8 @@
                                 <th>Vie</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr><td class="time-col">7:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">8:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">9:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">10:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">11:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">12:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">13:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
-                            <tr><td class="time-col">14:00</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                        <tbody id="schedule-tbody">
+                            <!-- Filled dynamically by renderScheduleTable() -->
                         </tbody>
                     </table>
                 </div>
@@ -3269,60 +3422,15 @@
                         Calendario
                     </div>
                 </div>
-                <div class="calendar-widget">
+                <div class="calendar-widget" id="calendar-widget">
                     <div class="calendar-nav">
-                        <button class="calendar-nav-btn"><span class="material-icons-round">chevron_left</span></button>
-                        <span class="calendar-month">Febrero 2026</span>
-                        <button class="calendar-nav-btn"><span class="material-icons-round">chevron_right</span></button>
+                        <button class="calendar-nav-btn" id="cal-prev"><span class="material-icons-round">chevron_left</span></button>
+                        <span class="calendar-month" id="cal-month-label">Abril 2026</span>
+                        <button class="calendar-nav-btn" id="cal-next"><span class="material-icons-round">chevron_right</span></button>
                     </div>
-                    <div class="calendar-grid">
-                        <div class="calendar-day-name">Lu</div>
-                        <div class="calendar-day-name">Ma</div>
-                        <div class="calendar-day-name">Mi</div>
-                        <div class="calendar-day-name">Ju</div>
-                        <div class="calendar-day-name">Vi</div>
-                        <div class="calendar-day-name">Sa</div>
-                        <div class="calendar-day-name">Do</div>
-                        <div class="calendar-day other-month"></div>
-                        <div class="calendar-day other-month"></div>
-                        <div class="calendar-day other-month"></div>
-                        <div class="calendar-day other-month"></div>
-                        <div class="calendar-day other-month"></div>
-                        <div class="calendar-day other-month"></div>
-                        <div class="calendar-day">1</div>
-                        <div class="calendar-day">2</div>
-                        <div class="calendar-day">3</div>
-                        <div class="calendar-day">4</div>
-                        <div class="calendar-day">5</div>
-                        <div class="calendar-day has-event">6</div>
-                        <div class="calendar-day">7</div>
-                        <div class="calendar-day">8</div>
-                        <div class="calendar-day">9</div>
-                        <div class="calendar-day">10</div>
-                        <div class="calendar-day">11</div>
-                        <div class="calendar-day">12</div>
-                        <div class="calendar-day today">13</div>
-                        <div class="calendar-day">14</div>
-                        <div class="calendar-day">15</div>
-                        <div class="calendar-day">16</div>
-                        <div class="calendar-day">17</div>
-                        <div class="calendar-day">18</div>
-                        <div class="calendar-day has-event">19</div>
-                        <div class="calendar-day">20</div>
-                        <div class="calendar-day">21</div>
-                        <div class="calendar-day">22</div>
-                        <div class="calendar-day">23</div>
-                        <div class="calendar-day">24</div>
-                        <div class="calendar-day">25</div>
-                        <div class="calendar-day">26</div>
-                        <div class="calendar-day">27</div>
-                        <div class="calendar-day">28</div>
-                        <div class="calendar-day other-month"></div>
+                    <div class="calendar-grid" id="cal-grid">
+                        <!-- Filled dynamically by renderCalendar() -->
                     </div>
-                    <button class="fab-option" id="add-apunte" onclick="openNewNoteModal()">
-                        <span class="material-icons-round">edit_note</span>
-                        Agregar Nota Rápida
-                    </button>
                 </div>
             </div>
         </aside>
@@ -3371,9 +3479,45 @@
                         <div class="form-error" id="error-professor">Este campo es obligatorio</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="subject-schedule">Horario <span class="required">*</span></label>
-                        <input class="form-input" type="text" id="subject-schedule" placeholder="Ej: Lun y Mié 10:00 - 12:00" required>
-                        <div class="form-error" id="error-schedule">Este campo es obligatorio</div>
+                        <label class="form-label">Días de clase <span class="required">*</span></label>
+                        <div class="days-checkbox-row">
+                            <input type="checkbox" class="day-checkbox" id="day-lun" value="Lun"><label class="day-label" for="day-lun">Lun</label>
+                            <input type="checkbox" class="day-checkbox" id="day-mar" value="Mar"><label class="day-label" for="day-mar">Mar</label>
+                            <input type="checkbox" class="day-checkbox" id="day-mie" value="Mié"><label class="day-label" for="day-mie">Mié</label>
+                            <input type="checkbox" class="day-checkbox" id="day-jue" value="Jue"><label class="day-label" for="day-jue">Jue</label>
+                            <input type="checkbox" class="day-checkbox" id="day-vie" value="Vie"><label class="day-label" for="day-vie">Vie</label>
+                        </div>
+                        <div class="form-error" id="error-days">Selecciona al menos un día</div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="subject-hora-inicio">Hora Inicio <span class="required">*</span></label>
+                            <select class="form-select" id="subject-hora-inicio" required>
+                                <option value="" disabled selected>Inicio</option>
+                                <option value="7:00">7:00</option><option value="8:00">8:00</option>
+                                <option value="9:00">9:00</option><option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option><option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option><option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option><option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option><option value="18:00">18:00</option>
+                                <option value="19:00">19:00</option><option value="20:00">20:00</option>
+                            </select>
+                            <div class="form-error" id="error-hora-inicio">Selecciona hora de inicio</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="subject-hora-fin">Hora Fin <span class="required">*</span></label>
+                            <select class="form-select" id="subject-hora-fin" required>
+                                <option value="" disabled selected>Fin</option>
+                                <option value="8:00">8:00</option><option value="9:00">9:00</option>
+                                <option value="10:00">10:00</option><option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option><option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option><option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option><option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option><option value="19:00">19:00</option>
+                                <option value="20:00">20:00</option><option value="21:00">21:00</option>
+                            </select>
+                            <div class="form-error" id="error-hora-fin">Selecciona hora de fin</div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="subject-semester">Periodo / Semestre <span class="required">*</span></label>
@@ -3440,6 +3584,17 @@
                     <div class="form-group">
                         <label class="form-label">Descripción</label>
                         <input class="form-input" id="task-description" placeholder="Detalles de la tarea">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prioridad</label>
+                        <div class="priority-options">
+                            <input type="radio" name="task-priority" class="priority-option" id="priority-alta" value="alta">
+                            <label class="priority-label" for="priority-alta"><span class="dot alta"></span> Alta</label>
+                            <input type="radio" name="task-priority" class="priority-option" id="priority-media" value="media" checked>
+                            <label class="priority-label" for="priority-media"><span class="dot media"></span> Media</label>
+                            <input type="radio" name="task-priority" class="priority-option" id="priority-baja" value="baja">
+                            <label class="priority-label" for="priority-baja"><span class="dot baja"></span> Baja</label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -4579,7 +4734,8 @@
         });
 
         function hideAllViews() {
-            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView];
+            const settingsView = document.getElementById('settings-view');
+            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView, settingsView];
             views.forEach(v => { if (v) v.classList.remove('active'); });
             // Reset nav active class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -4654,6 +4810,7 @@
             document.getElementById('task-date').value = '';
             document.getElementById('task-time').value = '';
             document.getElementById('task-description').value = '';
+            document.getElementById('priority-media').checked = true;
         }
 
         // ══════════════════════════════════════════════════════════════
@@ -4799,7 +4956,8 @@
                 { id: 'subject-code',      errorId: 'error-code' },
                 { id: 'subject-credits',   errorId: 'error-credits' },
                 { id: 'subject-professor', errorId: 'error-professor' },
-                { id: 'subject-schedule',  errorId: 'error-schedule' },
+                { id: 'subject-hora-inicio', errorId: 'error-hora-inicio' },
+                { id: 'subject-hora-fin',    errorId: 'error-hora-fin' },
                 { id: 'subject-semester',  errorId: 'error-semester' },
             ];
             fields.forEach(({ id, errorId }) => {
@@ -4810,6 +4968,12 @@
                     isValid = false;
                 }
             });
+            // Validate days
+            const selectedDays = document.querySelectorAll('.day-checkbox:checked');
+            if (selectedDays.length === 0) {
+                document.getElementById('error-days').classList.add('visible');
+                isValid = false;
+            }
             const credits = document.getElementById('subject-credits');
             if (credits.value && (isNaN(credits.value) || credits.value < 1 || credits.value > 10)) {
                 credits.classList.add('error');
@@ -4862,7 +5026,8 @@
                 </div>
                 <div style="font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px;margin-bottom:16px">
                     <span class="material-icons-round" style="font-size:16px">schedule</span>
-                    ${data.horarioTexto}
+                    ${data.horarioTexto || data.horario || ''}
+                    <span class="subject-schedule" style="display:none">${data.horario || ''}</span>
                 </div>
                 <div class="subject-progress">
                     <div class="subject-progress-bar" style="background:${color.gradient};width:${data.progreso}%"></div>
@@ -5143,6 +5308,10 @@
                 
                 // Actualizar selects de materias en modales
                 updateSubjectSelects(asignaturas);
+                // Render schedule from subjects' horario
+                if (typeof renderScheduleTable === 'function') renderScheduleTable();
+                // Load calendar tasks for current month
+                if (typeof loadCalendarTasks === 'function') loadCalendarTasks();
             } catch (err) {
                 console.error("Error fetching asignaturas:", err);
             }
@@ -5359,12 +5528,16 @@
             if (!validateSubjectForm()) return;
 
             const userId = getUserId();
+            const selectedDays = [...document.querySelectorAll('.day-checkbox:checked')].map(cb => cb.value);
+            const horaInicio = document.getElementById('subject-hora-inicio').value;
+            const horaFin = document.getElementById('subject-hora-fin').value;
+            const horarioStr = selectedDays.join(',') + '|' + horaInicio + '-' + horaFin;
             const payload = {
                 nombre:    document.getElementById('subject-name').value.trim(),
                 codigo:    document.getElementById('subject-code').value.trim().toUpperCase(),
                 creditos:  parseInt(document.getElementById('subject-credits').value),
                 profesor:  document.getElementById('subject-professor').value.trim(),
-                horario:   document.getElementById('subject-schedule').value.trim(),
+                horario:   horarioStr,
                 periodo:   document.getElementById('subject-semester').value,
                 usuarioId: userId ? parseInt(userId) : null,
             };
@@ -5381,6 +5554,7 @@
                 closeModal();
                 showToast(`"${json.asignatura.nombre}" agregada exitosamente`);
                 updateSubjectCount();
+                renderScheduleTable();
                 // Si estamos en el selector de la calculadora, refrescarlo
                 if (calcSelectorView.classList.contains('active')) openCalcSelector();
             } catch (err) {
@@ -5410,6 +5584,7 @@
                 fechaEntrega,
                 horaEntrega,
                 descripcion: descripcion || null,
+                prioridad: document.querySelector('input[name="task-priority"]:checked')?.value || 'media',
             };
 
             console.log('Enviando tarea:', JSON.stringify(payload), 'a:', `${API}/api/tareas`);
@@ -6413,6 +6588,361 @@ window.addEventListener('storage', (e) => {
             } finally {
                 document.querySelector('#nav-export').innerHTML = originalText;
             }
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        //  SETTINGS VIEW
+        // ══════════════════════════════════════════════════════════════
+
+        document.getElementById('nav-settings').addEventListener('click', () => {
+            navigateSafe(() => {
+                hideAllViews();
+                const sv = document.getElementById('settings-view');
+                sv.classList.add('active');
+                syncNavbar('nav-settings');
+                currentView = 'settings';
+                loadSettingsData();
+            });
+        });
+
+        function loadSettingsData() {
+            const userId = getUserId();
+            if (!userId) return;
+            fetch(`${API_BASE}/${userId}`)
+                .then(r => r.json())
+                .then(u => {
+                    document.getElementById('settings-nombre').value = u.nombre || '';
+                    document.getElementById('settings-apellido').value = u.apellido || '';
+                    document.getElementById('settings-carrera').value = u.carrera || '';
+                    // Apply stored theme
+                    const storedColor = u.temaColor || localStorage.getItem('studyhub-theme') || 'blue';
+                    document.querySelectorAll('.color-swatch').forEach(s => {
+                        s.classList.toggle('selected', s.dataset.color === storedColor);
+                    });
+                })
+                .catch(err => console.error('Error cargando settings:', err));
+        }
+
+        async function saveSettingsProfile() {
+            const userId = getUserId();
+            if (!userId) return;
+            const nombre = document.getElementById('settings-nombre').value.trim();
+            const apellido = document.getElementById('settings-apellido').value.trim();
+            const carrera = document.getElementById('settings-carrera').value;
+            const temaColor = document.querySelector('.color-swatch.selected')?.dataset.color || 'blue';
+
+            try {
+                const res = await fetch(`${API_BASE}/${userId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, carrera, temaColor }),
+                });
+                if (!res.ok) throw new Error('Error');
+                const updated = await res.json();
+                // Update sidebar name
+                const nameEl = document.querySelector('.profile-name');
+                if (nameEl) nameEl.textContent = (updated.nombre || '') + ' ' + (updated.apellido || '');
+                applyThemeColor(temaColor);
+                localStorage.setItem('studyhub-theme', temaColor);
+                showToast('Configuración guardada exitosamente');
+            } catch (err) {
+                console.error(err);
+                showToast('Error al guardar configuración');
+            }
+        }
+
+        function selectThemeColor(el) {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            applyThemeColor(el.dataset.color);
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        //  THEME COLOR SYSTEM
+        // ══════════════════════════════════════════════════════════════
+
+        const THEME_COLORS = {
+            blue:   { 50:'#E3F2FD',100:'#BBDEFB',200:'#90CAF9',300:'#64B5F6',400:'#42A5F5',500:'#1E88E5',600:'#1565C0',700:'#0D47A1' },
+            purple: { 50:'#F3E5F5',100:'#E1BEE7',200:'#CE93D8',300:'#BA68C8',400:'#AB47BC',500:'#9C27B0',600:'#7B1FA2',700:'#4A148C' },
+            green:  { 50:'#E8F5E9',100:'#C8E6C9',200:'#A5D6A7',300:'#81C784',400:'#66BB6A',500:'#43A047',600:'#2E7D32',700:'#1B5E20' },
+            orange: { 50:'#FFF3E0',100:'#FFE0B2',200:'#FFCC80',300:'#FFB74D',400:'#FFA726',500:'#FB8C00',600:'#E65100',700:'#BF360C' },
+            red:    { 50:'#FFEBEE',100:'#FFCDD2',200:'#EF9A9A',300:'#E57373',400:'#EF5350',500:'#E53935',600:'#C62828',700:'#B71C1C' },
+            teal:   { 50:'#E0F2F1',100:'#B2DFDB',200:'#80CBC4',300:'#4DB6AC',400:'#26A69A',500:'#009688',600:'#00695C',700:'#004D40' },
+            pink:   { 50:'#FCE4EC',100:'#F8BBD0',200:'#F48FB1',300:'#F06292',400:'#EC407A',500:'#E91E63',600:'#AD1457',700:'#880E4F' },
+            dark:   { 50:'#FAFAFA',100:'#F5F5F5',200:'#EEEEEE',300:'#E0E0E0',400:'#BDBDBD',500:'#616161',600:'#424242',700:'#212121' },
+        };
+
+        function applyThemeColor(colorName) {
+            const c = THEME_COLORS[colorName];
+            if (!c) return;
+            const r = document.documentElement;
+            r.style.setProperty('--blue-50', c[50]);
+            r.style.setProperty('--blue-100', c[100]);
+            r.style.setProperty('--blue-200', c[200]);
+            r.style.setProperty('--blue-300', c[300]);
+            r.style.setProperty('--blue-400', c[400]);
+            r.style.setProperty('--blue-500', c[500]);
+            r.style.setProperty('--blue-600', c[600]);
+            r.style.setProperty('--blue-700', c[700]);
+        }
+
+        // Apply saved theme on load
+        (function() {
+            const saved = localStorage.getItem('studyhub-theme');
+            if (saved) applyThemeColor(saved);
+        })();
+
+        // ══════════════════════════════════════════════════════════════
+        //  DYNAMIC CALENDAR
+        // ══════════════════════════════════════════════════════════════
+
+        let calYear = new Date().getFullYear();
+        let calMonth = new Date().getMonth(); // 0-indexed
+        let calendarTasks = []; // cached for current month
+
+        const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+        function renderCalendar() {
+            const grid = document.getElementById('cal-grid');
+            const label = document.getElementById('cal-month-label');
+            if (!grid || !label) return;
+
+            label.textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+            grid.innerHTML = '';
+
+            // Day name headers
+            ['Lu','Ma','Mi','Ju','Vi','Sa','Do'].forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'calendar-day-name';
+                el.textContent = d;
+                grid.appendChild(el);
+            });
+
+            const firstDay = new Date(calYear, calMonth, 1);
+            let startWeekday = firstDay.getDay(); // 0=Sun
+            startWeekday = startWeekday === 0 ? 6 : startWeekday - 1; // Mon=0
+
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+            const today = new Date();
+
+            // Empty cells before first day
+            for (let i = 0; i < startWeekday; i++) {
+                const el = document.createElement('div');
+                el.className = 'calendar-day other-month';
+                grid.appendChild(el);
+            }
+
+            // Build tasks map for this month
+            const taskMap = {}; // day -> [{titulo, prioridad, horaEntrega}]
+            calendarTasks.forEach(t => {
+                const d = new Date(t.fechaEntrega + 'T00:00:00');
+                const day = d.getDate();
+                if (!taskMap[day]) taskMap[day] = [];
+                taskMap[day].push(t);
+            });
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const el = document.createElement('div');
+                el.className = 'calendar-day';
+                el.textContent = d;
+
+                if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) {
+                    el.classList.add('today');
+                }
+
+                const dayTasks = taskMap[d];
+                if (dayTasks && dayTasks.length > 0) {
+                    el.classList.add('has-tasks');
+                    // Add priority dots
+                    const dotsDiv = document.createElement('div');
+                    dotsDiv.className = 'cal-dots';
+                    // Show up to 3 dots, sorted by priority
+                    const order = { alta: 0, media: 1, baja: 2 };
+                    const sorted = dayTasks.sort((a, b) => (order[a.prioridad||'media'] || 1) - (order[b.prioridad||'media'] || 1));
+                    sorted.slice(0, 3).forEach(t => {
+                        const dot = document.createElement('span');
+                        dot.className = 'cal-dot ' + (t.prioridad || 'media');
+                        dotsDiv.appendChild(dot);
+                    });
+                    el.appendChild(dotsDiv);
+
+                    // Click handler to show popup
+                    el.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        showCalDayPopup(d, dayTasks, ev);
+                    });
+                }
+
+                grid.appendChild(el);
+            }
+        }
+
+        function showCalDayPopup(day, tasks, ev) {
+            // Remove any existing popup
+            document.querySelectorAll('.cal-day-popup').forEach(p => p.remove());
+
+            const popup = document.createElement('div');
+            popup.className = 'cal-day-popup';
+            popup.innerHTML = `
+                <button class="cal-popup-close" onclick="this.parentElement.remove()">
+                    <span class="material-icons-round" style="font-size:18px">close</span>
+                </button>
+                <h4>${day} de ${MONTH_NAMES[calMonth]}</h4>
+                ${tasks.map(t => `
+                    <div class="cal-popup-task">
+                        <span class="cal-popup-priority ${t.prioridad || 'media'}"></span>
+                        <div class="cal-popup-info">
+                            <strong>${t.titulo}</strong><br>
+                            ${t.asignatura?.nombre || ''} · ${t.horaEntrega || ''}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+
+            document.body.appendChild(popup);
+            // Position near click
+            const rect = ev.target.getBoundingClientRect();
+            popup.style.top = (rect.bottom + 8) + 'px';
+            popup.style.left = Math.max(10, Math.min(rect.left, window.innerWidth - 280)) + 'px';
+
+            // Close on outside click
+            setTimeout(() => {
+                document.addEventListener('click', function handler(e) {
+                    if (!popup.contains(e.target)) {
+                        popup.remove();
+                        document.removeEventListener('click', handler);
+                    }
+                });
+            }, 10);
+        }
+
+        async function loadCalendarTasks() {
+            const userId = getUserId();
+            if (!userId) { calendarTasks = []; renderCalendar(); return; }
+            const startDate = `${calYear}-${String(calMonth+1).padStart(2,'0')}-01`;
+            const endDay = new Date(calYear, calMonth+1, 0).getDate();
+            const endDate = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(endDay).padStart(2,'0')}`;
+            try {
+                const res = await fetch(`${API}/api/tareas?usuarioId=${userId}&startDate=${startDate}&endDate=${endDate}`);
+                if (res.ok) calendarTasks = await res.json();
+                else calendarTasks = [];
+            } catch { calendarTasks = []; }
+            renderCalendar();
+        }
+
+        // Calendar nav buttons
+        document.getElementById('cal-prev')?.addEventListener('click', () => {
+            calMonth--;
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            loadCalendarTasks();
+        });
+        document.getElementById('cal-next')?.addEventListener('click', () => {
+            calMonth++;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            loadCalendarTasks();
+        });
+
+        // Initial render
+        renderCalendar();
+
+        // ══════════════════════════════════════════════════════════════
+        //  DYNAMIC SCHEDULE TABLE
+        // ══════════════════════════════════════════════════════════════
+
+        const SCHEDULE_HOURS = [7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+        const DAY_MAP = { 'Lun': 0, 'Mar': 1, 'Mié': 2, 'Jue': 3, 'Vie': 4 };
+        const SCHEDULE_COLORS = [
+            { bg: '#E3F2FD', fg: '#0D47A1' },
+            { bg: '#F3E5F5', fg: '#4A148C' },
+            { bg: '#E8F5E9', fg: '#1B5E20' },
+            { bg: '#FFF3E0', fg: '#BF360C' },
+            { bg: '#FFEBEE', fg: '#B71C1C' },
+            { bg: '#E0F2F1', fg: '#004D40' },
+            { bg: '#FCE4EC', fg: '#880E4F' },
+        ];
+
+        function renderScheduleTable() {
+            const tbody = document.getElementById('schedule-tbody');
+            if (!tbody) return;
+
+            // Build a map of slots: grid[hour][dayIndex] = subject name
+            const grid = {};
+            SCHEDULE_HOURS.forEach(h => { grid[h] = ['','','','','']; });
+
+            // Get all subjects from the DOM cards
+            const cards = document.querySelectorAll('.subject-card');
+            let colorIdx = 0;
+            const nameColorMap = {};
+
+            cards.forEach(card => {
+                const name = card.querySelector('.subject-name')?.textContent || '';
+                const horarioEl = card.querySelector('.subject-schedule');
+                let horarioStr = horarioEl ? horarioEl.textContent : '';
+
+                // Also try from data or from the API data
+                // Parse horario: format "Lun,Mié|10:00-12:00"
+                if (!horarioStr) return;
+                // Try structured format first
+                const pipeIdx = horarioStr.indexOf('|');
+                let days = [], startH = 0, endH = 0;
+
+                if (pipeIdx !== -1) {
+                    const daysPart = horarioStr.substring(0, pipeIdx);
+                    const timePart = horarioStr.substring(pipeIdx + 1);
+                    days = daysPart.split(',').map(d => d.trim());
+                    const [startStr, endStr] = timePart.split('-').map(t => t.trim());
+                    startH = parseInt(startStr);
+                    endH = parseInt(endStr);
+                } else {
+                    // Legacy: try to parse "Lun y Mié 10:00 - 12:00"
+                    return; // Skip unparseable
+                }
+
+                if (!nameColorMap[name]) {
+                    nameColorMap[name] = SCHEDULE_COLORS[colorIdx % SCHEDULE_COLORS.length];
+                    colorIdx++;
+                }
+
+                days.forEach(dayName => {
+                    const dayIdx = DAY_MAP[dayName];
+                    if (dayIdx === undefined) return;
+                    for (let h = startH; h < endH; h++) {
+                        if (grid[h]) grid[h][dayIdx] = name;
+                    }
+                });
+            });
+
+            // Render rows
+            tbody.innerHTML = '';
+            SCHEDULE_HOURS.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="time-col">${h}:00</td>`;
+                for (let d = 0; d < 5; d++) {
+                    const td = document.createElement('td');
+                    const subj = grid[h][d];
+                    if (subj) {
+                        const c = nameColorMap[subj] || SCHEDULE_COLORS[0];
+                        td.innerHTML = `<span class="schedule-cell" style="background:${c.bg};color:${c.fg}">${subj}</span>`;
+                    } else {
+                        td.textContent = '—';
+                    }
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initial schedule render
+        renderScheduleTable();
+
+        // ── After saving a task, refresh calendar ──
+        const _origTaskSaveListener = document.getElementById('task-save-btn');
+        if (_origTaskSaveListener) {
+            const origClickHandlers = _origTaskSaveListener.onclick;
+            // We'll just add a post-save calendar refresh via MutationObserver on toast
+            const calRefreshObs = new MutationObserver(() => { loadCalendarTasks(); });
+            const toastEl = document.getElementById('toast');
+            if (toastEl) calRefreshObs.observe(toastEl, { attributes: true, attributeFilter: ['class'] });
         }
 
     </script>

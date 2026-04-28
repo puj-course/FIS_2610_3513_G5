@@ -51,6 +51,7 @@ public class TareaController {
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         tarea.setDescripcion(body.get("descripcion") != null ? body.get("descripcion").toString() : null);
+        tarea.setPrioridad(body.get("prioridad") != null ? body.get("prioridad").toString() : "media");
         tarea.setEstado(true);
 
         Tarea tareaGuardada = tareaRepository.save(tarea);
