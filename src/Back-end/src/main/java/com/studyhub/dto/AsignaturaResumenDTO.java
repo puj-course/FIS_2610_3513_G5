@@ -7,13 +7,15 @@ public class AsignaturaResumenDTO {
     private String nombre;
     private List<Nota> notas;
     private double promedio;
+    private boolean enRiesgo;
 
     public AsignaturaResumenDTO() {}
 
-    public AsignaturaResumenDTO(String nombre, List<Nota> notas, double promedio) {
+    public AsignaturaResumenDTO(String nombre, List<Nota> notas, double promedio, boolean enRiesgo) {
         this.nombre = nombre;
         this.notas = notas;
         this.promedio = promedio;
+        this.enRiesgo = enRiesgo;
     }
 
     public String getNombre() { return nombre; }
@@ -24,4 +26,7 @@ public class AsignaturaResumenDTO {
 
     public double getPromedio() { return promedio; }
     public void setPromedio(double promedio) { this.promedio = promedio; }
+
+    public boolean isEnRiesgo() { return enRiesgo; }
+    public void setEnRiesgo(boolean enRiesgo) { this.enRiesgo = enRiesgo; }
 }
