@@ -1,4 +1,10 @@
-# Agrega aquí tus títulos de historias de usuario (uno por línea)
-# Ejemplo:
-# Implementar login con Google
-# Crear vista de perfil de usuario
+# Sistema de Notificaciones Interactivas, Funcionales
+# Horario Semanal Expandido 
+# Gestión de Imagen de Perfil y cuadricula de materias funcionales
+# Sistema de Filtrado de Horario y Búsqueda
+# Visualización de Prioridades en Preview, vistas de notas y tareas Funcionales
+
+ 
+ 
+ 
+ 

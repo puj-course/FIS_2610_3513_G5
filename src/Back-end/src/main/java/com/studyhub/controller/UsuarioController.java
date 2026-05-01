@@ -1,15 +1,19 @@
 package com.studyhub.controller;
 
 import com.studyhub.model.Usuario;
-import com.studyhub.dto.UsuarioResumenDTO;
+import com.studyhub.dto.*;
 import com.studyhub.service.UsuarioService;
+import com.studyhub.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -18,6 +22,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
@@ -109,6 +116,54 @@ public class UsuarioController {
             // Usuario no encontrado → 404
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/recuperar")
+    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {
+        try {
+            String token = usuarioService.generarTokenRecuperacion(correo);
+            String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            String enlace = baseUri + "/index.html?token=" + token;
+            emailService.enviarCorreoRecuperacion(correo, enlace);
+            return ResponseEntity.ok(Map.of("mensaje", "Enlace enviado exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/restablecer")
+    public ResponseEntity<?> restablecerPassword(@RequestBody RestablecerRequest request) {
+        try {
+            usuarioService.restablecerPassword(request.getToken(), request.getNuevaPassword());
+            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{id}/estadisticas")
+    public ResponseEntity<EstadisticasDTO> obtenerEstadisticas(@PathVariable Long id) {
+        EstadisticasDTO estadisticas = usuarioService.obtenerEstadisticas(id);
+        return ResponseEntity.ok(estadisticas);
+    }
+
+    @GetMapping("/{id}/preferencias")
+    public ResponseEntity<?> obtenerPreferencias(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(usuarioService.obtenerPreferencias(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/preferencias")
+    public ResponseEntity<?> guardarPreferencias(@PathVariable Long id, @RequestBody Map<String, Object> preferencias) {
+        try {
+            usuarioService.guardarPreferencias(id, preferencias);
+            return ResponseEntity.ok(Map.of("mensaje", "Preferencias guardadas exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
         }
     }
 }

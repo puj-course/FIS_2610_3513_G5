@@ -43,6 +43,9 @@ public class Usuario {
      */
     private String fotoPerfil;
 
+    /** Tema o color preferido del usuario para la UI */
+    private String temaColor;
+
     private LocalDateTime fechaRegistro;
 
     @PrePersist
@@ -61,6 +64,7 @@ public class Usuario {
     public String getCarrera() { return carrera; }
     public Integer getSemestre() { return semestre; }
     public String getFotoPerfil() { return fotoPerfil; }
+    public String getTemaColor() { return temaColor; }
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
 
     // ===== SETTERS =====
@@ -74,5 +78,21 @@ public class Usuario {
     public void setCarrera(String carrera) { this.carrera = carrera; }
     public void setSemestre(Integer semestre) { this.semestre = semestre; }
     public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
+    public void setTemaColor(String temaColor) { this.temaColor = temaColor; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+
+    // Campos para recuperación de contraseña
+    private String tokenRecuperacion;
+    private LocalDateTime tokenExpiracion;
+
+    public String getTokenRecuperacion() { return tokenRecuperacion; }
+    public void setTokenRecuperacion(String tokenRecuperacion) { this.tokenRecuperacion = tokenRecuperacion; }
+    public LocalDateTime getTokenExpiracion() { return tokenExpiracion; }
+    public void setTokenExpiracion(LocalDateTime tokenExpiracion) { this.tokenExpiracion = tokenExpiracion; }
+
+    @Column(columnDefinition = "TEXT")
+    private String preferencias;
+
+    public String getPreferencias() { return preferencias; }
+    public void setPreferencias(String preferencias) { this.preferencias = preferencias; }
 }

@@ -22,7 +22,10 @@ public class Asignatura {
     private String horario;
     private int creditos;
     private String periodo;
-    private String horario;
+    private String horarioTexto;
+    private String diasClase;      
+    private String horaInicio;     
+    private String horaFin;        
     
     @jakarta.persistence.Transient
     @com.fasterxml.jackson.annotation.JsonProperty("progreso")
@@ -67,14 +70,23 @@ public class Asignatura {
     public String getPeriodo() { return periodo; }
     public void setPeriodo(String periodo) { this.periodo = periodo; }
 
-    public String getHorario() { return horario; }
-    public void setHorario(String horario) { this.horario = horario; }
+    public String getHorarioTexto() { return horarioTexto; }
+    public void setHorarioTexto(String horarioTexto) { this.horarioTexto = horarioTexto; }
 
     public double getProgreso() { return progreso; }
     public void setProgreso(double progreso) { this.progreso = progreso; }
 
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    
+    public String getDiasClase() { return diasClase; }
+    public void setDiasClase(String diasClase) { this.diasClase = diasClase; }
+
+    public String getHoraInicio() { return horaInicio; }
+    public void setHoraInicio(String horaInicio) { this.horaInicio = horaInicio; }
+
+    public String getHoraFin() { return horaFin; }
+    public void setHoraFin(String horaFin) { this.horaFin = horaFin; }
 
     @Override
     public String toString() {

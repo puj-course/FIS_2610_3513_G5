@@ -8,8 +8,13 @@ WORKDIR /app
 COPY src/Back-end/pom.xml .
 RUN mvn dependency:go-offline -B
 
-# Copiar el código fuente y construir el JAR
+# Copiar el código fuente
 COPY src/Back-end/src ./src
+
+# Copiar el frontend al directorio de recursos estáticos de Spring Boot
+# Esto permite que el backend sirva el index.html en la raíz (/) 
+COPY src/Front-End ./src/main/resources/static
+
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecución
@@ -19,8 +24,8 @@ WORKDIR /app
 # Copiar el archivo JAR construido desde la etapa anterior
 COPY --from=build /app/target/*.jar app.jar
 
-# Crear el directorio de datos para H2
-RUN mkdir -p data/ uploads/fotos-perfil
+# Crear el directorio para carga de archivos
+RUN mkdir -p uploads/fotos-perfil
 
 # Exponer el puerto
 EXPOSE 8080
