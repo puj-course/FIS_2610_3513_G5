@@ -23,4 +23,4 @@ public interface AsignaturaRepository extends JpaRepository<Asignatura, Long> {
                                    @Param("endTime") LocalTime endTime,
                                    @Param("keyword") String keyword);
 }
->>>>>>> Matias
+
