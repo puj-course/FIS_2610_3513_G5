@@ -4,11 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "asignaturas")
+@Table(name = "asignaturas", indexes = {
+    @Index(name = "idx_dia", columnList = "dias"),
+    @Index(name = "idx_hora_inicio", columnList = "horaInicio")
+})
 public class Asignatura {
 
     @Id
