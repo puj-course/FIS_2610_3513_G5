@@ -14,13 +14,13 @@ public interface AsignaturaRepository extends JpaRepository<Asignatura, Long> {
     List<Asignatura> findByUsuarioId(Long usuarioId);
     
     @Query("SELECT a FROM Asignatura a WHERE " +
-           "(:day IS NULL OR LOWER(a.dias) LIKE LOWER(CONCAT('%', :day, '%'))) AND " +
+           "(:day IS NULL OR LOWER(a.diasClase) LIKE LOWER(CONCAT('%', :day, '%'))) AND " +
            "(:startTime IS NULL OR a.horaInicio >= :startTime) AND " +
            "(:endTime IS NULL OR a.horaFin <= :endTime) AND " +
            "(:keyword IS NULL OR LOWER(a.nombre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(a.codigo) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     List<Asignatura> findSchedules(@Param("day") String day,
-                                   @Param("startTime") LocalTime startTime,
-                                   @Param("endTime") LocalTime endTime,
+                                   @Param("startTime") String startTime,
+                                   @Param("endTime") String endTime,
                                    @Param("keyword") String keyword);
 }
 
