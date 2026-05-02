@@ -2831,6 +2831,179 @@
         }
         .nav-item.logout-btn .material-icons-round { color: #E53935; }
 
+        /* ========== SCHEDULE FILTER BAR (HU-37) ========== */
+        .schedule-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            background: var(--white);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .filter-group input, .filter-group select {
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--gray-700);
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            transition: all 0.2s ease;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: var(--blue-400);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+        }
+
+        .filter-group input:disabled, .filter-group select:disabled {
+            background: var(--gray-200);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-clear-filters {
+            padding: 10px 16px;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-clear-filters:hover:not(:disabled) {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        
+        .btn-clear-filters:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Results / Empty state / Loader */
+        .schedule-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--blue-500);
+        }
+
+        .schedule-loader .material-icons-round {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .schedule-empty {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--gray-300);
+            color: var(--gray-500);
+            display: none;
+        }
+
+        .schedule-empty .material-icons-round {
+            font-size: 48px;
+            color: var(--gray-400);
+            margin-bottom: 12px;
+        }
+
+        .schedule-empty p {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .schedule-results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .schedule-result-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .schedule-result-card:hover {
+            border-color: var(--blue-300);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .schedule-result-info h4 {
+            font-size: 15px;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .schedule-result-info p {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .schedule-result-time {
+            text-align: right;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--blue-600);
+            background: var(--blue-50);
+            padding: 6px 12px;
+            border-radius: 16px;
+            white-space: nowrap;
+        }
     </style>
 
     <!-- PDF Generation Libraries -->
@@ -3577,11 +3750,64 @@
                         <span class="material-icons-round">calendar_view_week</span>
                         Horario Semanal
                     </div>
-                    <button class="filter-btn">
+                    <button class="filter-btn" id="toggleFilterBtn">
                         <span class="material-icons-round">filter_list</span>
                         Filtrar
                     </button>
                 </div>
+                
+                <div class="schedule-filter-bar" id="scheduleFilterBar" style="display: none;">
+                    <div class="filter-group">
+                        <label for="filter-day">Día</label>
+                        <select id="filter-day">
+                            <option value="">Todos los días</option>
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-start-time">Hora Inicio</label>
+                        <input type="time" id="filter-start-time">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-end-time">Hora Fin</label>
+                        <input type="time" id="filter-end-time">
+                    </div>
+                    <div class="filter-group" style="flex: 2; min-width: 200px;">
+                        <label for="filter-keyword">Buscar</label>
+                        <input type="text" id="filter-keyword" placeholder="Palabra clave...">
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn-clear-filters" id="btnClearFilters" type="button">
+                            <span class="material-icons-round">clear_all</span> Limpiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error Toast / Alert (for 400 responses) -->
+                <div id="scheduleFilterError" style="display: none; background: #FFF5F5; border: 1px solid #FEB2B2; color: #C53030; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 13px;"></div>
+
+                <!-- Loader -->
+                <div class="schedule-loader" id="scheduleLoader" style="display: none;">
+                    <span class="material-icons-round">refresh</span>
+                </div>
+
+                <!-- Empty State -->
+                <div class="schedule-empty" id="scheduleEmpty">
+                    <span class="material-icons-round">search_off</span>
+                    <p>No se encontraron resultados para tu búsqueda/selección</p>
+                    <button class="btn-clear-filters" style="margin: 0 auto;" onclick="document.getElementById('btnClearFilters').click();">
+                        Limpiar Filtros
+                    </button>
+                </div>
+
+                <!-- Results List Container (Dynamic) -->
+                <div class="schedule-results-list" id="scheduleResultsList" style="display: none;"></div>
+
                 <div class="schedule-container">
                     <table class="schedule-table" id="schedule-table">
                         <thead>
@@ -7332,7 +7558,147 @@ window.addEventListener('storage', (e) => {
             </div>
         </div>
     </div>
+    <script>
+        // ==========================================
+        // HU-37: SISTEMA DE FILTRADO DE HORARIO
+        // ==========================================
+        const toggleFilterBtn = document.getElementById('toggleFilterBtn');
+        const scheduleFilterBar = document.getElementById('scheduleFilterBar');
+        const filterDay = document.getElementById('filter-day');
+        const filterStartTime = document.getElementById('filter-start-time');
+        const filterEndTime = document.getElementById('filter-end-time');
+        const filterKeyword = document.getElementById('filter-keyword');
+        const btnClearFilters = document.getElementById('btnClearFilters');
+        
+        const scheduleContainerTable = document.querySelector('.schedule-container'); // The original table
+        const scheduleResultsList = document.getElementById('scheduleResultsList');
+        const scheduleLoader = document.getElementById('scheduleLoader');
+        const scheduleEmpty = document.getElementById('scheduleEmpty');
+        const scheduleFilterError = document.getElementById('scheduleFilterError');
 
+        // URL base para el backend de Asignaturas/Schedules
+        const SCHEDULE_API = 'http://localhost:8080/schedules';
+
+        if(toggleFilterBtn) {
+            toggleFilterBtn.addEventListener('click', () => {
+                if (scheduleFilterBar.style.display === 'none') {
+                    scheduleFilterBar.style.display = 'flex';
+                } else {
+                    scheduleFilterBar.style.display = 'none';
+                }
+            });
+        }
+
+        let debounceTimer;
+        
+        function handleFilterChange() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                fetchFilteredSchedules();
+            }, 400); // 400ms debounce
+        }
+
+        if(filterDay) filterDay.addEventListener('change', handleFilterChange);
+        if(filterStartTime) filterStartTime.addEventListener('change', handleFilterChange);
+        if(filterEndTime) filterEndTime.addEventListener('change', handleFilterChange);
+        if(filterKeyword) filterKeyword.addEventListener('input', handleFilterChange);
+
+        if(btnClearFilters) {
+            btnClearFilters.addEventListener('click', () => {
+                filterDay.value = '';
+                filterStartTime.value = '';
+                filterEndTime.value = '';
+                filterKeyword.value = '';
+                scheduleFilterError.style.display = 'none';
+                fetchFilteredSchedules();
+            });
+        }
+
+        async function fetchFilteredSchedules() {
+            const day = filterDay.value;
+            const startTime = filterStartTime.value;
+            const endTime = filterEndTime.value;
+            const keyword = filterKeyword.value.trim();
+
+            if (!day && !startTime && !endTime && !keyword) {
+                scheduleContainerTable.style.display = 'block';
+                scheduleResultsList.style.display = 'none';
+                scheduleEmpty.style.display = 'none';
+                scheduleFilterError.style.display = 'none';
+                return;
+            }
+
+            scheduleContainerTable.style.display = 'none';
+            scheduleResultsList.style.display = 'none';
+            scheduleEmpty.style.display = 'none';
+            scheduleFilterError.style.display = 'none';
+            
+            scheduleLoader.style.display = 'flex';
+            filterDay.disabled = true;
+            filterStartTime.disabled = true;
+            filterEndTime.disabled = true;
+            filterKeyword.disabled = true;
+            btnClearFilters.disabled = true;
+
+            try {
+                const params = new URLSearchParams();
+                if (day) params.append('day', day);
+                if (startTime) params.append('startTime', startTime);
+                if (endTime) params.append('endTime', endTime);
+                if (keyword) params.append('keyword', keyword);
+
+                const res = await fetch(`${SCHEDULE_API}?${params.toString()}`);
+                
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.error || 'Error al filtrar horarios');
+                }
+
+                const data = await res.json();
+                renderFilteredSchedules(data);
+
+            } catch (error) {
+                console.error("Error fetching schedules:", error);
+                scheduleFilterError.textContent = error.message;
+                scheduleFilterError.style.display = 'block';
+                scheduleEmpty.style.display = 'none';
+            } finally {
+                scheduleLoader.style.display = 'none';
+                filterDay.disabled = false;
+                filterStartTime.disabled = false;
+                filterEndTime.disabled = false;
+                filterKeyword.disabled = false;
+                btnClearFilters.disabled = false;
+            }
+        }
+
+        function renderFilteredSchedules(schedules) {
+            scheduleResultsList.innerHTML = '';
+
+            if (!schedules || schedules.length === 0) {
+                scheduleEmpty.style.display = 'block';
+                return;
+            }
+
+            schedules.forEach(subj => {
+                const card = document.createElement('div');
+                card.className = 'schedule-result-card';
+                card.innerHTML = `
+                    <div class="schedule-result-info">
+                        <h4>${subj.nombre} (${subj.codigo})</h4>
+                        <p><span class="material-icons-round" style="font-size:14px">person</span> ${subj.profesor}</p>
+                    </div>
+                    <div class="schedule-result-time">
+                        ${subj.dias}<br>
+                        ${subj.horaInicio ? subj.horaInicio.substring(0,5) : '--:--'} - ${subj.horaFin ? subj.horaFin.substring(0,5) : '--:--'}
+                    </div>
+                `;
+                scheduleResultsList.appendChild(card);
+            });
+
+            scheduleResultsList.style.display = 'flex';
+        }
+    </script>
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
