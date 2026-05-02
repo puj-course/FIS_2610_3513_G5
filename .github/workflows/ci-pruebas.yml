@@ -1,0 +1,169 @@
+name: CI - Pruebas Unitarias
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  tests:
+    name: Ejecutar Pruebas Unitarias
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Obtener el código del repositorio
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # Configurar Java 17
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Correr las pruebas unitarias
+      - name: Ejecutar pruebas con Maven
+        run: mvn test --file src/Back-end/pom.xml --batch-mode --no-transfer-progress
+
+      # Generar reporte HTML con los resultados
+      - name: Generar reporte HTML
+        if: always()
+        run: mvn surefire-report:report --file src/Back-end/pom.xml --batch-mode --no-transfer-progress -DskipTests
+
+      # Construir reporte HTML enriquecido a partir de los XML de Surefire
+      - name: Construir resumen HTML
+        if: always()
+        run: |
+          REPORT_DIR="src/Back-end/target/surefire-reports"
+          OUTPUT="src/Back-end/target/reporte-pruebas.html"
+
+          TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; ERRORS=0
+
+          if [ -d "$REPORT_DIR" ]; then
+            for xml in "$REPORT_DIR"/TEST-*.xml; do
+              [ -f "$xml" ] || continue
+              t=$(grep -oP 'tests="\K[0-9]+' "$xml" | head -1)
+              f=$(grep -oP 'failures="\K[0-9]+' "$xml" | head -1)
+              s=$(grep -oP 'skipped="\K[0-9]+' "$xml" | head -1)
+              e=$(grep -oP 'errors="\K[0-9]+' "$xml" | head -1)
+              TOTAL=$((TOTAL + ${t:-0}))
+              FAILED=$((FAILED + ${f:-0}))
+              SKIPPED=$((SKIPPED + ${s:-0}))
+              ERRORS=$((ERRORS + ${e:-0}))
+            done
+            PASSED=$((TOTAL - FAILED - SKIPPED - ERRORS))
+          fi
+
+          STATUS="EXITOSO"
+          COLOR="#27ae60"
+          if [ $((FAILED + ERRORS)) -gt 0 ]; then
+            STATUS="FALLIDO"
+            COLOR="#e74c3c"
+          fi
+
+          cat > "$OUTPUT" << HTMLEOF
+          <!DOCTYPE html>
+          <html lang="es">
+          <head>
+            <meta charset="UTF-8">
+            <title>Reporte de Pruebas — StudyHub</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; color: #333; }
+              h1 { color: #2c3e50; }
+              h2 { color: #34495e; border-bottom: 2px solid #bdc3c7; padding-bottom: 6px; }
+              .badge { display: inline-block; padding: 6px 16px; border-radius: 4px; color: white; font-weight: bold; background: ${COLOR}; }
+              .summary { display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
+              .card { background: white; border-radius: 8px; padding: 20px 30px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); min-width: 120px; }
+              .card .num { font-size: 32px; font-weight: bold; }
+              .card .lbl { font-size: 13px; color: #888; margin-top: 4px; }
+              .total .num { color: #2c3e50; }
+              .passed .num { color: #27ae60; }
+              .failed .num { color: #e74c3c; }
+              .skipped .num { color: #f39c12; }
+              table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+              th { background: #2c3e50; color: white; padding: 10px 14px; text-align: left; font-size: 13px; }
+              td { padding: 9px 14px; border-bottom: 1px solid #ecf0f1; font-size: 13px; }
+              tr:last-child td { border-bottom: none; }
+              .pass { color: #27ae60; font-weight: bold; }
+              .fail { color: #e74c3c; font-weight: bold; }
+              .meta { color: #888; font-size: 12px; margin-top: 30px; }
+            </style>
+          </head>
+          <body>
+            <h1>Reporte de Pruebas Unitarias — StudyHub</h1>
+            <p>Estado general: <span class="badge">${STATUS}</span></p>
+
+            <h2>Resumen</h2>
+            <div class="summary">
+              <div class="card total"><div class="num">${TOTAL}</div><div class="lbl">Total</div></div>
+              <div class="card passed"><div class="num">${PASSED}</div><div class="lbl">Exitosas</div></div>
+              <div class="card failed"><div class="num">$((FAILED + ERRORS))</div><div class="lbl">Fallidas</div></div>
+              <div class="card skipped"><div class="num">${SKIPPED}</div><div class="lbl">Omitidas</div></div>
+            </div>
+
+            <h2>Detalle por clase</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Clase de prueba</th>
+                  <th>Total</th>
+                  <th>Exitosas</th>
+                  <th>Fallidas</th>
+                  <th>Omitidas</th>
+                  <th>Tiempo (s)</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+          HTMLEOF
+
+          if [ -d "$REPORT_DIR" ]; then
+            for xml in "$REPORT_DIR"/TEST-*.xml; do
+              [ -f "$xml" ] || continue
+              name=$(grep -oP 'name="\K[^"]+' "$xml" | head -1)
+              t=$(grep -oP 'tests="\K[0-9]+' "$xml" | head -1)
+              f=$(grep -oP 'failures="\K[0-9]+' "$xml" | head -1)
+              s=$(grep -oP 'skipped="\K[0-9]+' "$xml" | head -1)
+              e=$(grep -oP 'errors="\K[0-9]+' "$xml" | head -1)
+              time=$(grep -oP 'time="\K[0-9.]+' "$xml" | head -1)
+              p=$(( ${t:-0} - ${f:-0} - ${s:-0} - ${e:-0} ))
+              total_fail=$(( ${f:-0} + ${e:-0} ))
+              if [ "$total_fail" -gt 0 ]; then
+                row_status='<span class="fail">FALLIDO</span>'
+              else
+                row_status='<span class="pass">EXITOSO</span>'
+              fi
+              echo "        <tr><td>${name}</td><td>${t:-0}</td><td>${p}</td><td>${total_fail}</td><td>${s:-0}</td><td>${time:-0}</td><td>${row_status}</td></tr>" >> "$OUTPUT"
+            done
+          fi
+
+          cat >> "$OUTPUT" << HTMLEOF
+              </tbody>
+            </table>
+            <p class="meta">Generado por GitHub Actions · Rama: ${GITHUB_REF_NAME} · Commit: ${GITHUB_SHA:0:7} · $(date -u '+%Y-%m-%d %H:%M UTC')</p>
+          </body>
+          </html>
+          HTMLEOF
+
+          echo "Reporte generado en $OUTPUT"
+
+      # Subir el reporte HTML como artefacto descargable
+      - name: Subir reporte como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas-unitarias
+          path: src/Back-end/target/reporte-pruebas.html
+          retention-days: 30
+
+      # Subir XML de Surefire como respaldo
+      - name: Subir reportes Surefire XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-xml
+          path: src/Back-end/target/surefire-reports/
+          retention-days: 30
