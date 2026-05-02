@@ -73,7 +73,10 @@ public class ScheduleController {
             day = null;
         }
 
-        List<Asignatura> results = asignaturaRepository.findSchedules(day, parsedStartTime, parsedEndTime, keyword);
+        List<Asignatura> results = asignaturaRepository.findSchedules(day, 
+                parsedStartTime != null ? parsedStartTime.toString() : null, 
+                parsedEndTime != null ? parsedEndTime.toString() : null, 
+                keyword);
 
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
