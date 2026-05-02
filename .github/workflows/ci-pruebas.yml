@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      # 1. Obtener el código del repositorio
+      # Obtener el código del repositorio
       - name: Checkout código
         uses: actions/checkout@v4
 
-      # 2. Configurar Java 17
+      # Configurar Java 17
       - name: Configurar JDK 17
         uses: actions/setup-java@v4
         with:
@@ -24,16 +24,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 3. Correr las pruebas unitarias
+      # Correr las pruebas unitarias
       - name: Ejecutar pruebas con Maven
         run: mvn test --file src/Back-end/pom.xml --batch-mode --no-transfer-progress
 
-      # 4. Generar reporte HTML con los resultados
+      # Generar reporte HTML con los resultados
       - name: Generar reporte HTML
         if: always()
         run: mvn surefire-report:report --file src/Back-end/pom.xml --batch-mode --no-transfer-progress -DskipTests
 
-      # 5. Construir reporte HTML enriquecido a partir de los XML de Surefire
+      # Construir reporte HTML enriquecido a partir de los XML de Surefire
       - name: Construir resumen HTML
         if: always()
         run: |
@@ -150,7 +150,7 @@ jobs:
 
           echo "Reporte generado en $OUTPUT"
 
-      # 6. Subir el reporte HTML como artefacto descargable
+      # Subir el reporte HTML como artefacto descargable
       - name: Subir reporte como artefacto
         if: always()
         uses: actions/upload-artifact@v4
@@ -159,7 +159,7 @@ jobs:
           path: src/Back-end/target/reporte-pruebas.html
           retention-days: 30
 
-      # 7. Subir también los XML de Surefire como respaldo
+      # Subir XML de Surefire como respaldo
       - name: Subir reportes Surefire XML
         if: always()
         uses: actions/upload-artifact@v4
