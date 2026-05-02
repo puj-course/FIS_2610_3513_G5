@@ -266,4 +266,108 @@ class NotaServiceTest {
 
         assertEquals(5.0, resultado, 0.001);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Pruebas adicionales — Taller Pruebas y Métricas (CP11 – CP15)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ─── CP11: Borde — Agregar nota con porcentaje = 0 ──────────────────────
+
+    @Test
+    void agregarNota_guardaNota_cuandoPorcentajeEsCero() {
+        // Arrange
+        nota.setPorcentaje(0.0);
+        when(notaRepository.findByAsignaturaId(1L)).thenReturn(Collections.emptyList());
+        when(notaRepository.save(nota)).thenReturn(nota);
+
+        // Act
+        Nota resultado = notaService.agregarNota(nota);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(0.0, resultado.getPorcentaje());
+        verify(notaRepository, times(1)).save(nota);
+    }
+
+    // ─── CP12: Borde — Agregar nota con porcentaje = 100 (lista vacía) ──────
+
+    @Test
+    void agregarNota_guardaNota_cuandoPorcentajeEsCienYNoHayOtrasNotas() {
+        // Arrange
+        nota.setPorcentaje(100.0);
+        when(notaRepository.findByAsignaturaId(1L)).thenReturn(Collections.emptyList());
+        when(notaRepository.save(nota)).thenReturn(nota);
+
+        // Act
+        Nota resultado = notaService.agregarNota(nota);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(100.0, resultado.getPorcentaje());
+        verify(notaRepository, times(1)).save(nota);
+    }
+
+    // ─── CP13: Negativa — Calcular promedio con calificación null ────────────
+
+    @Test
+    void calcularPromedio_ignoraNotasSinCalificacion_cuandoCalificacionEsNull() {
+        // Arrange
+        Nota notaSinCalificacion = new Nota();
+        notaSinCalificacion.setNombre("Quiz");
+        notaSinCalificacion.setCalificacion(null);
+        notaSinCalificacion.setPorcentaje(20.0);
+        notaSinCalificacion.setAsignatura(asignatura);
+
+        when(notaRepository.findByAsignaturaId(1L))
+                .thenReturn(List.of(nota, notaSinCalificacion));
+
+        // Act — nota tiene 4.0 * (30/100) = 1.2, la otra se ignora
+        double resultado = notaService.calcularPromedio(1L);
+
+        // Assert
+        assertEquals(1.2, resultado, 0.001);
+    }
+
+    // ─── CP14: Negativa — Calcular progreso sin notas ───────────────────────
+
+    @Test
+    void calcularProgreso_retornaCero_cuandoNoHayNotas() {
+        // Arrange
+        when(notaRepository.findByAsignaturaId(1L)).thenReturn(Collections.emptyList());
+
+        // Act
+        double resultado = notaService.calcularProgreso(1L);
+
+        // Assert
+        assertEquals(0.0, resultado);
+    }
+
+    // ─── CP15: Lógica de negocio — Calcular progreso con notas mixtas ───────
+
+    @Test
+    void calcularProgreso_sumaSoloPorcentajesDeNotasCalificadas_cuandoHayNotasMixtas() {
+        // Arrange
+        // nota ya tiene calificacion = 4.0, porcentaje = 30.0
+
+        Nota notaCalificada = new Nota();
+        notaCalificada.setNombre("Parcial 2");
+        notaCalificada.setCalificacion(3.5);
+        notaCalificada.setPorcentaje(40.0);
+        notaCalificada.setAsignatura(asignatura);
+
+        Nota notaSinCalificar = new Nota();
+        notaSinCalificar.setNombre("Final");
+        notaSinCalificar.setCalificacion(null);
+        notaSinCalificar.setPorcentaje(30.0);
+        notaSinCalificar.setAsignatura(asignatura);
+
+        when(notaRepository.findByAsignaturaId(1L))
+                .thenReturn(List.of(nota, notaCalificada, notaSinCalificar));
+
+        // Act — Solo debe sumar 30 + 40 = 70 (ignora la nota sin calificación)
+        double resultado = notaService.calcularProgreso(1L);
+
+        // Assert
+        assertEquals(70.0, resultado, 0.001);
+    }
 }
