@@ -7549,6 +7549,11 @@ window.addEventListener('storage', (e) => {
                         <div class="color-swatch" data-color="#8E24AA" style="background: #8E24AA;"></div>
                         <div class="color-swatch" data-color="#00ACC1" style="background: #00ACC1;"></div>
                     </div>
+                    <div class="custom-color-picker" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                        <label for="custom-color" style="font-size: 14px; color: var(--gray-700); font-weight: 500;">Color personalizado (#HEX):</label>
+                        <input type="color" id="custom-color" value="#1E88E5" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; padding: 0; background: transparent;">
+                        <span id="custom-color-hex" style="font-family: monospace; color: var(--gray-600); font-size: 14px; padding: 4px 8px; background: var(--gray-100); border-radius: 4px; border: 1px solid var(--gray-200);">#1E88E5</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
