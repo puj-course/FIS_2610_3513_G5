@@ -3707,6 +3707,12 @@
                         <div class="color-swatch" data-color="pink" style="background: linear-gradient(135deg, #AD1457, #EC407A);" onclick="selectThemeColor(this)"></div>
                         <div class="color-swatch" data-color="dark" style="background: linear-gradient(135deg, #212121, #424242);" onclick="selectThemeColor(this)"></div>
                     </div>
+                    
+                    <div class="custom-color-picker" style="margin-top: 20px; display: flex; align-items: center; gap: 12px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                        <label for="settings-custom-color" style="font-size: 14px; color: var(--gray-700); font-weight: 500;">Color personalizado:</label>
+                        <input type="color" id="settings-custom-color" oninput="updateCustomColorPreview(this.value)" onchange="selectCustomThemeColor(this.value)" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; padding: 0; background: transparent;">
+                        <span id="settings-custom-color-hex" style="font-family: monospace; color: var(--gray-600); font-size: 14px; padding: 4px 8px; background: var(--gray-100); border-radius: 4px; border: 1px solid var(--gray-200);">#HEX</span>
+                    </div>
                 </div>
             </div><!-- /.settings-view -->
 
@@ -7153,6 +7159,15 @@ window.addEventListener('storage', (e) => {
                         document.querySelectorAll('.color-swatch').forEach(s => {
                             s.classList.toggle('selected', s.dataset.color === storedColor);
                         });
+                        
+                        if (storedColor.startsWith('#')) {
+                            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+                            const colorInput = document.getElementById('settings-custom-color');
+                            const colorHex = document.getElementById('settings-custom-color-hex');
+                            if (colorInput) colorInput.value = storedColor;
+                            if (colorHex) colorHex.textContent = storedColor.toUpperCase();
+                            window.customThemeColor = storedColor;
+                        }
                     }
                 })
                 .catch(err => console.error('Error cargando settings:', err));
@@ -7164,7 +7179,8 @@ window.addEventListener('storage', (e) => {
             const nombre = document.getElementById('settings-nombre').value.trim();
             const apellido = document.getElementById('settings-apellido').value.trim();
             const carrera = document.getElementById('settings-carrera').value;
-            const temaColor = document.querySelector('.color-swatch.selected')?.dataset.color || 'blue';
+            let temaColor = document.querySelector('.color-swatch.selected')?.dataset.color;
+            if (!temaColor) temaColor = window.customThemeColor || 'blue';
 
             try {
                 const res = await fetch(`${API}/api/usuarios/${userId}/perfil`, {
@@ -7190,7 +7206,19 @@ window.addEventListener('storage', (e) => {
         function selectThemeColor(el) {
             document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
             el.classList.add('selected');
+            window.customThemeColor = null; // Clear custom color since a swatch is selected
             applyThemeColor(el.dataset.color);
+        }
+
+        function updateCustomColorPreview(colorHex) {
+            document.getElementById('settings-custom-color-hex').textContent = colorHex.toUpperCase();
+            applyThemeColor(colorHex);
+        }
+
+        function selectCustomThemeColor(colorHex) {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+            window.customThemeColor = colorHex;
+            applyThemeColor(colorHex);
         }
 
         // ══════════════════════════════════════════════════════════════
@@ -7209,9 +7237,23 @@ window.addEventListener('storage', (e) => {
         };
 
         function applyThemeColor(colorName) {
+            const r = document.documentElement;
+            
+            if (colorName.startsWith('#')) {
+                // Generar variaciones aproximadas para colores HEX personalizados
+                r.style.setProperty('--blue-50', colorName + '1A'); // ~10% opacidad
+                r.style.setProperty('--blue-100', colorName + '33'); // ~20%
+                r.style.setProperty('--blue-200', colorName + '4D'); // ~30%
+                r.style.setProperty('--blue-300', colorName + '66'); // ~40%
+                r.style.setProperty('--blue-400', colorName + '99'); // ~60%
+                r.style.setProperty('--blue-500', colorName);
+                r.style.setProperty('--blue-600', colorName);
+                r.style.setProperty('--blue-700', colorName);
+                return;
+            }
+
             const c = THEME_COLORS[colorName];
             if (!c) return;
-            const r = document.documentElement;
             r.style.setProperty('--blue-50', c[50]);
             r.style.setProperty('--blue-100', c[100]);
             r.style.setProperty('--blue-200', c[200]);
