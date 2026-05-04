@@ -275,6 +275,162 @@
             font-size: 20px;
         }
 
+        /* ========== VISTA: MI PERFIL (HU-perfil) ========== */
+        .profile-view {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+        .profile-view.active { display: block; }
+
+        .profile-feedback {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .profile-feedback.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #A5D6A7;
+        }
+        .profile-feedback.error {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #EF9A9A;
+        }
+        .profile-feedback .material-icons-round { font-size: 20px; }
+
+        .profile-edit-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            padding: 40px 48px;
+            display: flex;
+            gap: 48px;
+            align-items: flex-start;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        /* Sección foto */
+        .profile-photo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .profile-photo-wrapper {
+            position: relative;
+        }
+        .profile-photo-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue-400), var(--blue-600));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(30, 136, 229, 0.3);
+            border: 3px solid var(--white);
+            outline: 2px solid var(--blue-200);
+        }
+        .profile-photo-preview .material-icons-round {
+            font-size: 56px;
+            color: var(--white);
+        }
+        .profile-photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-photo-btn {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--blue-600);
+            color: var(--white);
+            border: 2px solid var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+        .profile-photo-btn:hover { background: var(--blue-700); }
+        .profile-photo-btn .material-icons-round { font-size: 16px; }
+        .profile-photo-hint {
+            font-size: 11px;
+            color: var(--gray-400);
+            text-align: center;
+            max-width: 120px;
+            line-height: 1.4;
+        }
+
+        /* Sección formulario */
+        .profile-form-section { flex: 1; }
+        .profile-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .profile-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+        .profile-form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+        .profile-form-label .required { color: #E53935; margin-left: 2px; }
+        .profile-form-input {
+            padding: 10px 14px;
+            border: 1.5px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-700);
+            background: var(--white);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+        .profile-form-input:focus {
+            border-color: var(--blue-400);
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+        }
+        .profile-form-input.error {
+            border-color: #E53935;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+        }
+        .profile-form-select { cursor: pointer; }
+        .profile-form-error {
+            font-size: 12px;
+            color: #E53935;
+            display: none;
+        }
+        .profile-form-error.visible { display: block; }
+
+        .profile-form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 8px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-100);
+        }
+
         /* ========== MAIN CONTENT ========== */
         .main-content {
             padding: 28px 32px;
@@ -3181,6 +3337,10 @@
                         <span class="material-icons-round">rate_review</span>
                         Reseñas
                     </div>
+                    <div class="nav-item" id="nav-perfil">
+                        <span class="material-icons-round">manage_accounts</span>
+                        Mi Perfil
+                    </div>
                     <div class="nav-item" id="nav-settings">
                         <span class="material-icons-round">settings</span>
                         Configuración
@@ -3716,6 +3876,121 @@
                 </div>
             </div><!-- /.settings-view -->
 
+            <!-- ===== Vista: Mi Perfil (HU-perfil) ===== -->
+            <div class="profile-view" id="profile-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" id="profile-back-btn">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <h2 class="grades-view-title">Mi Perfil</h2>
+                        <p class="grades-view-subtitle">Actualiza tu información personal</p>
+                    </div>
+                </div>
+
+                <!-- Mensajes de feedback -->
+                <div class="profile-feedback success" id="profile-success" style="display:none;">
+                    <span class="material-icons-round">check_circle</span>
+                    <span id="profile-success-text">Perfil actualizado exitosamente.</span>
+                </div>
+                <div class="profile-feedback error" id="profile-error" style="display:none;">
+                    <span class="material-icons-round">error</span>
+                    <span id="profile-error-text">Error al actualizar el perfil.</span>
+                </div>
+
+                <div class="profile-edit-card">
+                    <!-- Sección de foto de perfil -->
+                    <div class="profile-photo-section">
+                        <div class="profile-photo-wrapper">
+                            <div class="profile-photo-preview" id="profile-photo-preview">
+                                <span class="material-icons-round" id="profile-photo-icon">person</span>
+                                <img id="profile-photo-img" src="" alt="Foto de perfil" style="display:none;">
+                            </div>
+                            <button class="profile-photo-btn" id="profile-photo-btn" title="Cambiar foto">
+                                <span class="material-icons-round">photo_camera</span>
+                            </button>
+                        </div>
+                        <input type="file" id="profile-photo-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                        <p class="profile-photo-hint">JPG, PNG o WEBP · Máx. 2 MB</p>
+                    </div>
+
+                    <!-- Formulario de datos -->
+                    <div class="profile-form-section">
+                        <div class="profile-form-row">
+                            <div class="profile-form-group">
+                                <label class="profile-form-label" for="profile-nombre">
+                                    Nombre <span class="required">*</span>
+                                </label>
+                                <input class="profile-form-input" type="text" id="profile-nombre"
+                                    placeholder="Ej: Juan" maxlength="50" required>
+                                <div class="profile-form-error" id="error-profile-nombre">El nombre es obligatorio</div>
+                            </div>
+                            <div class="profile-form-group">
+                                <label class="profile-form-label" for="profile-apellido">
+                                    Apellido <span class="required">*</span>
+                                </label>
+                                <input class="profile-form-input" type="text" id="profile-apellido"
+                                    placeholder="Ej: Pérez" maxlength="50" required>
+                                <div class="profile-form-error" id="error-profile-apellido">El apellido es obligatorio</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-form-group">
+                            <label class="profile-form-label" for="profile-carrera">
+                                Carrera <span class="required">*</span>
+                            </label>
+                            <select class="profile-form-input profile-form-select" id="profile-carrera" required>
+                                <option value="">Selecciona tu carrera</option>
+                                <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+                                <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                                <option value="Ingeniería Civil">Ingeniería Civil</option>
+                                <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+                                <option value="Medicina">Medicina</option>
+                                <option value="Derecho">Derecho</option>
+                                <option value="Administración de Empresas">Administración de Empresas</option>
+                                <option value="Economía">Economía</option>
+                                <option value="Comunicación Social">Comunicación Social</option>
+                                <option value="Psicología">Psicología</option>
+                                <option value="Arquitectura">Arquitectura</option>
+                                <option value="Contaduría">Contaduría</option>
+                                <option value="Ciencia Política">Ciencia Política</option>
+                                <option value="Otra">Otra</option>
+                            </select>
+                            <div class="profile-form-error" id="error-profile-carrera">La carrera es obligatoria</div>
+                        </div>
+
+                        <div class="profile-form-group">
+                            <label class="profile-form-label" for="profile-semestre">
+                                Semestre actual <span class="required">*</span>
+                            </label>
+                            <select class="profile-form-input profile-form-select" id="profile-semestre" required>
+                                <option value="">Selecciona tu semestre</option>
+                                <option value="1">1° semestre</option>
+                                <option value="2">2° semestre</option>
+                                <option value="3">3° semestre</option>
+                                <option value="4">4° semestre</option>
+                                <option value="5">5° semestre</option>
+                                <option value="6">6° semestre</option>
+                                <option value="7">7° semestre</option>
+                                <option value="8">8° semestre</option>
+                                <option value="9">9° semestre</option>
+                                <option value="10">10° semestre</option>
+                            </select>
+                            <div class="profile-form-error" id="error-profile-semestre">El semestre es obligatorio</div>
+                        </div>
+
+                        <!-- Acciones -->
+                        <div class="profile-form-actions">
+                            <button class="btn-cancel" id="profile-btn-cancel" type="button">Cancelar</button>
+                            <button class="btn-save" id="profile-btn-save" type="button">
+                                <span class="material-icons-round" id="profile-save-icon">save</span>
+                                <span id="profile-save-text">Guardar Cambios</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.profile-view -->
+
         </main>
 
         <aside class="sidebar-right">
@@ -4179,7 +4454,7 @@
 
     <script>
         const API      = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                         ? 'https://studyhub-c2ft.onrender.com' 
+                         ? 'http://localhost:8080' 
                          : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
 
@@ -5154,9 +5429,310 @@
             });
         });
 
+        // ══════════════════════════════════════════════════════════════
+        //  VISTA MI PERFIL (HU-perfil)
+        // ══════════════════════════════════════════════════════════════
+
+        /** Snapshot de los datos del perfil al entrar a la vista (para Cancelar) */
+        let _profileSnapshot = null;
+        /** Archivo de imagen pendiente de subir */
+        let _profilePhotoFile = null;
+
+        /**
+         * Abre la vista Mi Perfil y precarga los datos del usuario desde el backend.
+         */
+        async function openProfileView() {
+            hideAllViews();
+            document.getElementById('profile-view').classList.add('active');
+            syncNavbar('nav-perfil');
+            currentView = 'perfil';
+
+            hideFeedback();
+            _profilePhotoFile = null;
+
+            const userId = getUserId();
+            if (!userId) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/${userId}`);
+                if (!res.ok) throw new Error('No se pudo cargar el perfil');
+                const u = await res.json();
+
+                document.getElementById('profile-nombre').value    = u.nombre    || '';
+                document.getElementById('profile-apellido').value  = u.apellido  || '';
+                document.getElementById('profile-carrera').value   = u.carrera   || '';
+                document.getElementById('profile-semestre').value  = u.semestre  || '';
+
+                // Foto de perfil
+                const img  = document.getElementById('profile-photo-img');
+                const icon = document.getElementById('profile-photo-icon');
+                if (u.fotoPerfil) {
+                    const fotoUrl = u.fotoPerfil.startsWith('http')
+                        ? u.fotoPerfil
+                        : `${API}${u.fotoPerfil}`;
+                    img.src = fotoUrl;
+                    img.style.display  = 'block';
+                    icon.style.display = 'none';
+                    // Reflejar también en el sidebar si ya tenía foto
+                    updateSidebarProfile(u);
+                } else {
+                    img.style.display  = 'none';
+                    icon.style.display = '';
+                }
+
+                // Guardar snapshot para cancelar
+                _profileSnapshot = {
+                    nombre: u.nombre || '', apellido: u.apellido || '',
+                    carrera: u.carrera || '', semestre: u.semestre || '',
+                    fotoPerfil: u.fotoPerfil || ''
+                };
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        /** Oculta ambos mensajes de feedback */
+        function hideFeedback() {
+            document.getElementById('profile-success').style.display = 'none';
+            document.getElementById('profile-error').style.display   = 'none';
+        }
+
+        /** Muestra mensaje de éxito */
+        function showProfileSuccess(msg) {
+            hideFeedback();
+            document.getElementById('profile-success-text').textContent = msg;
+            document.getElementById('profile-success').style.display    = 'flex';
+        }
+
+        /** Muestra mensaje de error */
+        function showProfileError(msg) {
+            hideFeedback();
+            document.getElementById('profile-error-text').textContent = msg;
+            document.getElementById('profile-error').style.display    = 'flex';
+        }
+
+        // Previsualización inmediata de la foto seleccionada
+        document.getElementById('profile-photo-btn').addEventListener('click', () => {
+            document.getElementById('profile-photo-input').click();
+        });
+
+        document.getElementById('profile-photo-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validar tipo
+            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowed.includes(file.type)) {
+                showProfileError('Solo se permiten imágenes JPG, PNG o WEBP.');
+                e.target.value = '';
+                return;
+            }
+            // Validar tamaño (2 MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showProfileError('La imagen no puede superar los 2 MB.');
+                e.target.value = '';
+                return;
+            }
+
+            hideFeedback();
+            _profilePhotoFile = file;
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img  = document.getElementById('profile-photo-img');
+                const icon = document.getElementById('profile-photo-icon');
+                img.src = ev.target.result;
+                img.style.display  = 'block';
+                icon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        /** Valida el formulario de perfil. Retorna true si todo es correcto. */
+        function validateProfileForm() {
+            let valid = true;
+            const fields = [
+                { id: 'profile-nombre',   errId: 'error-profile-nombre' },
+                { id: 'profile-apellido', errId: 'error-profile-apellido' },
+                { id: 'profile-carrera',  errId: 'error-profile-carrera' },
+                { id: 'profile-semestre', errId: 'error-profile-semestre' },
+            ];
+            fields.forEach(({ id, errId }) => {
+                const input = document.getElementById(id);
+                const err   = document.getElementById(errId);
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    err.classList.add('visible');
+                    valid = false;
+                } else {
+                    input.classList.remove('error');
+                    err.classList.remove('visible');
+                }
+            });
+            return valid;
+        }
+
+        // Limpiar error al escribir
+        ['profile-nombre','profile-apellido','profile-carrera','profile-semestre'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', () => {
+                el.classList.remove('error');
+                const errId = 'error-' + id;
+                document.getElementById(errId)?.classList.remove('visible');
+            });
+        });
+
+        /**
+         * Guarda los cambios del perfil en el backend.
+         * 1. Si hay foto nueva → sube imagen con multipart/form-data
+         * 2. Actualiza datos personales con PUT /api/usuarios/:id (JSON)
+         * 3. Refleja cambios en la sidebar inmediatamente
+         */
+        document.getElementById('profile-btn-save').addEventListener('click', async () => {
+            hideFeedback();
+            if (!validateProfileForm()) return;
+
+            const userId   = getUserId();
+            if (!userId) { showProfileError('No se encontró sesión activa.'); return; }
+
+            const nombre   = document.getElementById('profile-nombre').value.trim();
+            const apellido = document.getElementById('profile-apellido').value.trim();
+            const carrera  = document.getElementById('profile-carrera').value;
+            const semestre = document.getElementById('profile-semestre').value;
+
+            // Estado visual: cargando
+            const btnSave  = document.getElementById('profile-btn-save');
+            const saveIcon = document.getElementById('profile-save-icon');
+            const saveText = document.getElementById('profile-save-text');
+            btnSave.disabled   = true;
+            saveIcon.textContent = 'hourglass_empty';
+            saveText.textContent = 'Guardando…';
+
+            try {
+                let fotoUrl = _profileSnapshot?.fotoPerfil || '';
+
+                // 1. Subir foto si se seleccionó una nueva
+                if (_profilePhotoFile) {
+                    const formData = new FormData();
+                    formData.append('foto', _profilePhotoFile);
+                    const fotoRes = await fetch(`${API_BASE}/${userId}/foto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!fotoRes.ok) {
+                        const err = await fotoRes.json().catch(() => ({}));
+                        throw new Error(err.mensaje || 'Error al subir la foto');
+                    }
+                    const fotoData = await fotoRes.json();
+                    fotoUrl = fotoData.url || fotoData.fotoPerfil || fotoUrl;
+                }
+
+                // 2. Actualizar datos personales
+                const payload = { nombre, apellido, carrera, semestre: parseInt(semestre) };
+                if (fotoUrl) payload.fotoPerfil = fotoUrl;
+
+                const res = await fetch(`${API_BASE}/${userId}/perfil`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const body = await res.json();
+                if (!res.ok) {
+                    throw new Error(body.mensaje || `Error ${res.status} al actualizar el perfil`);
+                }
+
+                // El PUT /perfil retorna { mensaje, usuario }
+                const updated = body.usuario || body;
+
+                // 3. Reflejar en la sidebar inmediatamente (HU-20)
+                updateSidebarProfile(updated);
+
+                // Actualizar snapshot y limpiar foto pendiente
+                _profileSnapshot = { nombre, apellido, carrera, semestre, fotoPerfil: fotoUrl };
+                _profilePhotoFile = null;
+
+                showProfileSuccess('¡Perfil actualizado exitosamente!');
+            } catch (err) {
+                console.error(err);
+                showProfileError(err.message || 'Error inesperado al guardar los cambios.');
+            } finally {
+                btnSave.disabled     = false;
+                saveIcon.textContent = 'save';
+                saveText.textContent = 'Guardar Cambios';
+            }
+        });
+
+        /**
+         * Actualiza el avatar, nombre y semestre visibles en la barra lateral
+         * sin recargar la página.
+         * @param {Object} u - Objeto usuario actualizado del backend
+         */
+        function updateSidebarProfile(u) {
+            // Nombre completo
+            const nameEl = document.querySelector('.profile-name');
+            if (nameEl) nameEl.textContent = `${u.nombre || ''} ${u.apellido || ''}`.trim();
+
+            // Foto de perfil en el avatar del sidebar
+            const avatar = document.querySelector('.profile-avatar');
+            if (avatar && u.fotoPerfil) {
+                // Construir URL absoluta usando la base del API
+                const fotoUrl = u.fotoPerfil.startsWith('http')
+                    ? u.fotoPerfil
+                    : `${API}${u.fotoPerfil}`;
+                avatar.innerHTML = `<img src="${fotoUrl}" alt="Foto de perfil"
+                    style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            }
+        }
+
+        // Cancelar: restaurar valores del snapshot
+        document.getElementById('profile-btn-cancel').addEventListener('click', () => {
+            if (!_profileSnapshot) {
+                document.getElementById('nav-dashboard').click();
+                return;
+            }
+            document.getElementById('profile-nombre').value   = _profileSnapshot.nombre;
+            document.getElementById('profile-apellido').value = _profileSnapshot.apellido;
+            document.getElementById('profile-carrera').value  = _profileSnapshot.carrera;
+            document.getElementById('profile-semestre').value = _profileSnapshot.semestre;
+
+            const img  = document.getElementById('profile-photo-img');
+            const icon = document.getElementById('profile-photo-icon');
+            if (_profileSnapshot.fotoPerfil) {
+                img.src = _profileSnapshot.fotoPerfil;
+                img.style.display  = 'block';
+                icon.style.display = 'none';
+            } else {
+                img.style.display  = 'none';
+                icon.style.display = '';
+            }
+            document.getElementById('profile-photo-input').value = '';
+            _profilePhotoFile = null;
+
+            hideFeedback();
+            // Limpiar errores
+            ['profile-nombre','profile-apellido','profile-carrera','profile-semestre'].forEach(id => {
+                document.getElementById(id).classList.remove('error');
+                document.getElementById('error-' + id)?.classList.remove('visible');
+            });
+
+            document.getElementById('nav-dashboard').click();
+        });
+
+        // Botón "Atrás" de la vista
+        document.getElementById('profile-back-btn').addEventListener('click', () => {
+            document.getElementById('nav-dashboard').click();
+        });
+
+        // Nav "Mi Perfil"
+        document.getElementById('nav-perfil').addEventListener('click', () => {
+            navigateSafe(() => { openProfileView(); });
+        });
+
         function hideAllViews() {
             const settingsView = document.getElementById('settings-view');
-            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView, settingsView];
+            const profileView  = document.getElementById('profile-view');
+            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView, settingsView, profileView];
             views.forEach(v => { if (v) v.classList.remove('active'); });
             // Reset nav active class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
