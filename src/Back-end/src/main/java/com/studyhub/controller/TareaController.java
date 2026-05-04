@@ -4,6 +4,8 @@ import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
 import com.studyhub.repository.AsignaturaRepository;
 import com.studyhub.repository.TareaRepository;
+import com.studyhub.service.NotificationService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +24,12 @@ public class TareaController {
 
     private final TareaRepository tareaRepository;
     private final AsignaturaRepository asignaturaRepository;
+    private final NotificationService notificationService;
 
-    public TareaController(TareaRepository tareaRepository, AsignaturaRepository asignaturaRepository) {
+    public TareaController(TareaRepository tareaRepository, AsignaturaRepository asignaturaRepository, NotificationService notificationService) {
         this.tareaRepository = tareaRepository;
         this.asignaturaRepository = asignaturaRepository;
+        this.notificationService = notificationService;
     }
 
     @PostMapping
@@ -55,6 +59,16 @@ public class TareaController {
         tarea.setEstado(true);
 
         Tarea tareaGuardada = tareaRepository.save(tarea);
+        
+     // HU-36: disparar notificación al dueño de la asignatura
+        notificationService.publicar(
+            asignatura.getUsuario().getId(),
+            "TAREA",
+            "Nueva tarea creada: " + tareaGuardada.getTitulo(),
+            "NORMAL",
+            "/tareas/" + tareaGuardada.getId()
+        );
+        
         respuesta.put("mensaje", "Tarea guardada exitosamente");
         respuesta.put("tarea", tareaGuardada);
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
