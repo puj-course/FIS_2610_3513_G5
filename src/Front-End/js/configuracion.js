@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'https://studyhub-c2ft.onrender.com/api' 
+                    ? 'http://localhost:8080/api' 
                     : window.location.origin + '/api';
 
     // Cargar preferencias iniciales
