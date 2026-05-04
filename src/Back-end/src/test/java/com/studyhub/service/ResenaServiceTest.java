@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,189 +33,104 @@ class ResenaServiceTest {
     void setUp() {
         usuario = new Usuario();
         usuario.setId(1L);
+        usuario.setNombre("Federico");
 
         resena = new Resena();
-        resena.setComentario("Muy buena plataforma para organizar el semestre.");
+        resena.setId(1L);
+        resena.setComentario("Excelente materia, muy buen contenido");
         resena.setCalificacion(5);
+        resena.setTipo("MATERIA");
+        resena.setObjetivo("Fundamentos de Ingeniería de Software");
         resena.setUsuario(usuario);
     }
 
-    // ─── crearResena — CP normal ────────────────────────────────────────────
-
     @Test
-    void crearResena_guardaYRetornaResena_cuandoDatosValidos() {
-        // Arrange
-        when(resenaRepository.save(resena)).thenReturn(resena);
-
-        // Act
-        Resena resultado = resenaService.crearResena(resena);
-
-        // Assert
-        System.out.println("Resultado real: Reseña creada - comentario='" + resultado.getComentario() + "', calificacion=" + resultado.getCalificacion());
-        assertNotNull(resultado);
-        assertEquals("Muy buena plataforma para organizar el semestre.", resultado.getComentario());
-        verify(resenaRepository, times(1)).save(resena);
-    }
-
-    // ─── CP11: comentario vacío ─────────────────────────────────────────────
-
-    @Test
-    void crearResena_lanzaExcepcion_cuandoComentarioEsVacio() {
-        // Arrange
-        resena.setComentario("");
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.crearResena(resena));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+    void crearResena_lanzaExcepcion_cuandoComentarioEsNull() {
+        resena.setComentario(null);
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
         assertEquals("El comentario no puede estar vacío", ex.getMessage());
         verify(resenaRepository, never()).save(any());
     }
 
     @Test
-    void crearResena_lanzaExcepcion_cuandoComentarioEsNulo() {
-        // Arrange
-        resena.setComentario(null);
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.crearResena(resena));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+    void crearResena_lanzaExcepcion_cuandoComentarioEsVacio() {
+        resena.setComentario("");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
         assertEquals("El comentario no puede estar vacío", ex.getMessage());
         verify(resenaRepository, never()).save(any());
     }
 
     @Test
     void crearResena_lanzaExcepcion_cuandoComentarioSoloTieneEspacios() {
-        // Arrange
         resena.setComentario("   ");
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.crearResena(resena));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
         assertEquals("El comentario no puede estar vacío", ex.getMessage());
         verify(resenaRepository, never()).save(any());
     }
 
-    // ─── Borde: límite de longitud del comentario ───────────────────────────
-
     @Test
     void crearResena_lanzaExcepcion_cuandoComentarioSuperaLosQuinientosCaracteres() {
-        // Arrange
         resena.setComentario("A".repeat(501));
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.crearResena(resena));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
         assertEquals("El comentario no puede superar los 500 caracteres", ex.getMessage());
         verify(resenaRepository, never()).save(any());
     }
 
     @Test
     void crearResena_guardaResena_cuandoComentarioTieneExactamenteQuinientosCaracteres() {
-        // Arrange
         resena.setComentario("A".repeat(500));
         when(resenaRepository.save(resena)).thenReturn(resena);
-
-        // Act
         Resena resultado = resenaService.crearResena(resena);
-
-        // Assert
-        System.out.println("Resultado real: Reseña creada - longitud comentario=" + resultado.getComentario().length() + " caracteres");
         assertNotNull(resultado);
+        assertEquals(500, resultado.getComentario().length());
         verify(resenaRepository, times(1)).save(resena);
     }
 
-    // ─── CP12: calificación fuera de rango ──────────────────────────────────
-
     @Test
-    void crearResena_lanzaExcepcion_cuandoCalificacionEsMayorQueCinco() {
-        // Arrange
-        resena.setCalificacion(6);
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.crearResena(resena));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
-        assertEquals("La calificación debe estar entre 1 y 5", ex.getMessage());
-        verify(resenaRepository, never()).save(any());
+    void crearResena_guardaYRetornaResena_cuandoDatosValidos() {
+        when(resenaRepository.save(resena)).thenReturn(resena);
+        Resena resultado = resenaService.crearResena(resena);
+        assertNotNull(resultado);
+        assertEquals("Excelente materia, muy buen contenido", resultado.getComentario());
+        verify(resenaRepository, times(1)).save(resena);
     }
 
     @Test
     void crearResena_lanzaExcepcion_cuandoCalificacionEsMenorQueUno() {
-        // Arrange
         resena.setCalificacion(0);
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.crearResena(resena));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
         assertEquals("La calificación debe estar entre 1 y 5", ex.getMessage());
         verify(resenaRepository, never()).save(any());
     }
 
     @Test
-    void crearResena_guardaResena_cuandoCalificacionEsUno() {
-        // Arrange
-        resena.setCalificacion(1);
-        when(resenaRepository.save(resena)).thenReturn(resena);
-
-        // Act
-        Resena resultado = resenaService.crearResena(resena);
-
-        // Assert
-        System.out.println("Resultado real: Reseña creada - calificacion=" + resultado.getCalificacion());
-        assertNotNull(resultado);
-        verify(resenaRepository, times(1)).save(resena);
+    void crearResena_lanzaExcepcion_cuandoCalificacionEsMayorQueCinco() {
+        resena.setCalificacion(6);
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
+        assertEquals("La calificación debe estar entre 1 y 5", ex.getMessage());
+        verify(resenaRepository, never()).save(any());
     }
-
-    // ─── CP13: eliminarResena sin permiso ───────────────────────────────────
 
     @Test
     void eliminarResena_lanzaExcepcion_cuandoUsuarioNoEsDueno() {
-        // Arrange
         when(resenaRepository.findById(1L)).thenReturn(Optional.of(resena));
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.eliminarResena(1L, 2L));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+        Long otroUsuarioId = 99L;
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.eliminarResena(1L, otroUsuarioId));
         assertEquals("No tienes permiso para eliminar esta reseña", ex.getMessage());
         verify(resenaRepository, never()).delete(any());
     }
 
     @Test
     void eliminarResena_eliminaCorrectamente_cuandoUsuarioEsDueno() {
-        // Arrange
         when(resenaRepository.findById(1L)).thenReturn(Optional.of(resena));
-
-        // Act
         assertDoesNotThrow(() -> resenaService.eliminarResena(1L, 1L));
-
-        // Assert
-        System.out.println("Resultado real: Reseña eliminada correctamente - usuarioId=1, resenaId=1");
         verify(resenaRepository, times(1)).delete(resena);
     }
 
     @Test
     void eliminarResena_lanzaExcepcion_cuandoResenaNoExiste() {
-        // Arrange
         when(resenaRepository.findById(99L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> resenaService.eliminarResena(99L, 1L));
-
-        System.out.println("Resultado real: Excepción lanzada - \"" + ex.getMessage() + "\"");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.eliminarResena(99L, 1L));
         assertEquals("Reseña no encontrada", ex.getMessage());
         verify(resenaRepository, never()).delete(any());
     }
