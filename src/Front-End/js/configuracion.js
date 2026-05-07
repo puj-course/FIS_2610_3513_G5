@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnReset = document.getElementById('config-btn-reset');
     const temaSelect = document.getElementById('config-tema');
     const swatches = document.querySelectorAll('.color-swatch');
+    const customColorInput = document.getElementById('custom-color');
+    const customColorHex = document.getElementById('custom-color-hex');
 
     // Si no existen los elementos necesarios, abortar para no romper otros scripts
     if (!configBtn || !modalOverlay) {
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'https://studyhub-c2ft.onrender.com/api' 
+                    ? 'http://localhost:8080/api' 
                     : window.location.origin + '/api';
 
     // Cargar preferencias iniciales
@@ -78,9 +80,31 @@ document.addEventListener('DOMContentLoaded', () => {
             swatches.forEach(s => s.style.border = '2px solid transparent');
             e.target.style.border = '2px solid var(--gray-700)';
 
+            // Update custom input
+            if (customColorInput) customColorInput.value = color;
+            if (customColorHex) customColorHex.textContent = color.toUpperCase();
+
             aplicarPreferencias(currentPrefs);
         });
     });
+
+    // Event Listener - Cambio de Color Personalizado
+    if (customColorInput) {
+        customColorInput.addEventListener('input', (e) => {
+            const color = e.target.value;
+            currentPrefs.colorPrimario = color;
+            
+            if (customColorHex) customColorHex.textContent = color.toUpperCase();
+
+            // Deseleccionar swatches
+            swatches.forEach(s => {
+                s.classList.remove('active');
+                s.style.border = '2px solid transparent';
+            });
+
+            aplicarPreferencias(currentPrefs);
+        });
+    }
 
     // Guardar en BD
     btnSave.addEventListener('click', async () => {
@@ -191,14 +215,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function actualizarUIModal() {
         temaSelect.value = currentPrefs.tema;
         
+        let isSwatchMatched = false;
         swatches.forEach(swatch => {
             swatch.classList.remove('active');
             swatch.style.border = '2px solid transparent';
-            if (swatch.getAttribute('data-color') === currentPrefs.colorPrimario) {
+            if (swatch.getAttribute('data-color').toLowerCase() === currentPrefs.colorPrimario.toLowerCase()) {
                 swatch.classList.add('active');
                 swatch.style.border = '2px solid var(--gray-700)';
+                isSwatchMatched = true;
             }
         });
+
+        if (customColorInput) {
+            customColorInput.value = currentPrefs.colorPrimario;
+        }
+        if (customColorHex) {
+            customColorHex.textContent = currentPrefs.colorPrimario.toUpperCase();
+        }
     }
 
     function mostrarToast(mensaje) {
