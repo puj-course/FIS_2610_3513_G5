@@ -1,10 +1,5 @@
-# Sistema de Notificaciones Interactivas, Funcionales
-# Horario Semanal Expandido 
-# Gestión de Imagen de Perfil y cuadricula de materias funcionales
-# Sistema de Filtrado de Horario y Búsqueda
-# Visualización de Prioridades en Preview, vistas de notas y tareas Funcionales
-
- 
- 
- 
- 
+# Redirección Inteligente desde  Notificación
+# Exportación de Horario (PDF/Imagen)
+# Vista de Detalle y Salón en el Horario
+# Dashboard de Materias con Indicadores de Riesgo
+# Búsqueda Global "Omnisearch"
