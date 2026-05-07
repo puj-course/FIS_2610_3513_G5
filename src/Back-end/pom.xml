@@ -61,6 +61,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+        <!-- PDF Generation (#480) -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -81,6 +87,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                </configuration>
             </plugin>
             <!-- Plugin JaCoCo para cobertura de código (requerido por SonarCloud) -->
             <plugin>
@@ -101,14 +111,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <useFile>false</useFile>
-                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                </configuration>
             </plugin>
         </plugins>
     </build>
