@@ -77,6 +77,15 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <!-- Evitar la generación del jar -plain que puede causar problemas en Docker -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <classifier>plain</classifier>
+                    <skipIfEmpty>true</skipIfEmpty>
+                </configuration>
+            </plugin>
             <!-- Plugin para generar reportes de pruebas en HTML -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

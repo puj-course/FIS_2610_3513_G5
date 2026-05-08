@@ -12,8 +12,8 @@ RUN mvn dependency:go-offline -B
 COPY src/Back-end/src ./src
 
 # Copiar el frontend al directorio de recursos estáticos de Spring Boot
-# Esto permite que el backend sirva el index.html en la raíz (/) 
-COPY src/Front-End ./src/main/resources/static
+# Se usa la ruta completa para evitar ambigüedades
+COPY src/Front-End/ /app/src/main/resources/static/
 
 RUN mvn clean package -DskipTests -Dmaven.test.skip=true
 
@@ -21,8 +21,8 @@ RUN mvn clean package -DskipTests -Dmaven.test.skip=true
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copiar el archivo JAR construido desde la etapa anterior
-COPY --from=build /app/target/*.jar app.jar
+# Copiar el archivo JAR (buscando específicamente el que no es 'plain')
+COPY --from=build /app/target/studyhub-0.0.1-SNAPSHOT.jar app.jar
 
 # Crear el directorio para carga de archivos
 RUN mkdir -p uploads/fotos-perfil
