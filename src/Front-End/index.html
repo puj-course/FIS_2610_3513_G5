@@ -5641,6 +5641,9 @@
                 // 3. Reflejar en la sidebar inmediatamente (HU-20)
                 updateSidebarProfile(updated);
 
+                // 4. PERSISTIR CAMBIOS: Actualizar localStorage para que no se pierdan al dar F5
+                SessionManager.getInstance().setUser(updated);
+
                 // Actualizar snapshot y limpiar foto pendiente
                 _profileSnapshot = { nombre, apellido, carrera, semestre, fotoPerfil: fotoUrl };
                 _profilePhotoFile = null;
@@ -6935,6 +6938,8 @@
                 document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
                 document.querySelector('.profile-id').dataset.userId = user.id;
                 
+                // Cargar foto de perfil al inicio (Fix persistencia F5)
+                updateSidebarProfile(user);
                 hideAllViews();
                 dashboardView.classList.add('active');
                 syncNavbar('nav-dashboard');
@@ -6954,6 +6959,9 @@
                 document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
                 document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
                 document.querySelector('.profile-id').dataset.userId = user.id;
+
+                // Cargar foto de perfil al inicio (Fix persistencia F5)
+                updateSidebarProfile(user);
 
                 hideAllViews();
                 resenasView.classList.add('active');
