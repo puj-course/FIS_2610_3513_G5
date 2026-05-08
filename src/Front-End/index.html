@@ -3994,33 +3994,26 @@
         </main>
 
         <aside class="sidebar-right">
-            <div class="widget">
+            <div class="widget" id="notification-widget">
                 <div class="widget-header">
                     <div class="widget-title">
                         <span class="material-icons-round">notifications</span>
                         Notificaciones
+                        <!-- Badge con conteo de no leídas -->
+                        <span id="notif-badge" style="
+                            display:none; background:#E53935; color:#fff;
+                            border-radius:50%; font-size:11px; font-weight:700;
+                            padding:2px 6px; margin-left:6px;">0</span>
                     </div>
-                    <span class="widget-action">Ver todas</span>
+                    <span class="widget-action" id="notif-mark-all" style="cursor:pointer;">
+                        Marcar todas leídas
+                    </span>
                 </div>
-                <div class="notification-item">
-                    <div class="notification-dot blue"></div>
-                    <div>
-                        <div class="notification-text">Nueva tarea publicada en <strong>Fundamentos de Ing. de Software</strong></div>
-                        <div class="notification-time">Hace 2 horas</div>
-                    </div>
-                </div>
-                <div class="notification-item">
-                    <div class="notification-dot blue"></div>
-                    <div>
-                        <div class="notification-text">Recordatorio: Parcial de <strong>Cálculo Diferencial</strong> el viernes</div>
-                        <div class="notification-time">Hace 5 horas</div>
-                    </div>
-                </div>
-                <div class="notification-item">
-                    <div class="notification-dot light"></div>
-                    <div>
-                        <div class="notification-text">Tu reseña de <strong>Prof. Carlos Ramírez</strong> fue publicada</div>
-                        <div class="notification-time">Ayer</div>
+
+                <!-- Lista dinámica de notificaciones -->
+                <div id="notification-list">
+                    <div style="padding:12px; color:#90A4AE; font-size:13px;">
+                        Cargando notificaciones...
                     </div>
                 </div>
             </div>
@@ -8325,5 +8318,6 @@ window.addEventListener('storage', (e) => {
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
+    <script src="js/notifications.js"></script>
 </body>
 </html>
