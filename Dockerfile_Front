@@ -1,0 +1,11 @@
+# Dockerfile para el Frontend de StudyHub
+FROM nginx:alpine
+
+# Copiar los archivos estáticos al directorio de Nginx
+COPY . /usr/share/nginx/html
+
+# Exponer el puerto 80
+EXPOSE 80
+
+# Comando para ejecutar Nginx
+CMD ["nginx", "-g", "daemon off;"]
