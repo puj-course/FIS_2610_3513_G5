@@ -21,8 +21,9 @@ RUN mvn clean package -DskipTests -Dmaven.test.skip=true
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copiar el archivo JAR (buscando específicamente el que no es 'plain')
-COPY --from=build /app/target/studyhub-0.0.1-SNAPSHOT.jar app.jar
+# Copiar todos los JARs y luego seleccionar el correcto (el más grande, que es el fat-jar)
+COPY --from=build /app/target/*.jar ./
+RUN mv $(ls -S *.jar | grep -v plain | head -n 1) app.jar
 
 # Crear el directorio para carga de archivos
 RUN mkdir -p uploads/fotos-perfil
