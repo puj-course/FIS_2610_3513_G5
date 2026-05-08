@@ -1,8 +1,11 @@
 # Dockerfile para el Frontend de StudyHub
 FROM nginx:alpine
 
-# Copiar los archivos estáticos al directorio de Nginx
-COPY src/Front-End /usr/share/nginx/html
+# Copiar SOLO los archivos del frontend
+COPY src/Front-End/ /usr/share/nginx/html/
+
+# Copiar configuración personalizada de nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Exponer el puerto 80
 EXPOSE 80
