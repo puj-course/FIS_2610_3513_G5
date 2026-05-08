@@ -23,7 +23,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: src/Back-end/Dockerfile
+      dockerfile: Dockerfile
     container_name: studyhub-backend
     # Descomenta depends_on si usas la DB local
     # depends_on:
@@ -43,8 +43,8 @@ services:
   # Servicio Frontend (Nginx)
   frontend:
     build:
-      context: src/Front-End
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile_Front
     container_name: studyhub-frontend
     ports:
       - "80:80"
