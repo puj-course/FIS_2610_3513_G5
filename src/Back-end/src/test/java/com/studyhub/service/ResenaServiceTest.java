@@ -47,12 +47,26 @@ class ResenaServiceTest {
     @Test
     void crearResena_lanzaExcepcion_cuandoComentarioEsNull() {
         resena.setComentario(null);
+
+        // Act & Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> resenaService.crearResena(resena));
+
         RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
         assertEquals("El comentario no puede estar vacío", ex.getMessage());
         verify(resenaRepository, never()).save(any());
     }
 
     @Test
+    void crearResena_guardaExitosamente_cuandoComentarioTiene500Chars() {
+        // Arrange
+        String comentario500 = "a".repeat(500);
+        resena.setComentario(comentario500);
+        resena.setCalificacion(4);
+
+        when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
+
+        // Act
     void crearResena_lanzaExcepcion_cuandoComentarioEsVacio() {
         resena.setComentario("");
         RuntimeException ex = assertThrows(RuntimeException.class, () -> resenaService.crearResena(resena));
@@ -87,6 +101,14 @@ class ResenaServiceTest {
     }
 
     @Test
+    void crearResena_lanzaExcepcion_cuandoCalificacionEsCero() {
+        // Arrange
+        resena.setCalificacion(0);
+
+        // Act & Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> resenaService.crearResena(resena));
+
     void crearResena_guardaYRetornaResena_cuandoDatosValidos() {
         when(resenaRepository.save(resena)).thenReturn(resena);
         Resena resultado = resenaService.crearResena(resena);
@@ -103,6 +125,23 @@ class ResenaServiceTest {
         verify(resenaRepository, never()).save(any());
     }
 
+    // ─── CP10: Lógica de negocio — Crear reseña válida completa ─────────────
+
+    @Test
+    void crearResena_guardaYRetorna_cuandoDatosCompletos() {
+        // Arrange
+        when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
+
+        // Act
+        Resena resultado = resenaService.crearResena(resena);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals("Excelente materia, muy buen contenido", resultado.getComentario());
+        assertEquals(5, resultado.getCalificacion());
+        assertEquals("MATERIA", resultado.getTipo());
+        assertEquals("Fundamentos de Ingeniería de Software", resultado.getObjetivo());
+        verify(resenaRepository, times(1)).save(resena);
     @Test
     void crearResena_lanzaExcepcion_cuandoCalificacionEsMayorQueCinco() {
         resena.setCalificacion(6);
