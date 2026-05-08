@@ -8,7 +8,7 @@
  */
 
 const NotificationPanel = (() => {
-    const API_BASE = window.API || 'http://localhost:8080';
+    const API_BASE = window.API || window.location.origin;
     let notificaciones = [];  // estado local en memoria
     let userId = null;
     let eventSource = null;
