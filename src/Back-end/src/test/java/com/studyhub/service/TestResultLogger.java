@@ -21,7 +21,7 @@ public class TestResultLogger implements TestWatcher {
     }
 
     private String getCp(String name) {
-        // ─── NotaService ───────────────────────────────────────────────────
+        // - NotaService -
         if (name.contains("DatosValidos") && name.contains("agregar"))           return "CP01";
         if (name.contains("Negativo"))                                            return "CP02";
         if (name.contains("SumaSuperaCien"))                                      return "CP03";
@@ -30,18 +30,18 @@ public class TestResultLogger implements TestWatcher {
         if (name.contains("calcularPromedio") || name.contains("Promedio"))      return "CP06";
         if (name.contains("retornaCero") && name.contains("Notas"))              return "CP07";
 
-        // ─── EstadoTareaService ────────────────────────────────────────────
+        // - EstadoTareaService -
         if (name.contains("Vencida"))                                             return "CP08";
         if (name.contains("Proxima") || name.contains("Manana"))                 return "CP09";
         if (name.contains("Pendiente"))                                           return "CP10";
 
-        // ─── ResenaService ─────────────────────────────────────────────────
+        // - ResenaService -
         if (name.contains("Vacio") || name.contains("Nulo") || name.contains("Espacios")) return "CP11";
         if (name.contains("MayorQueCinco") || name.contains("MenorQueUno")
                 || name.contains("CalificacionEsUno") || name.contains("Quinientos"))     return "CP12";
         if (name.contains("NoDueno") || name.contains("EsDueno")
                 || name.contains("ResenaNoExiste"))                               return "CP13";
 
-        return "—";
+        return "-";
     }
 }
