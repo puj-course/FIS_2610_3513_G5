@@ -23,7 +23,7 @@ class EstadoTareaServiceTest {
         tarea.setTitulo("Tarea de prueba");
     }
 
-    // ─── CP08: Tarea VENCIDA ────────────────────────────────────────────────
+    // - CP08: Tarea VENCIDA -
 
     @Test
     void obtenerEstado_retornaVencida_cuandoFechaEntregaEsAyer() {
@@ -51,7 +51,7 @@ class EstadoTareaServiceTest {
         assertEquals("VENCIDA", estado);
     }
 
-    // ─── CP09: Tarea PROXIMA ────────────────────────────────────────────────
+    // - CP09: Tarea PROXIMA -
 
     @Test
     void obtenerEstado_retornaProxima_cuandoFechaEntregaEsManana() {
@@ -66,7 +66,7 @@ class EstadoTareaServiceTest {
         assertEquals("PROXIMA", estado);
     }
 
-    // ─── CP10: Tarea PENDIENTE ──────────────────────────────────────────────
+    // - CP10: Tarea PENDIENTE -
 
     @Test
     void obtenerEstado_retornaPendiente_cuandoFechaEntregaEsEnDiezDias() {
@@ -94,7 +94,7 @@ class EstadoTareaServiceTest {
         assertEquals("PENDIENTE", estado);
     }
 
-    // ─── Casos borde de la estrategia de proximidad ─────────────────────────
+    // - Casos borde de la estrategia de proximidad -
 
     @Test
     void obtenerEstado_retornaPendiente_cuandoFechaEntregaEsHoy() {
