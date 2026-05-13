@@ -75,7 +75,10 @@ public class NotificationService {
     }
 
     private void enviarSSE(Long userId, Notification notif) {
-        List<SseEmitter> lista = emitters.getOrDefault(userId, List.of());
+        // FIX: usar CopyOnWriteArrayList como fallback en lugar de List.of()
+        // para evitar UnsupportedOperationException al llamar removeAll()
+        // cuando el usuario no tiene emitters SSE activos.
+        List<SseEmitter> lista = emitters.getOrDefault(userId, new CopyOnWriteArrayList<>());
         List<SseEmitter> muertos = new CopyOnWriteArrayList<>();
 
         for (SseEmitter emitter : lista) {

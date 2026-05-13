@@ -6691,7 +6691,7 @@
                 titulo,
                 asignaturaId: parseInt(asignaturaId),
                 fechaEntrega,
-                horaEntrega,
+                horaEntrega: horaEntrega.length === 5 ? horaEntrega + ':00' : horaEntrega,
                 descripcion: descripcion || null,
                 prioridad: document.querySelector('input[name="task-priority"]:checked')?.value || 'media',
             };
