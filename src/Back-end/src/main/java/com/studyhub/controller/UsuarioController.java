@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -141,47 +140,6 @@ public class UsuarioController {
         }
     }
 
-    /**
-     * Sube o reemplaza la foto de perfil de un usuario.
-     *
-     * Validaciones:
-     *  - El archivo no puede estar vacío.
-     *  - Solo se aceptan imágenes JPG, JPEG, PNG y WEBP.
-     *  - El tamaño máximo permitido es 2 MB.
-     *
-     * El archivo se guarda en el sistema local bajo uploads/fotos-perfil/
-     * y la URL pública resultante se persiste en el campo fotoPerfil del usuario.
-     *
-     * Respuestas:
-     *  - 200 OK           → { url, fotoPerfil } con la URL pública de la imagen
-     *  - 400 Bad Request  → archivo inválido (tipo o tamaño)
-     *  - 404 Not Found    → usuario no encontrado
-     *  - 500 Internal     → error al guardar el archivo
-     *
-     * @param id   ID del usuario
-     * @param foto Archivo de imagen enviado como multipart/form-data (campo "foto")
-     */
-    @PostMapping("/{id}/foto")
-    public ResponseEntity<?> subirFotoPerfil(
-            @PathVariable Long id,
-            @RequestParam("foto") MultipartFile foto) {
-        try {
-            String url = usuarioService.subirFotoPerfil(id, foto);
-            return ResponseEntity.ok(Map.of(
-                    "url",        url,
-                    "fotoPerfil", url
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        } catch (RuntimeException e) {
-            if (e.getMessage() != null && e.getMessage().contains("no encontrado")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("mensaje", e.getMessage()));
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("mensaje", e.getMessage()));
-        }
-    }
 
     @PostMapping("/recuperar")
     public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {

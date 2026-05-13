@@ -280,7 +280,7 @@
             display: none;
             animation: fadeIn 0.2s ease;
         }
-        .profile-view.active { display: block; }
+        .profile-view.active { display: block; max-width: 960px; }
 
         .profile-feedback {
             display: flex;
@@ -309,12 +309,13 @@
             border-radius: var(--radius-lg);
             border: 1px solid var(--gray-200);
             box-shadow: var(--shadow-sm);
-            padding: 40px 48px;
+            padding: 32px 36px;
             display: flex;
-            gap: 48px;
-            align-items: flex-start;
+            gap: 32px;
+            align-items: center;
             max-width: 820px;
             margin: 0 auto;
+            width: 100%;
         }
 
         /* Sección foto */
@@ -329,8 +330,8 @@
             position: relative;
         }
         .profile-photo-preview {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--blue-400), var(--blue-600));
             display: flex;
@@ -342,7 +343,7 @@
             outline: 2px solid var(--blue-200);
         }
         .profile-photo-preview .material-icons-round {
-            font-size: 56px;
+            font-size: 48px;
             color: var(--white);
         }
         .profile-photo-preview img {
@@ -377,11 +378,19 @@
         }
 
         /* Sección formulario */
-        .profile-form-section { flex: 1; }
+        .profile-form-section {
+            flex: 1;
+            min-width: 0; /* evita que el flex item desborde su contenedor */
+        }
         .profile-form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-wrap: wrap;
             gap: 16px;
+        }
+        .profile-form-row .profile-form-group {
+            flex: 1 1 180px;
+            min-width: 0;
+            margin-bottom: 0;
         }
         .profile-form-group {
             display: flex;
@@ -3910,8 +3919,19 @@
                                 <span class="material-icons-round">photo_camera</span>
                             </button>
                         </div>
-                        <input type="file" id="profile-photo-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
-                        <p class="profile-photo-hint">JPG, PNG o WEBP · Máx. 2 MB</p>
+                        <input type="file" id="profile-photo-input" accept="image/jpeg,image/png,image/gif" style="display:none;">
+                        <p class="profile-photo-hint">JPG, PNG o GIF · Máx. 5 MB</p>
+                        <!-- Botón eliminar avatar: visible solo cuando hay foto -->
+                        <button type="button" id="profile-photo-delete-btn"
+                            style="display:none; align-items:center; gap:6px;
+                                   background:none; border:1.5px solid #FFCDD2;
+                                   color:#C62828; border-radius:var(--radius-sm);
+                                   padding:6px 14px; font-size:12px; font-weight:600;
+                                   font-family:'Inter',sans-serif; cursor:pointer;
+                                   transition:all 0.2s ease; margin-top:4px;">
+                            <span class="material-icons-round" style="font-size:16px;">delete_outline</span>
+                            Eliminar imagen
+                        </button>
                     </div>
 
                     <!-- Formulario de datos -->
@@ -5459,6 +5479,7 @@
                 // Foto de perfil
                 const img  = document.getElementById('profile-photo-img');
                 const icon = document.getElementById('profile-photo-icon');
+                const deleteBtn = document.getElementById('profile-photo-delete-btn');
                 if (u.fotoPerfil) {
                     const fotoUrl = u.fotoPerfil.startsWith('http')
                         ? u.fotoPerfil
@@ -5466,11 +5487,13 @@
                     img.src = fotoUrl;
                     img.style.display  = 'block';
                     icon.style.display = 'none';
+                    deleteBtn.style.display = 'flex';
                     // Reflejar también en el sidebar si ya tenía foto
                     updateSidebarProfile(u);
                 } else {
                     img.style.display  = 'none';
                     icon.style.display = '';
+                    deleteBtn.style.display = 'none';
                 }
 
                 // Guardar snapshot para cancelar
@@ -5504,6 +5527,51 @@
             document.getElementById('profile-error').style.display    = 'flex';
         }
 
+        // Botón "Eliminar Imagen": llama a DELETE /avatar y restaura el avatar predeterminado
+        document.getElementById('profile-photo-delete-btn').addEventListener('click', async () => {
+            const userId = getUserId();
+            if (!userId) return;
+
+            const deleteBtn = document.getElementById('profile-photo-delete-btn');
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<span class="material-icons-round" style="font-size:16px;">hourglass_empty</span> Eliminando…';
+
+            try {
+                const res = await fetch(`${API_BASE}/${userId}/avatar`, { method: 'DELETE' });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.mensaje || 'Error al eliminar el avatar');
+                }
+
+                // Restaurar avatar predeterminado en el preview
+                const img  = document.getElementById('profile-photo-img');
+                const icon = document.getElementById('profile-photo-icon');
+                img.style.display  = 'none';
+                img.src = '';
+                icon.style.display = '';
+                deleteBtn.style.display = 'none';
+
+                // Limpiar foto pendiente de subir si había una en preview
+                _profilePhotoFile = null;
+                document.getElementById('profile-photo-input').value = '';
+
+                // Actualizar snapshot y sidebar
+                if (_profileSnapshot) _profileSnapshot.fotoPerfil = '';
+                const sidebar = document.querySelector('.profile-avatar');
+                if (sidebar) {
+                    sidebar.innerHTML = '<span class="material-icons-round">person</span>';
+                }
+
+                showProfileSuccess('Avatar eliminado. Se restauró la imagen predeterminada.');
+            } catch (err) {
+                console.error(err);
+                showProfileError(err.message || 'Error al eliminar el avatar.');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '<span class="material-icons-round" style="font-size:16px;">delete_outline</span> Eliminar imagen';
+            }
+        });
+
         // Previsualización inmediata de la foto seleccionada
         document.getElementById('profile-photo-btn').addEventListener('click', () => {
             document.getElementById('profile-photo-input').click();
@@ -5513,16 +5581,16 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // Validar tipo
-            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            // Validar tipo (HU: JPG, PNG, GIF)
+            const allowed = ['image/jpeg', 'image/png', 'image/gif'];
             if (!allowed.includes(file.type)) {
-                showProfileError('Solo se permiten imágenes JPG, PNG o WEBP.');
+                showProfileError('Solo se permiten imágenes JPG, PNG o GIF.');
                 e.target.value = '';
                 return;
             }
-            // Validar tamaño (2 MB)
-            if (file.size > 2 * 1024 * 1024) {
-                showProfileError('La imagen no puede superar los 2 MB.');
+            // Validar tamaño (5 MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showProfileError('La imagen no puede superar los 5 MB.');
                 e.target.value = '';
                 return;
             }
@@ -5534,9 +5602,11 @@
             reader.onload = (ev) => {
                 const img  = document.getElementById('profile-photo-img');
                 const icon = document.getElementById('profile-photo-icon');
+                const deleteBtn = document.getElementById('profile-photo-delete-btn');
                 img.src = ev.target.result;
                 img.style.display  = 'block';
                 icon.style.display = 'none';
+                deleteBtn.style.display = 'flex';
             };
             reader.readAsDataURL(file);
         });
@@ -5605,19 +5675,26 @@
                 let fotoUrl = _profileSnapshot?.fotoPerfil || '';
 
                 // 1. Subir foto si se seleccionó una nueva
+                // Si falla (ej: backend apagado), se muestra advertencia pero
+                // el guardado de datos personales continúa igual.
                 if (_profilePhotoFile) {
-                    const formData = new FormData();
-                    formData.append('foto', _profilePhotoFile);
-                    const fotoRes = await fetch(`${API_BASE}/${userId}/foto`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    if (!fotoRes.ok) {
-                        const err = await fotoRes.json().catch(() => ({}));
-                        throw new Error(err.mensaje || 'Error al subir la foto');
+                    try {
+                        const formData = new FormData();
+                        formData.append('foto', _profilePhotoFile);
+                        const fotoRes = await fetch(`${API_BASE}/${userId}/avatar`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        if (!fotoRes.ok) {
+                            const err = await fotoRes.json().catch(() => ({}));
+                            showProfileError(err.mensaje || 'Error al subir la foto. Los demás cambios sí se guardarán.');
+                        } else {
+                            const fotoData = await fotoRes.json();
+                            fotoUrl = fotoData.url || fotoData.fotoPerfil || fotoUrl;
+                        }
+                    } catch {
+                        showProfileError('No se pudo subir la foto (sin conexión). Los demás cambios sí se guardarán.');
                     }
-                    const fotoData = await fotoRes.json();
-                    fotoUrl = fotoData.url || fotoData.fotoPerfil || fotoUrl;
                 }
 
                 // 2. Actualizar datos personales
@@ -5638,17 +5715,25 @@
                 // El PUT /perfil retorna { mensaje, usuario }
                 const updated = body.usuario || body;
 
-                // 3. Reflejar en la sidebar inmediatamente (HU-20)
-                updateSidebarProfile(updated);
+                // Inyectar fotoUrl en updated: actualizarPerfil() no toca fotoPerfil.
+                if (fotoUrl) updated.fotoPerfil = fotoUrl;
 
-                // 4. PERSISTIR CAMBIOS: Actualizar localStorage para que no se pierdan al dar F5
-                SessionManager.getInstance().setUser(updated);
+                // 3. Persistir en localStorage PRIMERO, fusionando con la sesión actual
+                // para no perder loginAt ni campos que el PUT /perfil no devuelve.
+                // Es importante hacerlo antes de updateSidebarProfile para que cualquier
+                // fetch posterior que lea el localStorage ya tenga la foto.
+                const currentSession = SessionManager.getInstance().getUser() || {};
+                const mergedSession = { ...currentSession, ...updated };
+                SessionManager.getInstance().setUser(mergedSession);
+
+                // 4. Reflejar en el sidebar con el objeto fusionado completo
+                updateSidebarProfile(mergedSession);
 
                 // Actualizar snapshot y limpiar foto pendiente
                 _profileSnapshot = { nombre, apellido, carrera, semestre, fotoPerfil: fotoUrl };
                 _profilePhotoFile = null;
 
-                showProfileSuccess('¡Perfil actualizado exitosamente!');
+                showProfileSuccess('¡Perfil actualizado exitosamente! Recarga la página para ver los cambios en la barra lateral.');
             } catch (err) {
                 console.error(err);
                 showProfileError(err.message || 'Error inesperado al guardar los cambios.');
@@ -5694,13 +5779,16 @@
 
             const img  = document.getElementById('profile-photo-img');
             const icon = document.getElementById('profile-photo-icon');
+            const deleteBtn = document.getElementById('profile-photo-delete-btn');
             if (_profileSnapshot.fotoPerfil) {
                 img.src = _profileSnapshot.fotoPerfil;
                 img.style.display  = 'block';
                 icon.style.display = 'none';
+                deleteBtn.style.display = 'flex';
             } else {
                 img.style.display  = 'none';
                 icon.style.display = '';
+                deleteBtn.style.display = 'none';
             }
             document.getElementById('profile-photo-input').value = '';
             _profilePhotoFile = null;
@@ -6937,17 +7025,35 @@
                 document.querySelector('.profile-name').textContent = `${user.nombre} ${user.apellido || ''}`;
                 document.querySelector('.profile-id').textContent = `ID: ${user.id}`;
                 document.querySelector('.profile-id').dataset.userId = user.id;
-                
-                // Cargar foto de perfil al inicio (Fix persistencia F5)
+
+                // Aplicar datos basicos del localStorage inmediatamente (nombre, sin foto aun)
                 updateSidebarProfile(user);
                 hideAllViews();
                 dashboardView.classList.add('active');
                 syncNavbar('nav-dashboard');
                 currentView = 'dashboard';
-                
+
                 fetchAsignaturasBackend();
                 renderDashboardSummary();
                 iniciarGuardDeSesion();
+
+                // Cargar perfil completo desde el backend para obtener fotoPerfil.
+                // El objeto del localStorage viene del /login y no incluye fotoPerfil,
+                // por eso la foto no aparecia en el sidebar hasta abrir "Mi Perfil".
+                fetch(`${API_BASE}/${user.id}`)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(perfil => {
+                        if (perfil) {
+                            updateSidebarProfile(perfil);
+                            // Persistir fotoPerfil en localStorage para siguientes recargas
+                            const stored = SessionManager.getInstance().getUser();
+                            if (stored) {
+                                stored.fotoPerfil = perfil.fotoPerfil || null;
+                                SessionManager.getInstance().setUser(stored);
+                            }
+                        }
+                    })
+                    .catch(() => {}); // Sin conexion: sidebar queda sin foto, sin romper nada
             }
         }
 
