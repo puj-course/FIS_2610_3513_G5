@@ -33,8 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-
-
 @Service
 public class UsuarioService {
 
@@ -49,15 +47,15 @@ public class UsuarioService {
 
     @Autowired
     public UsuarioService(PasswordEncryptionStrategy encryptionStrategy,
-                          AsignaturaService asignaturaService,
-                          NotaService notaService,
-                          TareaRepository tareaRepository,
-                          ObjectMapper objectMapper) {
+            AsignaturaService asignaturaService,
+            NotaService notaService,
+            TareaRepository tareaRepository,
+            ObjectMapper objectMapper) {
         this.encryptionStrategy = encryptionStrategy;
-        this.asignaturaService  = asignaturaService;
-        this.notaService        = notaService;
-        this.tareaRepository    = tareaRepository;
-        this.objectMapper       = objectMapper;
+        this.asignaturaService = asignaturaService;
+        this.notaService = notaService;
+        this.tareaRepository = tareaRepository;
+        this.objectMapper = objectMapper;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -91,7 +89,10 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
     }
 
-    /** Directorio base donde se guardan las fotos de perfil (configurable en application.properties) */
+    /**
+     * Directorio base donde se guardan las fotos de perfil (configurable en
+     * application.properties)
+     */
     @Value("${app.upload.dir:uploads/fotos-perfil}")
     private String uploadDir;
 
@@ -100,9 +101,9 @@ public class UsuarioService {
      * actualiza el campo fotoPerfil con la URL pública resultante.
      *
      * Validaciones:
-     *  - El archivo no puede estar vacío.
-     *  - Solo se aceptan imágenes: image/jpeg, image/png, image/webp.
-     *  - El tamaño máximo es 2 MB.
+     * - El archivo no puede estar vacío.
+     * - Solo se aceptan imágenes: image/jpeg, image/png, image/webp.
+     * - El tamaño máximo es 2 MB.
      *
      * El archivo se renombra como {userId}_{uuid}.{ext} para evitar
      * colisiones y facilitar la identificación por usuario.
@@ -127,8 +128,8 @@ public class UsuarioService {
         String contentType = foto.getContentType();
         if (contentType == null ||
                 (!contentType.equals("image/jpeg") &&
-                 !contentType.equals("image/png")  &&
-                 !contentType.equals("image/webp"))) {
+                        !contentType.equals("image/png") &&
+                        !contentType.equals("image/webp"))) {
             throw new IllegalArgumentException("Solo se permiten imágenes JPG, PNG o WEBP");
         }
 
@@ -139,9 +140,9 @@ public class UsuarioService {
 
         // Determinar extensión a partir del tipo MIME
         String extension = switch (contentType) {
-            case "image/png"  -> ".png";
+            case "image/png" -> ".png";
             case "image/webp" -> ".webp";
-            default           -> ".jpg";
+            default -> ".jpg";
         };
 
         // Nombre único: {userId}_{uuid}{ext}
@@ -175,9 +176,9 @@ public class UsuarioService {
      * nombre, apellido, carrera y semestre.
      *
      * Validaciones:
-     *  - El usuario debe existir (404 si no).
-     *  - nombre y apellido son obligatorios y no pueden estar vacíos (400).
-     *  - carrera y semestre son opcionales.
+     * - El usuario debe existir (404 si no).
+     * - nombre y apellido son obligatorios y no pueden estar vacíos (400).
+     * - carrera y semestre son opcionales.
      *
      * @param id     ID del usuario a actualizar
      * @param campos Mapa con los campos: nombre, apellido, carrera, semestre
@@ -257,8 +258,7 @@ public class UsuarioService {
                 usuario.getId(),
                 usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
                 totalAsignaturas,
-                promedioGlobal
-        );
+                promedioGlobal);
     }
 
     public ResumenAcademicoDTO obtenerResumenAcademico(Long usuarioId) {
@@ -273,33 +273,33 @@ public class UsuarioService {
             double promedio = notaService.calcularPromedio(asig.getId());
             sumaPromedios += promedio;
             asignaturasResumen.add(new AsignaturaResumenDTO(
-                asig.getNombre(),
-                notaService.obtenerNotasPorAsignatura(asig.getId()),
-                promedio,
-                promedio < 3.0
-            ));
+                    asig.getNombre(),
+                    notaService.obtenerNotasPorAsignatura(asig.getId()),
+                    promedio,
+                    promedio < 3.0));
         }
 
         double promedioGlobal = asignaturasRaw.isEmpty() ? 0 : sumaPromedios / asignaturasRaw.size();
         promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
-        List<Tarea> tareasRaw = tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
+        List<Tarea> tareasRaw = tareaRepository
+                .findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
         List<TareaResumenDTO> tareasResumen = tareasRaw.stream()
-            .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega()))
-            .collect(Collectors.toList());
+                .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega(),
+                        t.getHoraEntrega()))
+                .collect(Collectors.toList());
 
         return new ResumenAcademicoDTO(
-            usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
-            promedioGlobal,
-            asignaturasResumen,
-            tareasResumen
-        );
+                usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
+                promedioGlobal,
+                asignaturasResumen,
+                tareasResumen);
     }
 
     public String generarTokenRecuperacion(String correo) {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese correo"));
-        
+
         String token = UUID.randomUUID().toString();
         usuario.setTokenRecuperacion(token);
         usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
@@ -310,11 +310,11 @@ public class UsuarioService {
     public void restablecerPassword(String token, String nuevaPassword) {
         Usuario usuario = usuarioRepository.findByTokenRecuperacion(token)
                 .orElseThrow(() -> new RuntimeException("Token de recuperación inválido"));
-        
+
         if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("El token ha expirado");
         }
-        
+
         usuario.setPassword(encryptionStrategy.encrypt(nuevaPassword));
         usuario.setTokenRecuperacion(null);
         usuario.setTokenExpiracion(null);
@@ -323,7 +323,7 @@ public class UsuarioService {
 
     public EstadisticasDTO obtenerEstadisticas(Long usuarioId) {
         List<Asignatura> asignaturas = asignaturaService.findByUserId(usuarioId);
-        
+
         int totalMaterias = asignaturas.size();
         int totalCreditos = 0;
         int materiasEnRiesgo = 0;
@@ -333,10 +333,10 @@ public class UsuarioService {
         for (Asignatura asig : asignaturas) {
             double promedio = notaService.calcularPromedio(asig.getId());
             promediosPorMateria.put(asig.getNombre(), promedio);
-            
+
             sumaPromedios += promedio;
             totalCreditos += asig.getCreditos();
-            
+
             if (promedio < 3.0 && promedio > 0) {
                 materiasEnRiesgo++;
             }
@@ -345,25 +345,25 @@ public class UsuarioService {
         double promedioGlobal = totalMaterias > 0 ? (sumaPromedios / totalMaterias) : 0.0;
 
         return new EstadisticasDTO(
-            Math.round(promedioGlobal * 100.0) / 100.0,
-            totalMaterias,
-            materiasEnRiesgo,
-            totalCreditos,
-            promediosPorMateria
-        );
+                Math.round(promedioGlobal * 100.0) / 100.0,
+                totalMaterias,
+                materiasEnRiesgo,
+                totalCreditos,
+                promediosPorMateria);
     }
 
     public Map<String, Object> obtenerPreferencias(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
-        
+
         String prefs = usuario.getPreferencias();
         if (prefs == null || prefs.trim().isEmpty()) {
             return new HashMap<>(); // Preferencias por defecto
         }
-        
+
         try {
-            return objectMapper.readValue(prefs, new TypeReference<Map<String, Object>>() {});
+            return objectMapper.readValue(prefs, new TypeReference<Map<String, Object>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al parsear preferencias JSON: " + e.getMessage());
             return new HashMap<>();
@@ -373,7 +373,7 @@ public class UsuarioService {
     public void guardarPreferencias(Long usuarioId, Map<String, Object> preferencias) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
-        
+
         try {
             String prefsJson = objectMapper.writeValueAsString(preferencias);
             usuario.setPreferencias(prefsJson);

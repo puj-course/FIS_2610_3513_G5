@@ -1,5 +1,6 @@
 package com.studyhub.controller;
 
+import com.studyhub.dto.TareaResumenDTO;
 import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
 import com.studyhub.repository.AsignaturaRepository;
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 // CORREGIDO: se agrega el prefijo /api para ser consistente con los demás controladores
 @RestController
@@ -59,8 +61,8 @@ public class TareaController {
         tarea.setEstado(true);
 
         Tarea tareaGuardada = tareaRepository.save(tarea);
-        
-     // HU-36: disparar notificación al dueño de la asignatura
+
+        // HU-36: disparar notificación al dueño de la asignatura
         notificationService.publicar(
             asignatura.getUsuario().getId(),
             "TAREA",
@@ -68,7 +70,7 @@ public class TareaController {
             "NORMAL",
             "/tareas/" + tareaGuardada.getId()
         );
-        
+
         respuesta.put("mensaje", "Tarea guardada exitosamente");
         respuesta.put("tarea", tareaGuardada);
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
@@ -81,7 +83,7 @@ public class TareaController {
             @RequestParam(required = false) String endDate) {
 
         List<Tarea> tareas;
-        
+
         if (usuarioId != null && startDate != null && endDate != null) {
             LocalDate start = LocalDate.parse(startDate);
             LocalDate end = LocalDate.parse(endDate);
@@ -91,7 +93,7 @@ public class TareaController {
         } else {
             tareas = tareaRepository.findAll();
         }
-        
+
         return new ResponseEntity<>(tareas, HttpStatus.OK);
     }
 
@@ -134,6 +136,44 @@ public class TareaController {
             return new ResponseEntity<>(tareaRepository.findByFechaEntrega(fechaParsed), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * HU-calendario: retorna las tareas del usuario en un rango de fechas,
+     * proyectadas como DTO (titulo, materia, fechaEntrega, horaEntrega).
+     * Usado por el calendario interactivo del dashboard.
+     *
+     * GET /api/tareas/calendario?usuarioId=1&desde=2025-05-01&hasta=2025-05-31
+     */
+    @GetMapping("/calendario")
+    public ResponseEntity<?> obtenerTareasParaCalendario(
+            @RequestParam Long usuarioId,
+            @RequestParam String desde,
+            @RequestParam String hasta) {
+
+        try {
+            LocalDate fechaDesde = LocalDate.parse(desde);
+            LocalDate fechaHasta = LocalDate.parse(hasta);
+
+            List<Tarea> tareas = tareaRepository
+                    .findByAsignatura_Usuario_IdAndFechaEntregaBetween(usuarioId, fechaDesde, fechaHasta);
+
+            List<TareaResumenDTO> resultado = tareas.stream()
+                    .map(t -> new TareaResumenDTO(
+                            t.getTitulo(),
+                            t.getAsignatura().getNombre(),
+                            t.getFechaEntrega(),
+                            t.getHoraEntrega()
+                    ))
+                    .collect(Collectors.toList());
+
+            return new ResponseEntity<>(resultado, HttpStatus.OK);
+
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", "Parámetros inválidos. Use formato yyyy-MM-dd para las fechas.");
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
     }
 }
