@@ -11,14 +11,19 @@ RUN mvn dependency:go-offline -B
 # Copiar el código fuente
 COPY src/Back-end/src ./src
 
+# Copiar el frontend al directorio de recursos estáticos de Spring Boot
+# Se usa la ruta completa para evitar ambigüedades
+COPY src/Front-End/ /app/src/main/resources/static/
+
 RUN mvn clean package -DskipTests -Dmaven.test.skip=true
 
 # Etapa 2: Ejecución
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copiar el archivo JAR construido desde la etapa anterior
-COPY --from=build /app/target/*.jar app.jar
+# Copiar todos los JARs y luego seleccionar el correcto (el más grande, que es el fat-jar)
+COPY --from=build /app/target/*.jar ./
+RUN mv $(ls -S *.jar | grep -v plain | head -n 1) app.jar
 
 # Crear el directorio para carga de archivos
 RUN mkdir -p uploads/fotos-perfil

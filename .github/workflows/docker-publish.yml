@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: src/Back-end/Dockerfile
+          file: Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/studyhub-backend:latest
@@ -36,8 +36,8 @@ jobs:
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
-          context: src/Front-End
-          file: src/Front-End/Dockerfile
+          context: .
+          file: Dockerfile_Front
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/studyhub-frontend:latest
