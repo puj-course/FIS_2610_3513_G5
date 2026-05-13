@@ -65,6 +65,127 @@
             overflow-x: hidden;
         }
 
+
+        /* ========== SUBJECTS QUICK GRID (HU - cuadrícula dashboard) ========== */
+        .subjects-quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        @media (max-width: 1200px) {
+            .subjects-quick-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .subjects-quick-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .subjects-quick-grid { grid-template-columns: 1fr; }
+        }
+
+        .subject-quick-cell {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .subject-quick-cell:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--blue-200);
+        }
+        .subject-quick-cell-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: var(--blue-50);
+            color: var(--blue-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .subject-quick-cell-icon .material-icons-round { font-size: 22px; }
+        .subject-quick-cell-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        .subject-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .subject-status-badge.pendiente {
+            background: var(--gray-100);
+            color: var(--gray-500);
+        }
+        .subject-status-badge.en_progreso {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+        .subject-status-badge.completada {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+        .subjects-quick-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 32px 0;
+            color: var(--gray-400);
+            font-size: 13px;
+        }
+
+
+        /* ========== DASHBOARD TWO-COLUMN LAYOUT ========== */
+        .dashboard-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 1024px) {
+            .dashboard-two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+        .dashboard-left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+        .dashboard-right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+        /* En el grid de materias dentro del panel derecho usar 2 columnas max */
+        .dashboard-right-col .subjects-quick-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        @media (max-width: 768px) {
+            .dashboard-right-col .subjects-quick-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* ========== MAIN LAYOUT ========== */
         .app-container {
             display: grid;
@@ -3425,8 +3546,7 @@
                     </div>
                 </div>
 
-                <div class="dashboard-row">
-                    <div class="dashboard-main">
+                <div class="dashboard-main">
                         <div class="dashboard-tasks-card">
                             <div class="section-header" style="margin-bottom: 0;">
                                 <h3 class="section-title" style="font-size: 16px;">Próximas Entregas</h3>
@@ -3440,13 +3560,14 @@
                             </div>
                         </div>
 
-                        <!-- Gráfico de Rendimiento (HU-374) -->
+                        <!-- Cuadrícula de Materias (HU - subjects grid) -->
                         <div class="dashboard-tasks-card" style="margin-top: 24px;">
-                            <div class="section-header">
-                                <h3 class="section-title" style="font-size: 16px;">Rendimiento por Materia</h3>
+                            <div class="section-header" style="margin-bottom: 16px;">
+                                <h3 class="section-title" style="font-size: 16px;">Mis Materias</h3>
+                                <span class="widget-action" onclick="document.getElementById('nav-subjects').click()" style="cursor:pointer;">Ver todas</span>
                             </div>
-                            <div style="height: 300px; position: relative;">
-                                <canvas id="averageChart"></canvas>
+                            <div class="subjects-quick-grid" id="subjects-quick-grid">
+                                <div class="subjects-quick-empty">Cargando materias...</div>
                             </div>
                         </div>
 
@@ -3459,8 +3580,18 @@
                             <div id="risk-list" class="risk-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
                         </div>
 
-                        <!-- Acciones Rapidas (Simplificadas) -->
-                        <div class="quick-actions" style="margin-top: 0;">
+                        <!-- Gráfico de Rendimiento (HU-374) -->
+                        <div class="dashboard-tasks-card" style="margin-top: 24px;">
+                            <div class="section-header">
+                                <h3 class="section-title" style="font-size: 16px;">Rendimiento por Materia</h3>
+                            </div>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="averageChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Acciones Rápidas -->
+                        <div class="quick-actions" style="margin-top: 24px;">
                             <div class="section-header" style="margin-bottom: 16px;">
                                 <h3 class="section-title" style="font-size: 16px;">Acciones Rápidas</h3>
                             </div>
@@ -3479,11 +3610,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="dashboard-sidebar">
-                        <!-- Widget de Horario o algo similar podría ir aquí en el futuro -->
-                    </div>
                 </div>
             </div><!-- /.dashboard-view -->
 
@@ -6332,6 +6458,98 @@
             if (currentView === 'dashboard') renderDashboardSummary();
         }
 
+
+        /**
+         * Carga las materias del usuario desde GET /api/usuarios/{id}/subjects
+         * y renderiza la cuadrícula compacta del dashboard.
+         * Cada celda muestra ícono, nombre y badge de estado.
+         * Al hacer clic navega al redirectUrl de la materia (vista de calificaciones).
+         */
+        async function fetchSubjectsGrid() {
+            const userId = getUserId();
+            if (!userId) return;
+
+            const grid = document.getElementById('subjects-quick-grid');
+            if (!grid) return;
+
+            // Iconos por índice para variar visualmente
+            const icons = ['menu_book','science','psychology','engineering','biotech',
+                           'hub','analytics','terminal','architecture','auto_stories'];
+            const colors = [
+                { bg: 'var(--blue-50)',   fg: 'var(--blue-600)' },
+                { bg: '#F3E5F5',          fg: '#7B1FA2' },
+                { bg: '#E8F5E9',          fg: '#2E7D32' },
+                { bg: '#FFF3E0',          fg: '#E65100' },
+                { bg: '#FCE4EC',          fg: '#AD1457' },
+                { bg: '#E0F2F1',          fg: '#00695C' },
+            ];
+
+            const badgeLabel = {
+                pendiente:   'Pendiente',
+                en_progreso: 'En progreso',
+                completada:  'Completada'
+            };
+            const badgeIcon = {
+                pendiente:   'radio_button_unchecked',
+                en_progreso: 'pending',
+                completada:  'check_circle'
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/${userId}/subjects`);
+                if (!res.ok) throw new Error('Error al cargar materias');
+                const subjects = await res.json();
+
+                grid.innerHTML = '';
+
+                if (subjects.length === 0) {
+                    grid.innerHTML = '<div class="subjects-quick-empty">No tienes materias registradas aún.</div>';
+                    return;
+                }
+
+                subjects.forEach((s, idx) => {
+                    const color = colors[idx % colors.length];
+                    const icon  = icons[idx % icons.length];
+                    const cell  = document.createElement('div');
+                    cell.className = 'subject-quick-cell';
+                    cell.title = s.description || s.name;
+
+                    cell.innerHTML = `
+                        <div class="subject-quick-cell-icon"
+                             style="background:${color.bg};color:${color.fg}">
+                            <span class="material-icons-round">${icon}</span>
+                        </div>
+                        <div class="subject-quick-cell-name">${s.name}</div>
+                        <span class="subject-status-badge ${s.status}">
+                            <span class="material-icons-round" style="font-size:12px;">
+                                ${badgeIcon[s.status] || 'radio_button_unchecked'}
+                            </span>
+                            ${badgeLabel[s.status] || s.status}
+                        </span>
+                    `;
+
+                    // Clic → redirigir al módulo de calificaciones de esa materia
+                    cell.addEventListener('click', () => {
+                        // redirectUrl es "/materias/{id}/calificaciones"
+                        // En esta SPA abrimos la vista de calificaciones de la tarjeta correspondiente
+                        const domCard = subjectsGrid.querySelector(`.subject-card[data-id="${s.id}"]`);
+                        if (domCard) {
+                            openGradesView(domCard);
+                        } else {
+                            // Fallback: ir a la vista de materias
+                            document.getElementById('nav-subjects').click();
+                        }
+                    });
+
+                    grid.appendChild(cell);
+                });
+
+            } catch (err) {
+                console.error('Error cargando subjects grid:', err);
+                grid.innerHTML = '<div class="subjects-quick-empty">No se pudieron cargar las materias.</div>';
+            }
+        }
+
         function fetchResumenUsuario() {
             const userId = getUserId();
             if (!userId) return;
@@ -6395,6 +6613,8 @@
                 if (typeof renderScheduleTable === 'function') renderScheduleTable();
                 // Load calendar tasks for current month
                 if (typeof loadCalendarTasks === 'function') loadCalendarTasks();
+                // Refrescar cuadrícula del dashboard
+                fetchSubjectsGrid();
             } catch (err) {
                 console.error("Error fetching asignaturas:", err);
             }
@@ -6691,6 +6911,9 @@
                 }
                 // 4. Renderizar gráfico de rendimiento y alertas
                 renderPerformanceChartAndAlerts();
+
+                // 5. Renderizar cuadrícula de materias
+                fetchSubjectsGrid();
             } catch (err) {
                 console.error("Error al renderizar resumen:", err);
             }
