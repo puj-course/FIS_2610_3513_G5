@@ -2,6 +2,9 @@ package com.studyhub.controller;
 
 import com.studyhub.model.Usuario;
 import com.studyhub.dto.*;
+import com.studyhub.model.Asignatura;
+import com.studyhub.service.AsignaturaService;
+import com.studyhub.service.NotaService;
 import com.studyhub.service.UsuarioService;
 import com.studyhub.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,12 @@ public class UsuarioController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private AsignaturaService asignaturaService;
+
+    @Autowired
+    private NotaService notaService;
 
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
@@ -141,47 +149,6 @@ public class UsuarioController {
         }
     }
 
-    /**
-     * Sube o reemplaza la foto de perfil de un usuario.
-     *
-     * Validaciones:
-     *  - El archivo no puede estar vacío.
-     *  - Solo se aceptan imágenes JPG, JPEG, PNG y WEBP.
-     *  - El tamaño máximo permitido es 2 MB.
-     *
-     * El archivo se guarda en el sistema local bajo uploads/fotos-perfil/
-     * y la URL pública resultante se persiste en el campo fotoPerfil del usuario.
-     *
-     * Respuestas:
-     *  - 200 OK           → { url, fotoPerfil } con la URL pública de la imagen
-     *  - 400 Bad Request  → archivo inválido (tipo o tamaño)
-     *  - 404 Not Found    → usuario no encontrado
-     *  - 500 Internal     → error al guardar el archivo
-     *
-     * @param id   ID del usuario
-     * @param foto Archivo de imagen enviado como multipart/form-data (campo "foto")
-     */
-    @PostMapping("/{id}/foto")
-    public ResponseEntity<?> subirFotoPerfil(
-            @PathVariable Long id,
-            @RequestParam("foto") MultipartFile foto) {
-        try {
-            String url = usuarioService.subirFotoPerfil(id, foto);
-            return ResponseEntity.ok(Map.of(
-                    "url",        url,
-                    "fotoPerfil", url
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        } catch (RuntimeException e) {
-            if (e.getMessage() != null && e.getMessage().contains("no encontrado")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("mensaje", e.getMessage()));
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("mensaje", e.getMessage()));
-        }
-    }
 
     @PostMapping("/recuperar")
     public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {
@@ -228,6 +195,70 @@ public class UsuarioController {
             return ResponseEntity.ok(Map.of("mensaje", "Preferencias guardadas exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    /**
+     * Retorna la lista de materias del usuario con los campos requeridos por la HU:
+     * id, name, description, status, redirectUrl e iconUrl.
+     *
+     * El status se deriva del progreso de calificaciones registradas:
+     *   - pendiente    → 0% evaluado (ninguna nota con calificación)
+     *   - en_progreso  → entre 1% y 99% evaluado
+     *   - completada   → 100% evaluado
+     *
+     * redirectUrl apunta al módulo de calificaciones de cada materia.
+     * iconUrl queda null por ahora — el modelo no tiene campo de ícono.
+     *
+     * Solo retorna materias del usuario indicado en el path.
+     * Si el usuario no existe responde 404.
+     *
+     * @param id ID del usuario autenticado
+     * @return Lista de SubjectSummaryDTO o error
+     */
+    @GetMapping("/{id}/subjects")
+    public ResponseEntity<?> obtenerMateriasPorUsuario(@PathVariable Long id) {
+        try {
+            // Verificar que el usuario existe — restricción por usuario autenticado
+            usuarioService.obtenerPorId(id);
+
+            List<Asignatura> asignaturas = asignaturaService.findByUserId(id);
+
+            List<SubjectSummaryDTO> subjects = asignaturas.stream().map(a -> {
+                // Calcular progreso para derivar el status
+                double progreso = notaService.calcularProgreso(a.getId());
+
+                String status;
+                if (progreso <= 0.0) {
+                    status = "pendiente";
+                } else if (progreso >= 100.0) {
+                    status = "completada";
+                } else {
+                    status = "en_progreso";
+                }
+
+                // description combina profesor y período
+                String description = String.format("%s · %s · %d créditos",
+                        a.getProfesor(), a.getPeriodo(), a.getCreditos());
+
+                // redirectUrl: ruta relativa al módulo de calificaciones de la materia
+                String redirectUrl = "/materias/" + a.getId() + "/calificaciones";
+
+                return new SubjectSummaryDTO(
+                        a.getId(),
+                        a.getNombre(),
+                        description,
+                        status,
+                        redirectUrl,
+                        null   // iconUrl: sin sistema de íconos por ahora
+                );
+            }).collect(java.util.stream.Collectors.toList());
+
+            return ResponseEntity.ok(subjects);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("mensaje", e.getMessage()));
         }
     }
 }
