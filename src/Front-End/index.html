@@ -7953,7 +7953,7 @@ window.addEventListener('storage', (e) => {
                                 color: ${t.prioridad === 'alta' ? '#D32F2F' : t.prioridad === 'baja' ? '#388E3C' : '#F57C00'};
                             ">${t.prioridad === 'alta' ? 'Alta' : t.prioridad === 'baja' ? 'Baja' : 'Media'}</span>
                             <br>
-                            ${t.asignatura?.nombre || ''} · ${t.horaEntrega || ''}
+                            ${t.asignaturaNombre || ''} · ${t.horaEntrega || ''}
                         </div>
                     </div>
                 `).join('')}
@@ -7979,14 +7979,19 @@ window.addEventListener('storage', (e) => {
         async function loadCalendarTasks() {
             const userId = getUserId();
             if (!userId) { calendarTasks = []; renderCalendar(); return; }
-            const startDate = `${calYear}-${String(calMonth+1).padStart(2,'0')}-01`;
-            const endDay = new Date(calYear, calMonth+1, 0).getDate();
-            const endDate = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(endDay).padStart(2,'0')}`;
+
+            const startDate = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-01`;
+            const endDay = new Date(calYear, calMonth + 1, 0).getDate();
+            const endDate = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(endDay).padStart(2, '0')}`;
+
             try {
-                const res = await fetch(`${API}/api/tareas?usuarioId=${userId}&startDate=${startDate}&endDate=${endDate}`);
+                // HU-calendario: usa el endpoint dedicado que retorna TareaResumenDTO
+                const res = await fetch(`${API}/api/tareas/calendario?usuarioId=${userId}&desde=${startDate}&hasta=${endDate}`);
                 if (res.ok) calendarTasks = await res.json();
                 else calendarTasks = [];
-            } catch { calendarTasks = []; }
+            } catch {
+                calendarTasks = [];
+            }
             renderCalendar();
         }
 
