@@ -16,10 +16,6 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepo;
 
-    /**
-     * Mapa de emitters SSE activos: userId → lista de conexiones abiertas.
-     * ConcurrentHashMap + CopyOnWriteArrayList para ser thread-safe.
-     */
     private final Map<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
 
     public NotificationService(NotificationRepository notificationRepo) {
@@ -68,14 +64,13 @@ public class NotificationService {
         n.setActionUrl(actionUrl);
         Notification guardada = notificationRepo.save(n);
 
-        // 2. Enviar por SSE (con reintento si falla)
         enviarSSE(userId, guardada);
 
         return guardada;
     }
 
     private void enviarSSE(Long userId, Notification notif) {
-        List<SseEmitter> lista = emitters.getOrDefault(userId, List.of());
+        List<SseEmitter> lista = emitters.getOrDefault(userId, new CopyOnWriteArrayList<>());
         List<SseEmitter> muertos = new CopyOnWriteArrayList<>();
 
         for (SseEmitter emitter : lista) {
