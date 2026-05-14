@@ -52,6 +52,9 @@
             src/main/java/com/studyhub/service/facade/**,
             src/main/java/com/studyhub/service/strategy/**
         </sonar.coverage.exclusions>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
         <dependency>
@@ -148,8 +151,6 @@
                         <exclude>com/studyhub/service/AsignaturaService.class</exclude>
                         <exclude>com/studyhub/service/AuthService.class</exclude>
                         <exclude>com/studyhub/service/EmailService.class</exclude>
-                        <exclude>com/studyhub/service/ExportService.class</exclude>
-                        <exclude>com/studyhub/service/NotificationService.class</exclude>
                         <exclude>com/studyhub/service/TareaNotificacionService.class</exclude>
                         <exclude>com/studyhub/service/builder/**</exclude>
                         <exclude>com/studyhub/service/decorator/**</exclude>
