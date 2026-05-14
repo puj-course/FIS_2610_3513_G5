@@ -2,9 +2,9 @@ name: CI - Pruebas Unitarias
 
 on:
   push:
-    branches: [ "main", "develop", "Valeria" ]
+    branches: [ "main", "develop", "Valeria", "feature/*", "features/*" ]
   pull_request:
-    branches: [ "main", "develop", "Valeria" ]
+    branches: [ "main", "develop", "Valeria", "feature/*", "features/*" ]
 
 jobs:
   tests:
