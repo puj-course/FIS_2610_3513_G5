@@ -117,6 +117,28 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/studyhub/dto/**</exclude>
+                        <exclude>com/studyhub/model/**</exclude>
+                        <exclude>com/studyhub/repository/**</exclude>
+                        <exclude>com/studyhub/controller/**</exclude>
+                        <exclude>com/studyhub/StudyHubApplication.class</exclude>
+                        <exclude>com/studyhub/WebConfig.class</exclude>
+                        <exclude>com/studyhub/SecurityConfig.class</exclude>
+                        <exclude>com/studyhub/service/ApunteService.class</exclude>
+                        <exclude>com/studyhub/service/AsignaturaService.class</exclude>
+                        <exclude>com/studyhub/service/AuthService.class</exclude>
+                        <exclude>com/studyhub/service/EmailService.class</exclude>
+                        <exclude>com/studyhub/service/ExportService.class</exclude>
+                        <exclude>com/studyhub/service/NotificationService.class</exclude>
+                        <exclude>com/studyhub/service/TareaNotificacionService.class</exclude>
+                        <exclude>com/studyhub/service/builder/**</exclude>
+                        <exclude>com/studyhub/service/decorator/**</exclude>
+                        <exclude>com/studyhub/service/facade/**</exclude>
+                        <exclude>com/studyhub/service/strategy/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -136,26 +158,6 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <excludes>
-                                <exclude>com/studyhub/dto/**</exclude>
-                                <exclude>com/studyhub/model/**</exclude>
-                                <exclude>com/studyhub/repository/**</exclude>
-                                <exclude>com/studyhub/controller/**</exclude>
-                                <exclude>com/studyhub/StudyHubApplication.class</exclude>
-                                <exclude>com/studyhub/WebConfig.class</exclude>
-                                <exclude>com/studyhub/SecurityConfig.class</exclude>
-                                <exclude>com/studyhub/service/ApunteService.class</exclude>
-                                <exclude>com/studyhub/service/AsignaturaService.class</exclude>
-                                <exclude>com/studyhub/service/AuthService.class</exclude>
-                                <exclude>com/studyhub/service/EmailService.class</exclude>
-                                <exclude>com/studyhub/service/ExportService.class</exclude>
-                                <exclude>com/studyhub/service/NotificationService.class</exclude>
-                                <exclude>com/studyhub/service/TareaNotificacionService.class</exclude>
-                                <exclude>com/studyhub/service/builder/**</exclude>
-                                <exclude>com/studyhub/service/decorator/**</exclude>
-                                <exclude>com/studyhub/service/facade/**</exclude>
-                                <exclude>com/studyhub/service/strategy/**</exclude>
-                            </excludes>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
