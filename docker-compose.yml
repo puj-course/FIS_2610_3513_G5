@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # Servicio de Base de Datos Local (Opcional, para cumplir con la rúbrica de orquestación)
   db:
     image: postgres:15
     container_name: studyhub-db-local
@@ -18,8 +17,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - studyhub-network
 
-  # Servicio Backend (Java/Spring Boot)
   backend:
     build:
       context: .
@@ -28,16 +28,19 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Conexión a Supabase
-      - JDBC_DATABASE_URL=jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
+      - JDBC_DATABASE_URL=jdbc:postgresql://aws-1-us-east-2.pooler.6543/postgres?sslmode=require
       - JDBC_DATABASE_USERNAME=postgres.nnnqjufyloqyehskvivw
       - JDBC_DATABASE_PASSWORD=Lalisam@1722!
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - PORT=8080
     volumes:
       - ./uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - studyhub-network
 
-  # Servicio Frontend (Nginx)
   frontend:
     build:
       context: .
@@ -47,6 +50,12 @@ services:
       - "80:80"
     depends_on:
       - backend
+    networks:
+      - studyhub-network
+
+networks:
+  studyhub-network:
+    driver: bridge
 
 volumes:
   postgres_data:
