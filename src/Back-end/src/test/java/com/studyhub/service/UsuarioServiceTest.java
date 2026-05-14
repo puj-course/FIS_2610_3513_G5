@@ -271,5 +271,33 @@ class UsuarioServiceTest {
         var result = usuarioService.obtenerPreferencias(1L);
         assertEquals("dark", result.get("theme"));
     }
+
+    // ─── CP11: Lógica — Resumen Académico ──────────────────────────────────
+
+    @Test
+    void obtenerResumenAcademico_retornaDatosCompletos() {
+        // Arrange
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        
+        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
+        a1.setId(10L); a1.setNombre("M1");
+        
+        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1));
+        when(notaService.calcularPromedio(10L)).thenReturn(4.5);
+        when(notaService.obtenerNotasPorAsignatura(10L)).thenReturn(new java.util.ArrayList<>());
+        
+        com.studyhub.model.Tarea t1 = new com.studyhub.model.Tarea();
+        t1.setTitulo("T1"); t1.setAsignatura(a1);
+        when(tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(1L))
+            .thenReturn(java.util.List.of(t1));
+
+        // Act
+        var resumen = usuarioService.obtenerResumenAcademico(1L);
+
+        // Assert
+        assertEquals(4.5, resumen.getPromedioGlobal());
+        assertEquals(1, resumen.getTareasPendientes().size());
+        assertEquals("T1", resumen.getTareasPendientes().get(0).getTitulo());
+    }
 }
 
