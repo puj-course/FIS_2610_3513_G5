@@ -11,14 +11,12 @@ const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sáb
 
 // Mapea el nombre del día (en cualquier capitalización) a su columna (1–6)
 const DIA_A_COL = {
-    'lunes':     1,
-    'martes':    2,
-    'miércoles': 3,
-    'miercoles': 3,
-    'jueves':    4,
-    'viernes':   5,
-    'sábado':    6,
-    'sabado':    6
+    'lunes':     1, 'lun': 1,
+    'martes':    2, 'mar': 2,
+    'miércoles': 3, 'miercoles': 3, 'mié': 3, 'mie': 3,
+    'jueves':    4, 'jue': 4,
+    'viernes':   5, 'vie': 5,
+    'sábado':    6, 'sabado': 6, 'sáb': 6, 'sab': 6
 };
 
 // Paleta de colores para diferenciar materias visualmente
@@ -34,8 +32,8 @@ const COLORES_MATERIA = [
 ];
 
 // Mapa nombre-materia → índice de color (se asigna la primera vez que aparece)
-const colorPorMateria = {};
-let colorIndex = 0;
+const horarioColorPorMateria = {};
+let horarioColorIndex = 0;
 
 // ── Utilidades ─────────────────────────────────────────────────────────────
 
@@ -54,11 +52,11 @@ function horaADecimal(horaStr) {
  * Si es la primera vez que aparece esa materia, le asigna el siguiente color.
  */
 function obtenerColor(nombreMateria) {
-    if (colorPorMateria[nombreMateria] === undefined) {
-        colorPorMateria[nombreMateria] = colorIndex % COLORES_MATERIA.length;
-        colorIndex++;
+    if (horarioColorPorMateria[nombreMateria] === undefined) {
+        horarioColorPorMateria[nombreMateria] = horarioColorIndex % COLORES_MATERIA.length;
+        horarioColorIndex++;
     }
-    return COLORES_MATERIA[colorPorMateria[nombreMateria]];
+    return COLORES_MATERIA[horarioColorPorMateria[nombreMateria]];
 }
 
 // ── Construcción de la grilla base ─────────────────────────────────────────
@@ -262,17 +260,19 @@ function renderHorario(sesiones) {
     document.querySelectorAll('.horario-bloque').forEach(b => b.remove());
 
     // Resetear colores para que coincidan en cada recarga
-    Object.keys(colorPorMateria).forEach(k => delete colorPorMateria[k]);
-    colorIndex = 0;
+    Object.keys(horarioColorPorMateria).forEach(k => delete horarioColorPorMateria[k]);
+    horarioColorIndex = 0;
+
+    // La grilla siempre es visible — las filas de horas siempre se muestran.
+    // Solo el mensaje de estado vacío cambia según si hay sesiones o no.
+    if (gridWrapper) gridWrapper.style.display = '';
 
     if (!sesiones || sesiones.length === 0) {
-        if (emptyState)  emptyState.style.display  = 'flex';
-        if (gridWrapper) gridWrapper.style.display  = 'none';
+        if (emptyState) emptyState.style.display = 'flex';
         return;
     }
 
-    if (emptyState)  emptyState.style.display  = 'none';
-    if (gridWrapper) gridWrapper.style.display  = '';
+    if (emptyState) emptyState.style.display = 'none';
 
     // Detectar conflictos antes de pintar para ajustar anchos
     const conflictos = detectarConflictos(sesiones);
@@ -342,5 +342,7 @@ function initNavHorario() {
     });
 }
 
-// ── Init ───────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', initNavHorario);
+// La navegación de nav-horario la maneja index.html con navigateSafe().
+// initNavHorario() queda disponible pero no se auto-registra para evitar
+// un listener duplicado que compita con el de index.html.
+// document.addEventListener('DOMContentLoaded', initNavHorario);

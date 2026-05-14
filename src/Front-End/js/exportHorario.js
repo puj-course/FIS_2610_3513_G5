@@ -71,15 +71,43 @@ async function capturaHorario() {
     // Scroll al inicio para capturar toda la grilla desde arriba
     nodo.scrollTop = 0;
 
-    const canvas = await window.html2canvas(nodo, {
-        scale:            CAPTURE_SCALE,
-        useCORS:          true,           // permite imágenes de dominios externos
-        allowTaint:       false,
-        backgroundColor:  '#FFFFFF',      // fondo blanco explícito
-        logging:          false,          // silenciar logs de desarrollo
-        scrollX:          0,
-        scrollY:          -window.scrollY // compensar scroll de página
-    });
+    // html2canvas necesita dimensiones reales. El wrapper tiene overflow-x:auto
+    // y puede reportar width=0 si el contenedor está colapsado. Se fuerza
+    // temporalmente tamaño y overflow visibles para la captura.
+    const estilosOriginales = {
+        width:    nodo.style.width,
+        minWidth: nodo.style.minWidth,
+        overflow: nodo.style.overflow,
+    };
+
+    const anchoReal = nodo.scrollWidth || nodo.offsetWidth;
+    if (anchoReal === 0) {
+        nodo.style.width    = '900px';
+        nodo.style.minWidth = '900px';
+    }
+    nodo.style.overflow = 'visible';
+
+    let canvas;
+    try {
+        canvas = await window.html2canvas(nodo, {
+            scale:           CAPTURE_SCALE,
+            useCORS:         true,
+            allowTaint:      false,
+            backgroundColor: '#FFFFFF',
+            logging:         false,
+            scrollX:         0,
+            scrollY:         -window.scrollY,
+            width:           nodo.scrollWidth  || nodo.offsetWidth  || 900,
+            height:          nodo.scrollHeight || nodo.offsetHeight || 600,
+            windowWidth:     document.documentElement.scrollWidth,
+            windowHeight:    document.documentElement.scrollHeight,
+        });
+    } finally {
+        // Restaurar estilos originales pase lo que pase
+        nodo.style.width    = estilosOriginales.width;
+        nodo.style.minWidth = estilosOriginales.minWidth;
+        nodo.style.overflow = estilosOriginales.overflow;
+    }
 
     return canvas;
 }
@@ -141,16 +169,26 @@ async function exportarHorarioPDF() {
         doc.line(MARGIN, MARGIN + 8, PAGE_W - MARGIN, MARGIN + 8);
 
         // ── Imagen del horario ──
-        const imgData  = canvas.toDataURL('image/jpeg', 0.95);
-        const imgW     = PAGE_W - MARGIN * 2;
-        const imgH     = (canvas.height / canvas.width) * imgW;
-        const topImg   = MARGIN + 12;
+        if (!canvas.width || !canvas.height) {
+            throw new Error('El canvas capturado tiene dimensiones inválidas.');
+        }
 
-        // Si la imagen excede la página, escalarla para que entre
+        const imgData  = canvas.toDataURL('image/jpeg', 0.95);
+        const topImg   = MARGIN + 12;
+        const maxImgW  = PAGE_W - MARGIN * 2;
         const maxImgH  = PAGE_H - topImg - MARGIN;
-        const finalH   = Math.min(imgH, maxImgH);
-        const finalW   = imgH > maxImgH ? (imgW * maxImgH) / imgH : imgW;
-        const leftImg  = MARGIN + (imgW - finalW) / 2; // centrar horizontalmente
+        const ratio    = canvas.width / canvas.height;
+
+        let finalW = maxImgW;
+        let finalH = finalW / ratio;
+        if (finalH > maxImgH) {
+            finalH = maxImgH;
+            finalW = finalH * ratio;
+        }
+        finalW = Math.max(finalW, 1);
+        finalH = Math.max(finalH, 1);
+
+        const leftImg = MARGIN + (maxImgW - finalW) / 2;
 
         doc.addImage(imgData, 'JPEG', leftImg, topImg, finalW, finalH);
 
@@ -272,3 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 });
+
+// ── API pública del módulo ───────────────────────────────────────────────────
+window.exportarHorarioPDF    = exportarHorarioPDF;
+window.exportarHorarioImagen = exportarHorarioImagen;
