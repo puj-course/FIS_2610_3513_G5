@@ -40,9 +40,9 @@ jobs:
         run: |
           JACOCO_XML="src/Back-end/target/site/jacoco/jacoco.xml"
           if [ -f "$JACOCO_XML" ]; then
-            # Extraer líneas totales y cubiertas
-            LINE_MISSED=$(grep -oP 'counter type="LINE" missed="\K[0-9]+' "$JACOCO_XML" | head -1)
-            LINE_COVERED=$(grep -oP 'counter type="LINE" missed="[0-9]+" covered="\K[0-9]+' "$JACOCO_XML" | head -1)
+            # Extraer líneas totales y cubiertas (usando tail -1 para el resumen global)
+            LINE_MISSED=$(grep -oP 'counter type="LINE" missed="\K[0-9]+' "$JACOCO_XML" | tail -1)
+            LINE_COVERED=$(grep -oP 'counter type="LINE" missed="[0-9]+" covered="\K[0-9]+' "$JACOCO_XML" | tail -1)
             TOTAL=$((LINE_MISSED + LINE_COVERED))
             PERCENTAGE=$(echo "scale=2; $LINE_COVERED * 100 / $TOTAL" | bc)
             echo "COVERAGE=$PERCENTAGE%" >> $GITHUB_OUTPUT
