@@ -3479,6 +3479,7 @@
                         <span class="material-icons-round">manage_accounts</span>
                         Mi Perfil
                     </div>
+
                     <div class="nav-item" id="nav-settings">
                         <span class="material-icons-round">settings</span>
                         Configuración
@@ -3641,6 +3642,8 @@
                     <!-- Las materias se cargan aquí dinámicamente -->
                 </div>
             </div><!-- /.subjects-view -->
+
+
 
             <!-- Vista: Calificaciones de asignatura -->
             <div class="grades-view" id="grades-view">
@@ -5990,8 +5993,14 @@
         function hideAllViews() {
             const settingsView = document.getElementById('settings-view');
             const profileView  = document.getElementById('profile-view');
-            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView, settingsView, profileView];
-            views.forEach(v => { if (v) v.classList.remove('active'); });
+            const metricsView  = document.getElementById('metrics-view');
+            const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView, settingsView, profileView, metricsView];
+            views.forEach(v => { 
+                if (v) {
+                    v.classList.remove('active');
+                    if (v.id === 'metrics-view') v.style.display = 'none';
+                }
+            });
             // Reset nav active class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             currentView = '';
@@ -8708,11 +8717,8 @@ window.addEventListener('storage', (e) => {
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
-<<<<<<< HEAD
     <script src="js/notification.js"></script>
     <script src="js/cronograma.js"></script>
-=======
-    <script src="js/notifications.js"></script>
->>>>>>> 435d1acb6847ce3ab543c48aae199c76285adf84
+
 </body>
 </html>

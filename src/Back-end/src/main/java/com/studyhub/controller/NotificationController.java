@@ -3,6 +3,7 @@ package com.studyhub.controller;
 import com.studyhub.model.Notification;
 import com.studyhub.repository.NotificationRepository;
 import com.studyhub.service.NotificationService;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -15,6 +16,7 @@ public class NotificationController {
 
     private final NotificationRepository notificationRepo;
     private final NotificationService    notificationService;
+
 
     public NotificationController(NotificationRepository notificationRepo,
                                   NotificationService notificationService) {
