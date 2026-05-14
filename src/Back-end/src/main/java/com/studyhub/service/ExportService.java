@@ -9,8 +9,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class ExportService {
+    private static final Logger logger = LoggerFactory.getLogger(ExportService.class);
 
     public ByteArrayInputStream generarPdf(List<Asignacion> asignaciones) {
         Document document = new Document();
@@ -35,7 +39,7 @@ public class ExportService {
 
             document.close();
         } catch (DocumentException ex) {
-            ex.printStackTrace();
+            logger.error("Error al generar PDF: ", ex);
         }
 
         return new ByteArrayInputStream(out.toByteArray());
