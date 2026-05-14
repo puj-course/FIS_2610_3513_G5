@@ -15,6 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/cronograma.css">
     
 
     
@@ -565,8 +566,11 @@
         .main-content {
             padding: 28px 32px;
             overflow-y: auto;
-            overflow-x: hidden;
-            min-width: 0;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-clamp: 2;
         }
 
         .section-header {
@@ -3451,6 +3455,10 @@
                         <span class="material-icons-round">calendar_view_week</span>
                         Horario Semanal
                     </div>
+                    <div class="nav-item" id="nav-cronograma">
+                        <span class="material-icons-round">view_week</span>
+                        Cronograma Lab.
+                    </div>
                     <div class="nav-item" id="nav-tasks">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
@@ -3939,6 +3947,46 @@
                     </div>
                 </div>
             </div><!-- /.horario-view -->
+
+            <!-- Vista: Cronograma Semanal Expandido (#478) -->
+            <div class="cronograma-view grades-view" id="cronograma-view">
+                <div class="grades-view-header">
+                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
+                        <span class="material-icons-round">arrow_back</span>
+                    </button>
+                    <div>
+                        <h2 class="grades-view-title">Cronograma de Trabajo</h2>
+                        <p class="grades-view-subtitle">Gestión de turnos y asignaciones semanales</p>
+                    </div>
+                </div>
+
+                <div class="cronograma-container">
+                    <div class="export-actions">
+                        <button class="btn-export btn-pdf" onclick="CronogramaManager.exportar('pdf')">
+                            <span class="material-icons-round">picture_as_pdf</span> PDF
+                        </button>
+                        <button class="btn-export btn-csv" onclick="CronogramaManager.exportar('csv')">
+                            <span class="material-icons-round">description</span> CSV
+                        </button>
+                    </div>
+                    
+                    <table class="tabla-cronograma">
+                        <thead>
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Fecha</th>
+                                <th>Proyecto / Materia</th>
+                                <th>Turno</th>
+                                <th>Horas</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-cronograma-body">
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div><!-- /.cronograma-view -->
 
             <!-- Vista: Configuración -->
             <div class="settings-view" id="settings-view">
@@ -8660,6 +8708,11 @@ window.addEventListener('storage', (e) => {
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
+<<<<<<< HEAD
+    <script src="js/notification.js"></script>
+    <script src="js/cronograma.js"></script>
+=======
     <script src="js/notifications.js"></script>
+>>>>>>> 435d1acb6847ce3ab543c48aae199c76285adf84
 </body>
 </html>

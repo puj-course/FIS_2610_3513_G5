@@ -80,6 +80,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+        <!-- PDF Generation (#480) -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -125,6 +131,8 @@
                     </execution>
                 </executions>
             </plugin>
+<<<<<<< HEAD
+=======
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-surefire-plugin</artifactId>
@@ -134,6 +142,7 @@
                 </configuration>
             </plugin>
 
+>>>>>>> 435d1acb6847ce3ab543c48aae199c76285adf84
         </plugins>
     </build>
 </project>
