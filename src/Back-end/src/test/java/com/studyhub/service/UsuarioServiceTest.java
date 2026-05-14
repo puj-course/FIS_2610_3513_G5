@@ -167,4 +167,137 @@ class UsuarioServiceTest {
         verify(encryptionStrategy, times(1)).encrypt("plainPassword123");
         verify(usuarioRepository, times(1)).save(usuario);
     }
+
+    // ─── CP06: Lógica — Obtener por ID ───────────────────────────────────────
+
+    @Test
+    void obtenerPorId_retornaUsuario_cuandoExiste() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        Usuario result = usuarioService.obtenerPorId(1L);
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+    }
+
+    @Test
+    void obtenerPorId_lanzaExcepcion_cuandoNoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.obtenerPorId(99L));
+    }
+
+    // ─── CP07: Lógica — Resumen de Usuario ──────────────────────────────────
+
+    @Test
+    void obtenerResumenUsuario_calculaPromedioCorrectamente() {
+        // Arrange
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        
+        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
+        a1.setId(10L); a1.setNombre("Materia 1");
+        com.studyhub.model.Asignatura a2 = new com.studyhub.model.Asignatura();
+        a2.setId(11L); a2.setNombre("Materia 2");
+        
+        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1, a2));
+        when(notaService.calcularPromedio(10L)).thenReturn(4.0);
+        when(notaService.calcularPromedio(11L)).thenReturn(5.0);
+
+        // Act
+        var resumen = usuarioService.obtenerResumenUsuario(1L);
+
+        // Assert
+        assertEquals(4.5, resumen.getPromedioGlobal());
+        assertEquals(2, resumen.getTotalAsignaturas());
+    }
+
+    // ─── CP08: Lógica — Estadísticas ────────────────────────────────────────
+
+    @Test
+    void obtenerEstadisticas_retornaDatosCorrectos() {
+        // Arrange
+        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
+        a1.setId(10L); a1.setNombre("M1"); a1.setCreditos(3);
+        
+        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1));
+        when(notaService.calcularPromedio(10L)).thenReturn(2.5); // Riesgo
+
+        // Act
+        var stats = usuarioService.obtenerEstadisticas(1L);
+
+        // Assert
+        assertEquals(1, stats.getMateriasEnRiesgo());
+        assertEquals(3, stats.getTotalCreditos());
+        assertEquals(2.5, stats.getPromedioGlobal());
+    }
+
+    // ─── CP09: Lógica — Recuperación de Contraseña ──────────────────────────
+
+    @Test
+    void generarTokenRecuperacion_guardaToken_cuandoCorreoExiste() {
+        when(usuarioRepository.findByCorreo("fede@studyhub.com")).thenReturn(Optional.of(usuario));
+        
+        String token = usuarioService.generarTokenRecuperacion("fede@studyhub.com");
+        
+        assertNotNull(token);
+        assertNotNull(usuario.getTokenRecuperacion());
+        verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    void restablecerPassword_actualizaPasswordYBorraToken() {
+        usuario.setTokenRecuperacion("valid-token");
+        usuario.setTokenExpiracion(java.time.LocalDateTime.now().plusMinutes(10));
+        
+        when(usuarioRepository.findByTokenRecuperacion("valid-token")).thenReturn(Optional.of(usuario));
+        when(encryptionStrategy.encrypt("newPass")).thenReturn("hashedNewPass");
+
+        usuarioService.restablecerPassword("valid-token", "newPass");
+
+        assertEquals("hashedNewPass", usuario.getPassword());
+        assertNull(usuario.getTokenRecuperacion());
+        verify(usuarioRepository).save(usuario);
+    }
+
+    // ─── CP10: Lógica — Preferencias ─────────────────────────────────────────
+
+    @Test
+    void obtenerPreferencias_retornaMapa_cuandoJsonEsValido() throws Exception {
+        usuario.setPreferencias("{\"theme\":\"dark\"}");
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        
+        Map<String, Object> prefsMock = new HashMap<>();
+        prefsMock.put("theme", "dark");
+        when(objectMapper.readValue(eq("{\"theme\":\"dark\"}"), any(com.fasterxml.jackson.core.type.TypeReference.class)))
+            .thenReturn(prefsMock);
+
+        var result = usuarioService.obtenerPreferencias(1L);
+        assertEquals("dark", result.get("theme"));
+    }
+
+    // ─── CP11: Lógica — Resumen Académico ──────────────────────────────────
+
+    @Test
+    void obtenerResumenAcademico_retornaDatosCompletos() {
+        // Arrange
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        
+        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
+        a1.setId(10L); a1.setNombre("M1");
+        
+        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1));
+        when(notaService.calcularPromedio(10L)).thenReturn(4.5);
+        when(notaService.obtenerNotasPorAsignatura(10L)).thenReturn(new java.util.ArrayList<>());
+        
+        com.studyhub.model.Tarea t1 = new com.studyhub.model.Tarea();
+        t1.setTitulo("T1"); t1.setAsignatura(a1);
+        when(tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(1L))
+            .thenReturn(java.util.List.of(t1));
+
+        // Act
+        var resumen = usuarioService.obtenerResumenAcademico(1L);
+
+        // Assert
+        assertEquals(4.5, resumen.getPromedioGlobal());
+        assertEquals(1, resumen.getTareasPendientes().size());
+        assertEquals("T1", resumen.getTareasPendientes().get(0).getTitulo());
+    }
 }
+

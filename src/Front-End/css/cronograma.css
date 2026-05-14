@@ -1,0 +1,67 @@
+/* Cronograma Semanal (#478) */
+.cronograma-container {
+    padding: 20px;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-top: 20px;
+}
+
+.tabla-cronograma {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.tabla-cronograma th, .tabla-cronograma td {
+    padding: 12px;
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    font-size: 14px;
+}
+
+.tabla-cronograma th {
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-weight: 600;
+}
+
+.editable-cell:focus {
+    background: var(--blue-50);
+    outline: 2px solid var(--blue-400);
+    border-radius: 4px;
+}
+
+.fila-conflicto {
+    background-color: #FFEBEE !important;
+}
+
+.conflicto-badge {
+    color: #C62828;
+    font-weight: bold;
+    font-size: 11px;
+    display: block;
+}
+
+.export-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-export {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.btn-pdf { background: #E53935; color: white; }
+.btn-csv { background: #43A047; color: white; }
+
+.btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
