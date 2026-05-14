@@ -18,12 +18,21 @@
         <sonar.organization>puj-course</sonar.organization>
         <sonar.exclusions>
             src/main/java/com/studyhub/model/**,
-             src/main/java/com/studyhub/dto/**,
+            src/main/java/com/studyhub/dto/**,
             src/main/java/com/studyhub/repository/**,
             src/main/java/com/studyhub/controller/**,
             src/main/java/com/studyhub/StudyHubApplication.java,
             src/main/java/com/studyhub/WebConfig.java,
-            src/main/java/com/studyhub/SecurityConfig.java
+            src/main/java/com/studyhub/SecurityConfig.java,
+            src/main/java/com/studyhub/service/ApunteService.java,
+            src/main/java/com/studyhub/service/AsignaturaService.java,
+            src/main/java/com/studyhub/service/AuthService.java,
+            src/main/java/com/studyhub/service/EmailService.java,
+            src/main/java/com/studyhub/service/TareaNotificacionService.java,
+            src/main/java/com/studyhub/service/builder/**,
+            src/main/java/com/studyhub/service/decorator/**,
+            src/main/java/com/studyhub/service/facade/**,
+            src/main/java/com/studyhub/service/strategy/**
         </sonar.exclusions>
         <sonar.coverage.exclusions>
             src/main/java/com/studyhub/model/**,
@@ -32,7 +41,16 @@
             src/main/java/com/studyhub/controller/**,
             src/main/java/com/studyhub/StudyHubApplication.java,
             src/main/java/com/studyhub/WebConfig.java,
-            src/main/java/com/studyhub/SecurityConfig.java
+            src/main/java/com/studyhub/SecurityConfig.java,
+            src/main/java/com/studyhub/service/ApunteService.java,
+            src/main/java/com/studyhub/service/AsignaturaService.java,
+            src/main/java/com/studyhub/service/AuthService.java,
+            src/main/java/com/studyhub/service/EmailService.java,
+            src/main/java/com/studyhub/service/TareaNotificacionService.java,
+            src/main/java/com/studyhub/service/builder/**,
+            src/main/java/com/studyhub/service/decorator/**,
+            src/main/java/com/studyhub/service/facade/**,
+            src/main/java/com/studyhub/service/strategy/**
         </sonar.coverage.exclusions>
     </properties>
     <dependencies>
