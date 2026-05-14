@@ -76,11 +76,69 @@ FIS_2610_3513_G5/
 ---
 
 ## Instalación y Ejecución
-**Requisitos**
+
+### Requisitos
 - Docker y Docker Compose
 - Git
-- Java 17+
-- Maven
+
+### Clonar el repositorio
+```bash
+git clone https://github.com/puj-course/FIS_2610_3513_G5.git
+cd FIS_2610_3513_G5
+```
+
+### Ejecución con Docker Compose
+
+El proyecto incluye tres servicios orquestados mediante Docker Compose:
+- **db**: Base de datos PostgreSQL local
+- **backend**: API REST en Spring Boot (puerto 8080)
+- **frontend**: Interfaz de usuario servida por Nginx (puerto 80)
+
+Los servicios se comunican a través de la red interna `studyhub-network`.
+
+Para levantar todos los servicios:
+```bash
+docker-compose up --build
+```
+
+Para ejecutarlos en segundo plano:
+```bash
+docker-compose up --build -d
+```
+
+Para detener los servicios:
+```bash
+docker-compose down
+```
+
+### Variables de entorno
+
+El backend requiere las siguientes variables de entorno, configuradas en el `docker-compose.yml`:
+
+| Variable | Descripción |
+|---|---|
+| `JDBC_DATABASE_URL` | URL de conexión a la base de datos PostgreSQL |
+| `JDBC_DATABASE_USERNAME` | Usuario de la base de datos |
+| `JDBC_DATABASE_PASSWORD` | Contraseña de la base de datos |
+| `SPRING_JPA_HIBERNATE_DDL_AUTO` | Estrategia de inicialización del esquema |
+| `PORT` | Puerto en el que corre el backend |
+
+### Verificar que los servicios están corriendo
+
+```bash
+docker-compose ps
+```
+
+El backend estará disponible en `http://localhost:8080` y el frontend en `http://localhost:80`.
+
+### Despliegue en producción
+
+El despliegue en producción se realiza automáticamente en Render mediante GitHub Actions al hacer push a la rama `main`. El pipeline ejecuta las siguientes etapas:
+
+1. Construcción y publicación de imágenes Docker en Docker Hub (con tags `:latest` y `:sha` del commit)
+2. Despliegue automático en Render vía deploy hook
+3. Healthcheck del servicio desplegado
+4. Notificación del resultado por Telegram
 
 ## Clonar el repositorio
 ```text

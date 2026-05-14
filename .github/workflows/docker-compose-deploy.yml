@@ -1,0 +1,84 @@
+name: Docker Compose Deployment
+
+on:
+  workflow_run:
+    workflows: ["Docker Image CI/CD"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  docker-compose-deploy:
+    name: Deploy with Docker Compose
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull latest images from DockerHub
+        run: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/studyhub-backend:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/studyhub-frontend:latest
+
+      - name: Validate Docker Compose file
+        run: docker-compose config
+
+      - name: Start services with Docker Compose
+        run: docker-compose up -d
+
+      - name: Show running containers and network
+        run: |
+          echo "=== Contenedores activos ==="
+          docker-compose ps
+          echo "=== Red Docker ==="
+          docker network inspect studyhub-network
+
+      - name: Healthcheck Backend
+        run: |
+          MAX_RETRIES=10
+          RETRY_COUNT=0
+          until $(curl --output /dev/null --silent --fail http://localhost:8080/actuator/health); do
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+              echo "Healthcheck FALLIDO"
+              docker-compose logs backend
+              exit 1
+            fi
+            echo "Esperando al backend... (Intento $((RETRY_COUNT+1)))"
+            sleep 15
+            RETRY_COUNT=$((RETRY_COUNT+1))
+          done
+          echo "Backend UP y respondiendo"
+
+      - name: Healthcheck Frontend
+        run: |
+          curl --silent --fail http://localhost:80 && echo "Frontend UP" || echo "Frontend no responde"
+
+      - name: Tear down services
+        if: always()
+        run: docker-compose down -v
+
+      - name: Notify Telegram (Success)
+        if: success()
+        run: |
+          MESSAGE="✅ *StudyHub Docker Compose*%0A%0ADespliegue con Docker Compose exitoso!%0A%0AServicios levantados: db, backend, frontend%0ARed: studyhub-network%0ACommit: ${{ github.sha }}"
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=$MESSAGE" \
+            -d "parse_mode=markdown"
+
+      - name: Notify Telegram (Failure)
+        if: failure()
+        run: |
+          MESSAGE="❌ *StudyHub Docker Compose*%0A%0AFalló el despliegue con Docker Compose.%0A%0AFavor revisar los logs en GitHub Actions."
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=$MESSAGE" \
+            -d "parse_mode=markdown"
