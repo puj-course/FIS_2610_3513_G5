@@ -109,6 +109,7 @@
                 <configuration>
                     <useFile>false</useFile>
                     <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                    <argLine>@{argLine} -Dnet.bytebuddy.experimental=true</argLine>
                 </configuration>
             </plugin>
             <!-- Plugin JaCoCo para cobertura de código (requerido por SonarCloud) -->
@@ -131,18 +132,6 @@
                     </execution>
                 </executions>
             </plugin>
-<<<<<<< HEAD
-=======
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <useFile>false</useFile>
-                    <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                </configuration>
-            </plugin>
-
->>>>>>> 435d1acb6847ce3ab543c48aae199c76285adf84
         </plugins>
     </build>
 </project>
