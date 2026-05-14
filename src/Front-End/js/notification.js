@@ -91,19 +91,27 @@ const NotificationPanel = (() => {
 
         lista.innerHTML = notificaciones.map(n => crearItemHTML(n)).join('');
 
-        // Adjuntar eventos a los botones generados
+        // Adjuntar eventos a los elementos generados
         notificaciones.forEach(n => {
+            // Evento para el contenedor principal de la notificación
+            document.getElementById(`notif-item-${n.id}`)
+                ?.addEventListener('click', (e) => {
+                    // Evitar que botones hijos disparen este evento
+                    if (e.target.tagName.toLowerCase() === 'button') return;
+                    marcarLeida(n.id);
+                    ejecutarRedireccion(n);
+                });
+
             document.getElementById(`notif-read-${n.id}`)
-                ?.addEventListener('click', () => marcarLeida(n.id));
+                ?.addEventListener('click', (e) => { 
+                    e.stopPropagation(); 
+                    marcarLeida(n.id); 
+                });
             document.getElementById(`notif-del-${n.id}`)
-                ?.addEventListener('click', () => descartar(n.id));
-            if (n.actionUrl) {
-                document.getElementById(`notif-action-${n.id}`)
-                    ?.addEventListener('click', () => {
-                        marcarLeida(n.id);
-                        window.location.href = n.actionUrl;
-                    });
-            }
+                ?.addEventListener('click', (e) => { 
+                    e.stopPropagation(); 
+                    descartar(n.id); 
+                });
         });
     }
 
@@ -121,13 +129,6 @@ const NotificationPanel = (() => {
             ? `<span class="material-icons-round" style="color:#E53935;font-size:18px;margin-right:6px;">warning</span>`
             : '';
 
-        const botonAccion = n.actionUrl
-            ? `<button id="notif-action-${n.id}" style="
-                background:#1A73E8; color:#fff; border:none; border-radius:4px;
-                padding:3px 8px; font-size:11px; cursor:pointer; margin-right:4px;">
-                Ver</button>`
-            : '';
-
         const botonLeer = !esLeida
             ? `<button id="notif-read-${n.id}" style="
                 background:none; border:1px solid #90A4AE; border-radius:4px;
@@ -140,7 +141,9 @@ const NotificationPanel = (() => {
             border-left: 3px solid ${borderColor};
             background: ${bgColor};
             opacity: ${esLeida ? '0.7' : '1'};
-            padding: 10px 12px; margin-bottom: 4px; border-radius: 4px;">
+            cursor: pointer;
+            padding: 10px 12px; margin-bottom: 4px; border-radius: 4px;
+            transition: background-color 0.2s ease;">
             <div style="display:flex; align-items:flex-start; gap:6px;">
                 ${iconoAlert}
                 <div style="flex:1;">
@@ -150,8 +153,7 @@ const NotificationPanel = (() => {
                     <div class="notification-time" style="font-size:11px; color:#90A4AE; margin-bottom:6px;">
                         ${fecha} · <em>${n.type}</em>
                     </div>
-                    <div>
-                        ${botonAccion}
+                    <div class="notif-actions" style="position:relative; z-index:2;">
                         ${botonLeer}
                         <button id="notif-del-${n.id}" style="
                             background:none; border:1px solid #EF9A9A; border-radius:4px;
@@ -164,6 +166,58 @@ const NotificationPanel = (() => {
     }
 
     // ── Acciones ─────────────────────────────────────────────────────────────
+
+    function ejecutarRedireccion(n) {
+        // Redirección directa si hay URL válida
+        if (n.actionUrl && n.actionUrl.trim() !== '') {
+            window.location.href = n.actionUrl;
+            return;
+        }
+
+        let navId = 'nav-dashboard'; // Por defecto (Escenario 4)
+
+        switch (n.type) {
+            case 'MENSAJE':
+                // Escenario 1: Bandeja de entrada (Actualmente no existe, va al dashboard)
+                navId = 'nav-dashboard';
+                break;
+            case 'TAREA':
+                // Escenario 2: Vista detallada de la tarea
+                navId = 'nav-tasks';
+                break;
+            case 'CALENDARIO':
+                // Escenario 3: Vista de evento de calendario
+                navId = 'nav-horario';
+                break;
+            case 'CALIFICACION':
+                navId = 'nav-resenas';
+                break;
+            case 'SISTEMA':
+            default:
+                // Escenario 4: Dashboard
+                navId = 'nav-dashboard';
+                break;
+        }
+
+        const navElement = document.getElementById(navId);
+        if (navElement) {
+            navElement.click();
+            
+            // Cerrar el contenedor de notificaciones si está abierto
+            const notifDropdown = document.getElementById('notification-dropdown');
+            if (notifDropdown && notifDropdown.style.display !== 'none') {
+                notifDropdown.style.display = 'none';
+            }
+        } else {
+            // Escenario 5: Contenido no disponible / Fallback
+            mostrarToast({
+                priority: 'NORMAL',
+                type: 'SISTEMA',
+                message: 'El contenido asociado ya no está disponible.'
+            });
+            document.getElementById('nav-dashboard')?.click();
+        }
+    }
 
     async function marcarLeida(id) {
         try {
