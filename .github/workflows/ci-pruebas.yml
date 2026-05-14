@@ -76,6 +76,11 @@ jobs:
             PASSED=$((TOTAL_T - FAILED - SKIPPED - ERRORS))
           fi
 
+          # Exportar variables para otros pasos
+          echo "TOTAL_T=$TOTAL_T" >> $GITHUB_ENV
+          echo "PASSED=$PASSED" >> $GITHUB_ENV
+          echo "FAILED_TOTAL=$((FAILED + ERRORS))" >> $GITHUB_ENV
+
           STATUS="EXITOSO"
           COLOR="#27ae60"
           if [ $((FAILED + ERRORS)) -gt 0 ]; then
@@ -116,7 +121,7 @@ jobs:
       - name: Notificar éxito por Telegram
         if: success()
         run: |
-          MSG="✅ *StudyHub Quality Pipeline*%0A%0A¡Build exitoso en la rama *${{ github.ref_name }}*!%0A%0A📊 *Métricas:*%0A• Cobertura: ${{ steps.coverage-summary.outputs.COVERAGE }}%0A• Tests: ${{ TOTAL_T }} (Exitosos: ${{ PASSED }})%0A%0ACommit: ${{ github.sha }}%0A[Ver Reporte](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          MSG="✅ *StudyHub Quality Pipeline*%0A%0A¡Build exitoso en la rama *${{ github.ref_name }}*!%0A%0A📊 *Métricas:*%0A• Cobertura: ${{ steps.coverage-summary.outputs.COVERAGE }}%0A• Tests: ${{ env.TOTAL_T }} (Exitosos: ${{ env.PASSED }})%0A%0ACommit: ${{ github.sha }}%0A[Ver Reporte](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d "text=$MSG" \
