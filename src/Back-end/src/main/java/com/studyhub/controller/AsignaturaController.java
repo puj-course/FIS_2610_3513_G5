@@ -61,13 +61,31 @@ public class AsignaturaController {
         asignatura.setNombre(body.get("nombre").toString());
         asignatura.setCodigo(body.get("codigo").toString());
         asignatura.setProfesor(body.get("profesor").toString());
-        asignatura.setHorarioTexto(body.get("horario").toString());
-        if (body.get("diasClase") != null)
+        String horarioRaw = body.get("horario").toString();
+        asignatura.setHorarioTexto(horarioRaw);
+
+        // Parsear "Lun,Mié|11:00-13:00" → diasClase="Lun,Mié", horaInicio="11:00", horaFin="13:00"
+        // Si el front envía los campos separados se usan directamente; si no, se extraen del string.
+        if (body.get("diasClase") != null) {
             asignatura.setDiasClase(body.get("diasClase").toString());
-        if (body.get("horaInicio") != null)
+        } else if (horarioRaw.contains("|")) {
+            asignatura.setDiasClase(horarioRaw.split("\\|")[0]);
+        }
+
+        if (body.get("horaInicio") != null) {
             asignatura.setHoraInicio(body.get("horaInicio").toString());
-        if (body.get("horaFin") != null)
+        } else if (horarioRaw.contains("|") && horarioRaw.split("\\|").length > 1) {
+            String franja = horarioRaw.split("\\|")[1]; // "11:00-13:00"
+            asignatura.setHoraInicio(franja.split("-")[0].trim());
+        }
+
+        if (body.get("horaFin") != null) {
             asignatura.setHoraFin(body.get("horaFin").toString());
+        } else if (horarioRaw.contains("|") && horarioRaw.split("\\|").length > 1) {
+            String franja = horarioRaw.split("\\|")[1];
+            String[] partes = franja.split("-");
+            if (partes.length > 1) asignatura.setHoraFin(partes[1].trim());
+        }
         asignatura.setCreditos(Integer.parseInt(body.get("creditos").toString()));
         asignatura.setPeriodo(body.get("periodo").toString());
         asignatura.setUsuario(usuario);
