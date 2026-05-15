@@ -28,7 +28,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - JDBC_DATABASE_URL=jdbc:postgresql://aws-1-us-east-2.pooler.6543/postgres?sslmode=require
+      - JDBC_DATABASE_URL=jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require
       - JDBC_DATABASE_USERNAME=postgres.nnnqjufyloqyehskvivw
       - JDBC_DATABASE_PASSWORD=Lalisam@1722!
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
