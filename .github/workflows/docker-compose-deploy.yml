@@ -29,15 +29,15 @@ jobs:
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/studyhub-frontend:latest
 
       - name: Validate Docker Compose file
-        run: docker-compose config
+        run: docker compose config
 
       - name: Start services with Docker Compose
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Show running containers and network
         run: |
           echo "=== Contenedores activos ==="
-          docker-compose ps
+          docker compose ps
           echo "=== Red Docker ==="
           docker network inspect studyhub-network
 
@@ -48,7 +48,7 @@ jobs:
           until $(curl --output /dev/null --silent --fail http://localhost:8080/actuator/health); do
             if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
               echo "Healthcheck FALLIDO"
-              docker-compose logs backend
+              docker compose logs backend
               exit 1
             fi
             echo "Esperando al backend... (Intento $((RETRY_COUNT+1)))"
@@ -63,7 +63,7 @@ jobs:
 
       - name: Tear down services
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
 
       - name: Notify Telegram (Success)
         if: success()
