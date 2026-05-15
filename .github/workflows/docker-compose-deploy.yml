@@ -38,8 +38,10 @@ jobs:
         run: |
           echo "=== Contenedores activos ==="
           docker compose ps
-          echo "=== Red Docker ==="
-          docker network inspect studyhub-network
+          echo "=== Redes Docker ==="
+          docker network ls
+          echo "=== Inspeccion de red ==="
+          docker network inspect $(docker network ls --filter name=studyhub --format "{{.Name}}" | head -1)
 
       - name: Healthcheck Backend
         run: |
