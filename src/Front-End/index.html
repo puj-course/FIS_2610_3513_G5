@@ -5229,10 +5229,11 @@
     </div>
 
     <script>
-        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '')
             ? 'http://localhost:8080'
             : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
+        window.API = API;
 
         /**
          * Retorna el ID del usuario actualmente autenticado,
@@ -8057,6 +8058,8 @@
                 this.states = {
                     login: new LoginState(this),
                     register: new RegisterState(this),
+                    recover: new RecoverState(this),
+                    reset: new ResetState(this),
                     dashboard: new DashboardState(this),
                     resenas: new ResenasState(this)
                 };
@@ -8078,6 +8081,8 @@
                 document.querySelector('.app-container').style.display = 'none';
                 document.getElementById('login-view').style.display = 'block';
                 document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'none';
                 document.getElementById('login-error').style.display = 'none';
             }
         }
@@ -8089,7 +8094,36 @@
                 document.querySelector('.app-container').style.display = 'none';
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('register-view').style.display = 'block';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'none';
                 document.getElementById('register-error').style.display = 'none';
+            }
+        }
+
+        class RecoverState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'block';
+                document.getElementById('reset-view').style.display = 'none';
+                document.getElementById('recover-error').style.display = 'none';
+                document.getElementById('recover-success').style.display = 'none';
+            }
+        }
+
+        class ResetState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'block';
+                document.getElementById('reset-error').style.display = 'none';
             }
         }
 
