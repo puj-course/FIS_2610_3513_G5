@@ -13,6 +13,8 @@ import java.util.List;
 public interface AsignaturaRepository extends JpaRepository<Asignatura, Long> {
     List<Asignatura> findByUsuarioId(Long usuarioId);
     
+    boolean existsByCodigoAndUsuarioId(String codigo, Long usuarioId);
+    
     @Query("SELECT a FROM Asignatura a WHERE " +
            "(:day IS NULL OR LOWER(a.diasClase) LIKE LOWER(CONCAT('%', :day, '%'))) AND " +
            "(:startTime IS NULL OR a.horaInicio >= :startTime) AND " +
