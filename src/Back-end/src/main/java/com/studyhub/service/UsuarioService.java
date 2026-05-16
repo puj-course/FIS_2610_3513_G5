@@ -143,6 +143,11 @@ public class UsuarioService {
             usuario.setTemaColor(temaColor == null || temaColor.isEmpty() ? null : temaColor);
         }
 
+        if (campos.containsKey("fotoPerfil")) {
+            String fotoPerfil = campos.get("fotoPerfil") != null ? campos.get("fotoPerfil").toString().trim() : null;
+            usuario.setFotoPerfil(fotoPerfil == null || fotoPerfil.isEmpty() ? null : fotoPerfil);
+        }
+
         return usuarioRepository.save(usuario);
     }
 

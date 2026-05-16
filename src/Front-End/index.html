@@ -17,7 +17,7 @@
     <!-- PDF + Imagen: Exportación de Horario (HU exportación) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="css/cronograma.css">
+    
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -3973,10 +3973,7 @@
                         <span class="material-icons-round">calendar_view_week</span>
                         Horario Semanal
                     </div>
-                    <div class="nav-item" id="nav-cronograma">
-                        <span class="material-icons-round">view_week</span>
-                        Cronograma Lab.
-                    </div>
+                    
                     <div class="nav-item" id="nav-tasks">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
@@ -4418,45 +4415,7 @@
 
                 </div><!-- /.tasks-view -->
 
-            <!-- Vista: Cronograma Semanal Expandido (#478) -->
-            <div class="cronograma-view grades-view" id="cronograma-view">
-                <div class="grades-view-header">
-                    <button class="back-btn" onclick="document.getElementById('nav-dashboard').click()">
-                        <span class="material-icons-round">arrow_back</span>
-                    </button>
-                    <div>
-                        <h2 class="grades-view-title">Cronograma de Trabajo</h2>
-                        <p class="grades-view-subtitle">Gestión de turnos y asignaciones semanales</p>
-                    </div>
-                </div>
-
-                <div class="cronograma-container">
-                    <div class="export-actions">
-                        <button class="btn-export btn-pdf" onclick="CronogramaManager.exportar('pdf')">
-                            <span class="material-icons-round">picture_as_pdf</span> PDF
-                        </button>
-                        <button class="btn-export btn-csv" onclick="CronogramaManager.exportar('csv')">
-                            <span class="material-icons-round">description</span> CSV
-                        </button>
-                    </div>
-                    
-                    <table class="tabla-cronograma">
-                        <thead>
-                            <tr>
-                                <th>Empleado</th>
-                                <th>Fecha</th>
-                                <th>Proyecto / Materia</th>
-                                <th>Turno</th>
-                                <th>Horas</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-cronograma-body">
-                            <!-- Datos dinámicos -->
-                        </tbody>
-                    </table>
-                </div>
-            </div><!-- /.cronograma-view -->
+            
 
             <!-- Vista: Configuración (falso - solo header) - CERRADO -->
 
@@ -6195,6 +6154,201 @@
             calcSaveBtn.style.display = 'none';
             renderCalcTable(activeCardForView);
             updateCardInProgress(key);
+            const badgeCls = notaMinRounded >= 4 ? 'warn' : 'ok';
+            const icon = notaMinRounded >= 4 ? 'warning' : 'check_circle';
+
+            document.querySelectorAll('.calc-min-badge-cell').forEach(cell => {
+                cell.innerHTML = `
+                    <span class="badge-min ${badgeCls}">
+                        <span class="material-icons-round" style="font-size:12px;">${icon}</span>
+                        ÔëÑ ${notaMinRounded.toFixed(2)}
+                    </span>
+                `;
+            });
+        }
+
+        calcBtn.addEventListener('click', calcularNotaMinima);
+
+        calcEditLink.addEventListener('click', async () => {
+            if (!activeCardForView) return;
+            const card = activeCardForView;
+            // Cerrar calculadora directamente sin abrir el selector
+            calcView.classList.remove('active');
+            document.getElementById('calc-min-value').textContent = '—';
+            document.getElementById('calc-min-bar').style.width = '0%';
+            document.querySelector('.sidebar-right').style.display = '';
+            document.querySelector('.app-container').style.gridTemplateColumns = '';
+            activeCardForView = null;
+            // Abrir vista de calificaciones y luego el modal con origen 'calc'
+            await openGradesView(card);
+            openGradeModal(card, 'calc');
+        });
+
+        // ÔöÇÔöÇ Edición inline de la columna Nota en la tabla de la calculadora ÔöÇÔöÇ
+
+        let calcEditingMode = false; // Estado: si la tabla está en modo edición
+
+        /**
+         * Activa el modo edición inline en las columnas "Nota" y "Porcentaje"
+         * de TODAS las filas de la tabla, permitiendo ingresar o modificar
+         * tanto la nota como el porcentaje de cualquier corte.
+         */
+        calcInlineEditBtn.addEventListener('click', () => {
+            if (calcEditingMode) return;
+            calcEditingMode = true;
+
+            calcInlineEditBtn.style.display = 'none';
+            calcSaveBtn.style.display = 'flex';
+
+            calcTableBody.querySelectorAll('tr').forEach(tr => {
+                if (tr.querySelector('td[colspan]')) return;
+
+                // ÔöÇÔöÇ Columna Nota ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+                const notaCell = tr.querySelector('td:nth-child(2)');
+                if (notaCell) {
+                    const badge = notaCell.querySelector('.grade-score-badge');
+                    const rawVal = badge ? badge.textContent.trim() : '';
+                    const numVal = rawVal === '—' ? '' : rawVal;
+                    notaCell.innerHTML = `
+                        <input class="grade-inline-input number-input calc-nota-input"
+                               type="number" min="0" max="5" step="0.1"
+                               value="${numVal}" placeholder="0.0 ÔÇô 5.0"
+                               style="max-width:80px;margin:0 auto;display:block;">
+                    `;
+                }
+
+                // ÔöÇÔöÇ Columna Porcentaje ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+                const pctCell = tr.querySelector('td:nth-child(3)');
+                if (pctCell) {
+                    const pill = pctCell.querySelector('.grade-percent-pill');
+                    const rawPct = pill ? pill.textContent.replace('%', '').trim() : '';
+                    pctCell.innerHTML = `
+                        <input class="grade-inline-input number-input calc-pct-input"
+                               type="number" min="1" max="100" step="1"
+                               value="${rawPct}" placeholder="1-100"
+                               style="max-width:70px;margin:0 auto;display:block;">
+                    `;
+                }
+            });
+        });
+
+        /**
+         * Guarda los cambios de nota Y porcentaje hechos inline.
+         * Valida que:
+         *  - Las notas estén entre 0.0 y 5.0 (o vacías).
+         *  - Los porcentajes sean entre 1 y 100.
+         *  - La suma total de porcentajes no supere el 100%.
+         * Envía PUT /notas/{id} por cada ítem modificado.
+         */
+        calcSaveBtn.addEventListener('click', async () => {
+            const key = activeCardForView?.dataset.id;
+            const grades = gradesStore[key] || [];
+            let valid = true;
+
+            // Filas editables en orden (registradas primero, luego pendientes)
+            const editableRows = [];
+            calcTableBody.querySelectorAll('tr').forEach(tr => {
+                if (tr.querySelector('td[colspan]')) return;
+                const notaInput = tr.querySelector('.calc-nota-input');
+                const pctInput = tr.querySelector('.calc-pct-input');
+                if (notaInput || pctInput) editableRows.push({ tr, notaInput, pctInput });
+            });
+
+            const registradas = grades.filter(g => g.nota != null);
+            const pendientes = grades.filter(g => g.nota == null);
+            const allGrades = [...registradas, ...pendientes];
+
+            // ÔöÇÔöÇ Validar notas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            editableRows.forEach(({ notaInput }) => {
+                if (!notaInput) return;
+                const val = notaInput.value.trim();
+                if (val === '') return; // vacío = null, válido
+                const num = parseFloat(val);
+                if (isNaN(num) || num < 0 || num > 5) {
+                    notaInput.classList.add('error');
+                    valid = false;
+                } else {
+                    notaInput.classList.remove('error');
+                }
+            });
+
+            // ÔöÇÔöÇ Validar porcentajes individualmente ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            editableRows.forEach(({ pctInput }) => {
+                if (!pctInput) return;
+                const val = pctInput.value.trim();
+                const num = parseInt(val, 10);
+                if (!val || isNaN(num) || num < 1 || num > 100) {
+                    pctInput.classList.add('error');
+                    valid = false;
+                } else {
+                    pctInput.classList.remove('error');
+                }
+            });
+
+            if (!valid) {
+                showToast('Corrige los valores inválidos antes de guardar.');
+                return;
+            }
+
+            // ÔöÇÔöÇ Validar suma total de porcentajes Ôëñ 100 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            const totalPct = editableRows.reduce((sum, { pctInput }) => {
+                if (!pctInput) return sum;
+                return sum + parseInt(pctInput.value.trim(), 10);
+            }, 0);
+
+            if (totalPct > 100) {
+                // Marcar todos los inputs de porcentaje como error
+                editableRows.forEach(({ pctInput }) => {
+                    if (pctInput) pctInput.classList.add('error');
+                });
+                showToast(`La suma de porcentajes es ${totalPct}% — no puede superar el 100%.`);
+                return;
+            }
+
+            // ÔöÇÔöÇ Enviar cambios al backend ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            for (let i = 0; i < editableRows.length; i++) {
+                const { notaInput, pctInput } = editableRows[i];
+                const gradeObj = allGrades[i];
+                if (!gradeObj) continue;
+
+                const notaVal = notaInput?.value.trim();
+                const newNota = !notaVal ? null : parseFloat(notaVal);
+                const newPct = pctInput ? parseInt(pctInput.value.trim(), 10) : gradeObj.porcentaje;
+
+                // Sin cambios en este ítem → saltar
+                if (newNota === gradeObj.nota && newPct === gradeObj.porcentaje) continue;
+
+                try {
+                    const res = await fetch(`${API}/notas/${gradeObj.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            nombre: gradeObj.nombre,
+                            calificacion: newNota,
+                            porcentaje: newPct,
+                            asignatura: { id: parseInt(key) }
+                        })
+                    });
+                    if (!res.ok) {
+                        const errBody = await res.json().catch(() => ({}));
+                        throw new Error(errBody.mensaje || `Error ${res.status} al actualizar la nota`);
+                    }
+                    // Actualizar store local
+                    gradeObj.nota = newNota;
+                    gradeObj.porcentaje = newPct;
+                } catch (err) {
+                    console.error(err);
+                    showToast('Error al guardar cambios en el servidor.');
+                    return;
+                }
+            }
+
+            // ÔöÇÔöÇ Salir del modo edición y re-renderizar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            calcEditingMode = false;
+            calcInlineEditBtn.style.display = 'flex';
+            calcSaveBtn.style.display = 'none';
+            renderCalcTable(activeCardForView);
+            updateCardInProgress(key);
             fetchResumenUsuario();
             showToast('Cambios guardados exitosamente.');
         });
@@ -6285,7 +6439,7 @@
                 const icon = document.getElementById('profile-photo-icon');
                 const deleteBtn = document.getElementById('profile-photo-delete-btn');
                 if (u.fotoPerfil) {
-                    const fotoUrl = u.fotoPerfil.startsWith('http')
+                    const fotoUrl = (u.fotoPerfil.startsWith('data:') || u.fotoPerfil.startsWith('http'))
                         ? u.fotoPerfil
                         : `${API}${u.fotoPerfil}`;
                     img.src = fotoUrl;
@@ -6483,21 +6637,14 @@
                 // el guardado de datos personales continúa igual.
                 if (_profilePhotoFile) {
                     try {
-                        const formData = new FormData();
-                        formData.append('foto', _profilePhotoFile);
-                        const fotoRes = await fetch(`${API_BASE}/${userId}/avatar`, {
-                            method: 'POST',
-                            body: formData
+                        fotoUrl = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(_profilePhotoFile);
                         });
-                        if (!fotoRes.ok) {
-                            const err = await fotoRes.json().catch(() => ({}));
-                            showProfileError(err.mensaje || 'Error al subir la foto. Los demás cambios sí se guardarán.');
-                        } else {
-                            const fotoData = await fotoRes.json();
-                            fotoUrl = fotoData.url || fotoData.fotoPerfil || fotoUrl;
-                        }
                     } catch {
-                        showProfileError('No se pudo subir la foto (sin conexión). Los demás cambios sí se guardarán.');
+                        showProfileError('No se pudo procesar la foto.');
                     }
                 }
 
@@ -6561,8 +6708,8 @@
             // Foto de perfil en el avatar del sidebar
             const avatar = document.querySelector('.profile-avatar');
             if (avatar && u.fotoPerfil) {
-                // Construir URL absoluta usando la base del API
-                const fotoUrl = u.fotoPerfil.startsWith('http')
+                // Soporta: base64 (data:), URL absoluta (http/https), o ruta relativa
+                const fotoUrl = (u.fotoPerfil.startsWith('data:') || u.fotoPerfil.startsWith('http'))
                     ? u.fotoPerfil
                     : `${API}${u.fotoPerfil}`;
                 avatar.innerHTML = `<img src="${fotoUrl}" alt="Foto de perfil"
@@ -7201,7 +7348,7 @@
             };
 
             try {
-                const res = await fetch(`${API_BASE}/${userId}/subjects`);
+                const res = await fetch(`${API}/api/usuarios/${userId}/subjects`);
                 if (!res.ok) throw new Error('Error al cargar materias');
                 const subjects = await res.json();
 
@@ -7217,7 +7364,7 @@
                     const icon = icons[idx % icons.length];
                     const cell = document.createElement('div');
                     cell.className = 'subject-quick-cell';
-                    cell.title = s.description || s.name;
+                    cell.title = s.name;
 
                     cell.innerHTML = `
                         <div class="subject-quick-cell-icon"
@@ -7225,11 +7372,11 @@
                             <span class="material-icons-round">${icon}</span>
                         </div>
                         <div class="subject-quick-cell-name">${s.name}</div>
-                        <span class="subject-status-badge ${s.status}">
+                        <span class="subject-status-badge ${s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')}">
                             <span class="material-icons-round" style="font-size:12px;">
-                                ${badgeIcon[s.status] || 'radio_button_unchecked'}
+                                ${badgeIcon[s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')] || 'radio_button_unchecked'}
                             </span>
-                            ${badgeLabel[s.status] || s.status}
+                            ${badgeLabel[s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')]}
                         </span>
                     `;
 
@@ -7466,7 +7613,7 @@
                 const data = await res.json();
 
                 const subjects = data.asignaturas || [];
-                const labels = subjects.map(s => s.nombre);
+                const labels = subjects.map(s => s.name);
                 const averages = subjects.map(s => s.promedio);
 
                 // 1. Renderizar el Gráfico
@@ -7537,7 +7684,7 @@
                             item.className = 'risk-item';
                             item.style = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 14px;';
                             item.innerHTML = `
-                                <span style="font-weight: 600; color: #333;">${s.nombre}</span>
+                                <span style="font-weight: 600; color: #333;">${s.name}</span>
                                 <span style="color: #d32f2f; font-weight: 700; background: #FFEBEE; padding: 2px 8px; border-radius: 6px;">${s.promedio.toFixed(2)}</span>
                             `;
                             riskList.appendChild(item);
@@ -7728,8 +7875,9 @@
                 const json = await res.json();
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
-                // Refrescar vista de tareas si está activa
-                if (tasksView.classList.contains('active')) fetchTareasBackend();
+                // Refrescar vista activa después de guardar
+                 if (tasksView.classList.contains('active')) fetchTareasBackend();
+                 if (dashboardView.classList.contains('active')) renderDashboardSummary();
             } catch (err) {
                 console.error('Error completo:', err);
                 showToast('Error al conectar con el servidor');
@@ -9373,7 +9521,7 @@
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
     <script src="js/notification.js"></script>
-    <script src="js/cronograma.js"></script>
+    
     <script src="js/exportHorario.js"></script>
 </body>
 
