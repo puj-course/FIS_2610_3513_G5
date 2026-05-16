@@ -18,7 +18,7 @@ const NotificationPanel = (() => {
     function init() {
         // Esperar a que la sesión esté disponible
         const checkSession = setInterval(() => {
-            const user = typeof session !== 'undefined' ? session.getUser() : null;
+            const user = typeof SessionManager !== 'undefined' ? SessionManager.getInstance().getUser() : null;
             if (user && user.id) {
                 clearInterval(checkSession);
                 userId = user.id;
