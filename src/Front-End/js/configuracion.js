@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return user ? user.id : 1;
     };
 
-    const API_URL = typeof window.API !== 'undefined' ? window.API + '/api' : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '') ? 'http://localhost:8080/api' : window.location.origin + '/api');
+    const API_URL = typeof window.API !== 'undefined' ? window.API + '/api' : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '') ? 'https://studyhub-c2ft.onrender.com/api' : window.location.origin + '/api');
 
     // Cargar preferencias iniciales
     cargarPreferenciasBD();
