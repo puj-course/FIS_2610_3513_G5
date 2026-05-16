@@ -49,12 +49,38 @@ jobs:
             CX_COVERED=$(grep -oP 'counter type="COMPLEXITY" missed="[0-9]+" covered="\K[0-9]+' "$JACOCO_XML" | tail -1)
             TOTAL_CX=$((CX_MISSED + CX_COVERED))
 
+            # Extraer Métodos Totales para calcular Complejidad Promedio
+            METHOD_MISSED=$(grep -oP 'counter type="METHOD" missed="\K[0-9]+' "$JACOCO_XML" | tail -1)
+            METHOD_COVERED=$(grep -oP 'counter type="METHOD" missed="[0-9]+" covered="\K[0-9]+' "$JACOCO_XML" | tail -1)
+            TOTAL_METHODS=$((METHOD_MISSED + METHOD_COVERED))
+
+            if [ "$TOTAL_METHODS" -gt 0 ]; then
+                AVG_CX=$(echo "scale=2; $TOTAL_CX / $TOTAL_METHODS" | bc)
+            else
+                AVG_CX=0
+            fi
+
+            # Clasificar Nivel de Complejidad (Estándar de McCabe)
+            if (( $(echo "$AVG_CX <= 10" | bc -l) )); then
+                CX_NIVEL="Baja (Estándar)"
+            elif (( $(echo "$AVG_CX <= 20" | bc -l) )); then
+                CX_NIVEL="Media (Moderada)"
+            else
+                CX_NIVEL="Alta (Riesgo)"
+            fi
+
             echo "COVERAGE=$PERCENTAGE%" >> $GITHUB_OUTPUT
             echo "COVERAGE_VAL=$PERCENTAGE" >> $GITHUB_OUTPUT
             echo "COMPLEXITY=$TOTAL_CX" >> $GITHUB_OUTPUT
+            echo "CX_AVG=$AVG_CX" >> $GITHUB_OUTPUT
+            echo "CX_LEVEL=$CX_NIVEL" >> $GITHUB_OUTPUT
+            echo "TOTAL_LINES=$TOTAL_LINES" >> $GITHUB_OUTPUT
           else
             echo "COVERAGE=N/A" >> $GITHUB_OUTPUT
             echo "COMPLEXITY=N/A" >> $GITHUB_OUTPUT
+            echo "CX_AVG=N/A" >> $GITHUB_OUTPUT
+            echo "CX_LEVEL=N/A" >> $GITHUB_OUTPUT
+            echo "TOTAL_LINES=0" >> $GITHUB_OUTPUT
           fi
 
       # Construir reporte HTML enriquecido
@@ -87,6 +113,22 @@ jobs:
           echo "PASSED=$PASSED" >> $GITHUB_ENV
           echo "FAILED_TOTAL=$((FAILED + ERRORS))" >> $GITHUB_ENV
           echo "CX_TOTAL=${{ steps.coverage-summary.outputs.COMPLEXITY }}" >> $GITHUB_ENV
+          echo "CX_AVG=${{ steps.coverage-summary.outputs.CX_AVG }}" >> $GITHUB_ENV
+          echo "CX_LEVEL=${{ steps.coverage-summary.outputs.CX_LEVEL }}" >> $GITHUB_ENV
+
+          # Nuevas métricas
+          TOTAL_L=${{ steps.coverage-summary.outputs.TOTAL_LINES }}
+          if [ "$TOTAL_L" -gt 0 ]; then
+            TEST_DENSITY=$(echo "scale=2; ($TOTAL_T * 1000) / $TOTAL_L" | bc)
+          else
+            TEST_DENSITY=0
+          fi
+          
+          if [ "$TOTAL_T" -gt 0 ]; then
+            TEST_SUCCESS=$(echo "scale=2; $PASSED * 100 / $TOTAL_T" | bc)
+          else
+            TEST_SUCCESS=0
+          fi
 
           STATUS="EXITOSO"
           COLOR="#27ae60"
@@ -127,7 +169,7 @@ jobs:
             <div class="content">
               <div class="grid">
                 <div class="card"><div class="card-title">Cobertura JaCoCo</div><div class="card-value" style="color: #3498db;">${COVERAGE_STR}</div></div>
-                <div class="card"><div class="card-title">Complejidad Total</div><div class="card-value">${{ steps.coverage-summary.outputs.COMPLEXITY }}</div></div>
+                <div class="card"><div class="card-title">Complejidad (Prom)</div><div class="card-value">${{ steps.coverage-summary.outputs.CX_AVG }}</div></div>
                 <div class="card"><div class="card-title">Tests Ejecutados</div><div class="card-value">${TOTAL_T}</div></div>
               </div>
               
@@ -147,14 +189,24 @@ jobs:
                     <td>${STATUS} (Min 70%)</td>
                   </tr>
                   <tr>
-                    <td>Pruebas Unitarias</td>
-                    <td><strong>${PASSED} / ${TOTAL_T}</strong></td>
-                    <td>$( [ "$FAILED" -eq 0 ] && echo "EXITOSO" || echo "CON FALLAS" )</td>
+                    <td>Complejidad Ciclomática Promedio</td>
+                    <td><strong>${{ steps.coverage-summary.outputs.CX_AVG }} (Por método)</strong></td>
+                    <td>${{ steps.coverage-summary.outputs.CX_LEVEL }}</td>
                   </tr>
                   <tr>
-                    <td>Complejidad Ciclomática</td>
-                    <td><strong>${{ steps.coverage-summary.outputs.COMPLEXITY }}</strong></td>
-                    <td>Analizada</td>
+                    <td>Densidad de Pruebas</td>
+                    <td><strong>${TEST_DENSITY}</strong></td>
+                    <td>Tests por cada 1000 líneas lógicas</td>
+                  </tr>
+                  <tr>
+                    <td>Tasa de Éxito de Pruebas</td>
+                    <td><strong>${TEST_SUCCESS}%</strong></td>
+                    <td>% de casos pasados</td>
+                  </tr>
+                  <tr>
+                    <td>Pruebas Unitarias Totales</td>
+                    <td><strong>${PASSED} / ${TOTAL_T}</strong></td>
+                    <td>$( [ "$FAILED" -eq 0 ] && echo "EXITOSO" || echo "CON FALLAS" )</td>
                   </tr>
                 </tbody>
               </table>

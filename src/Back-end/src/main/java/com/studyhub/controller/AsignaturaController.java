@@ -57,6 +57,13 @@ public class AsignaturaController {
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
 
+        String codigo = body.get("codigo").toString();
+        if (asignaturaRepository.existsByCodigoAndUsuarioId(codigo, usuarioId)) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("mensaje", "Ya existe una materia con el código " + codigo);
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
+
         Asignatura asignatura = new Asignatura();
         asignatura.setNombre(body.get("nombre").toString());
         asignatura.setCodigo(body.get("codigo").toString());
@@ -89,6 +96,54 @@ public class AsignaturaController {
         asignatura.setCreditos(Integer.parseInt(body.get("creditos").toString()));
         asignatura.setPeriodo(body.get("periodo").toString());
         asignatura.setUsuario(usuario);
+
+        // 2. Validar cruce de horarios
+        String newDiasClase = asignatura.getDiasClase();
+        String newHoraInicioStr = asignatura.getHoraInicio();
+        String newHoraFinStr = asignatura.getHoraFin();
+
+        if (newDiasClase != null && newHoraInicioStr != null && newHoraFinStr != null) {
+            try {
+                java.time.format.DateTimeFormatter formatter = new java.time.format.DateTimeFormatterBuilder()
+                        .appendPattern("H:mm[:ss]")
+                        .toFormatter();
+                java.time.LocalTime newStart = java.time.LocalTime.parse(newHoraInicioStr.trim(), formatter);
+                java.time.LocalTime newEnd = java.time.LocalTime.parse(newHoraFinStr.trim(), formatter);
+
+                List<Asignatura> existentes = asignaturaRepository.findByUsuarioId(usuarioId);
+                for (Asignatura exist : existentes) {
+                    if (exist.getDiasClase() != null && exist.getHoraInicio() != null && exist.getHoraFin() != null) {
+                        boolean shareDays = false;
+                        String[] daysNew = newDiasClase.split(",");
+                        String[] daysExist = exist.getDiasClase().split(",");
+                        for (String dNew : daysNew) {
+                            for (String dExist : daysExist) {
+                                if (dNew.trim().equalsIgnoreCase(dExist.trim())) {
+                                    shareDays = true;
+                                    break;
+                                }
+                            }
+                            if (shareDays) break;
+                        }
+
+                        if (shareDays) {
+                            java.time.LocalTime existStart = java.time.LocalTime.parse(exist.getHoraInicio().trim(), formatter);
+                            java.time.LocalTime existEnd = java.time.LocalTime.parse(exist.getHoraFin().trim(), formatter);
+
+                            // overlap condition: start1 < end2 && start2 < end1
+                            if (newStart.isBefore(existEnd) && existStart.isBefore(newEnd)) {
+                                Map<String, Object> error = new HashMap<>();
+                                error.put("mensaje", "Cruce de horarios detectado con la materia: " + exist.getNombre());
+                                return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // If it fails to parse, we log and skip validation
+                System.err.println("Error parsing time: " + e.getMessage());
+            }
+        }
 
         Asignatura guardada = asignaturaRepository.save(asignatura);
         System.out.println("Asignatura guardada en BD: " + guardada);
