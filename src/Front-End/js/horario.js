@@ -395,3 +395,23 @@ document.addEventListener('DOMContentLoaded', () => {
             e.currentTarget.style.display = 'none';
     });
 });
+
+// ── Modal de detalle del salón ──────────────────────────────────────────────
+
+function abrirDetalleSalon(salon) {
+    document.getElementById('modal-sd-nombre').textContent    = salon.nombre    || 'No especificado';
+    document.getElementById('modal-sd-ubicacion').textContent = salon.ubicacion || 'No especificada';
+    document.getElementById('modal-sd-capacidad').textContent = salon.capacidad !== null ? salon.capacidad : 'No especificada';
+
+    document.getElementById('modal-salon-detalle').style.display = 'flex';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('modal-salon-cerrar')?.addEventListener('click', () => {
+        document.getElementById('modal-salon-detalle').style.display = 'none';
+    });
+    document.getElementById('modal-salon-volver')?.addEventListener('click', () => {
+        document.getElementById('modal-salon-detalle').style.display = 'none';
+        // El modal de evento sigue abierto debajo
+    });
+});

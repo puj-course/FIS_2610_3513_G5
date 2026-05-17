@@ -9539,6 +9539,19 @@
       </div>
     </div>
     
+    <!-- Modal: Detalle de Salón -->
+    <div id="modal-salon-detalle" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1001; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:12px; padding:28px; width:380px; max-width:95vw; position:relative;">
+        <button id="modal-salon-cerrar" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+        <button id="modal-salon-volver" style="background:none; border:none; color:#1E88E5; cursor:pointer; font-size:13px; margin-bottom:10px;">← Volver al evento</button>
+        <h3 style="margin:0 0 14px; font-size:18px;">🏫 Detalle del Salón</h3>
+        <p><strong>Nombre:</strong> <span id="modal-sd-nombre"></span></p>
+        <p><strong>Ubicación:</strong> <span id="modal-sd-ubicacion"></span></p>
+        <p><strong>Capacidad:</strong> <span id="modal-sd-capacidad"></span></p>
+        <p><strong>Equipamiento:</strong> <span id="modal-sd-equipamiento">No especificado</span></p>
+      </div>
+    </div>
+    
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
