@@ -9517,6 +9517,28 @@
             scheduleResultsList.style.display = 'flex';
         }
     </script>
+    <!-- Modal: Detalle de Evento -->
+    <div id="modal-evento-detalle" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:12px; padding:28px; width:420px; max-width:95vw; position:relative;">
+        <button id="modal-evento-cerrar" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+        <h3 id="modal-evento-titulo" style="margin:0 0 12px; font-size:18px;"></h3>
+        <p><strong>Horario:</strong> <span id="modal-evento-horas"></span></p>
+        <p><strong>Profesor:</strong> <span id="modal-evento-profesor"></span></p>
+        <div id="modal-salon-bloque">
+          <hr style="margin:12px 0;">
+          <p style="font-weight:600; margin-bottom:6px;">📍 Salón</p>
+          <p><strong>Nombre:</strong> <span id="modal-salon-nombre"></span></p>
+          <p><strong>Ubicación:</strong> <span id="modal-salon-ubicacion"></span></p>
+          <p><strong>Capacidad:</strong> <span id="modal-salon-capacidad"></span></p>
+          <button id="btn-ver-salon" style="margin-top:8px; padding:6px 14px; background:#1E88E5; color:#fff; border:none; border-radius:6px; cursor:pointer;">Ver detalle del salón</button>
+        </div>
+        <div id="modal-sin-salon" style="display:none;">
+          <hr style="margin:12px 0;">
+          <p style="color:#888;">Sin salón asignado</p>
+        </div>
+      </div>
+    </div>
+    
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
