@@ -30,6 +30,13 @@ public class HorarioBuilder {
         dto.setProfesor(profesor);
         return this;
     }
+    
+    public HorarioBuilder conSalon(String nombre, String ubicacion, Integer capacidad) {
+        this.dto.setSalonNombre(nombre);
+        this.dto.setSalonUbicacion(ubicacion);
+        this.dto.setSalonCapacidad(capacidad);
+        return this;
+    }
 
     public horarioDTO build() {
         return dto;

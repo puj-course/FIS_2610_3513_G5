@@ -32,6 +32,7 @@ public class HorarioRepository {
                             asignatura.getHoraFin()    != null ? asignatura.getHoraFin()    : "00:00"
                         )
                         .conProfesor(asignatura.getProfesor())
+                        .conSalon(asignatura.getSalonNombre(), asignatura.getSalonUbicacion(), asignatura.getSalonCapacidad())
                         .build();
 
                 horario.add(dto);
