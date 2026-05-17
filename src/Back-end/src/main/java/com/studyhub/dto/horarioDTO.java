@@ -8,6 +8,9 @@ public class horarioDTO {
     private String horaFin;
     private String aula;
     private String profesor;
+    private String salonNombre;
+    private String salonUbicacion;
+    private Integer salonCapacidad;
 
     public horarioDTO() {}
 
@@ -57,6 +60,15 @@ public class horarioDTO {
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
     }
+    
+    public String getSalonNombre() { return salonNombre; }
+    public void setSalonNombre(String salonNombre) { this.salonNombre = salonNombre; }
+
+    public String getSalonUbicacion() { return salonUbicacion; }
+    public void setSalonUbicacion(String salonUbicacion) { this.salonUbicacion = salonUbicacion; }
+
+    public Integer getSalonCapacidad() { return salonCapacidad; }
+    public void setSalonCapacidad(Integer salonCapacidad) { this.salonCapacidad = salonCapacidad; }
 
     @Override
     public String toString() {
@@ -67,6 +79,9 @@ public class horarioDTO {
                 ", horaFin='" + horaFin + '\'' +
                 ", profesor='" + profesor + '\'' +
                 ", aula='" + aula + '\'' +
+                ", salonNombre='" + salonNombre + '\'' +
+                ", salonUbicacion='" + salonUbicacion + '\'' +
+                ", salonCapacidad=" + salonCapacidad +
                 '}';
     }
 }
