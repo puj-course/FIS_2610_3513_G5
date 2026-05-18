@@ -56,6 +56,12 @@ public class UsuarioService {
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new RuntimeException("El correo ya está registrado");
         }
+        if (usuario.getTelefono() != null && !usuario.getTelefono().trim().isEmpty()) {
+            if (usuarioRepository.existsByTelefono(usuario.getTelefono().trim())) {
+                throw new RuntimeException("El teléfono ya está registrado");
+            }
+            usuario.setTelefono(usuario.getTelefono().trim());
+        }
         usuario.setPassword(encryptionStrategy.encrypt(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
@@ -150,6 +156,16 @@ public class UsuarioService {
             usuario.setFotoPerfil(fotoPerfil == null || fotoPerfil.isEmpty() ? null : fotoPerfil);
         }
 
+        if (campos.containsKey("telefono")) {
+            String tel = campos.get("telefono") != null ? campos.get("telefono").toString().trim() : null;
+            if (tel != null && !tel.isEmpty() && !tel.equals(usuario.getTelefono())) {
+                if (usuarioRepository.existsByTelefono(tel)) {
+                    throw new RuntimeException("El teléfono ya está registrado en otra cuenta");
+                }
+            }
+            usuario.setTelefono(tel == null || tel.isEmpty() ? null : tel);
+        }
+
         return usuarioRepository.save(usuario);
     }
 
@@ -218,6 +234,17 @@ public class UsuarioService {
     public String generarTokenRecuperacion(String correo) {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese correo"));
+
+        String token = UUID.randomUUID().toString();
+        usuario.setTokenRecuperacion(token);
+        usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
+        usuarioRepository.save(usuario);
+        return token;
+    }
+
+    public String generarTokenRecuperacionPorTelefono(String telefono) {
+        Usuario usuario = usuarioRepository.findByTelefono(telefono)
+                .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese número celular"));
 
         String token = UUID.randomUUID().toString();
         usuario.setTokenRecuperacion(token);

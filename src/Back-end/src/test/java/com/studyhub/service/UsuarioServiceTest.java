@@ -301,6 +301,23 @@ class UsuarioServiceTest {
     }
 
     @Test
+    void generarTokenRecuperacionPorTelefono_guardaToken_cuandoTelefonoExiste() {
+        when(usuarioRepository.findByTelefono("3001234567")).thenReturn(Optional.of(usuario));
+
+        String token = usuarioService.generarTokenRecuperacionPorTelefono("3001234567");
+
+        assertNotNull(token);
+        assertNotNull(usuario.getTokenRecuperacion());
+        verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    void generarTokenRecuperacionPorTelefono_lanzaExcepcion_cuandoTelefonoNoExiste() {
+        when(usuarioRepository.findByTelefono("0000000000")).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.generarTokenRecuperacionPorTelefono("0000000000"));
+    }
+
+    @Test
     void generarTokenRecuperacion_lanzaExcepcion_cuandoCorreoNoExiste() {
         when(usuarioRepository.findByCorreo("no@existe.com")).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, () -> usuarioService.generarTokenRecuperacion("no@existe.com"));

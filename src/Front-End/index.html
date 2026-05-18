@@ -3862,17 +3862,21 @@
                     <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
+                    <label class="form-label">Correo Electrónico <span class="required">*</span></label>
                     <input type="email" id="reg-email" class="form-input" placeholder="estudiante@universidad.edu"
                         required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Contraseña</label>
+                    <label class="form-label">Teléfono Celular <span class="required">*</span></label>
+                    <input type="tel" id="reg-telefono" class="form-input" placeholder="Ej: 3001234567" required pattern="[0-9]+" minlength="10" maxlength="15">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña <span class="required">*</span></label>
                     <input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres" required
                         minlength="6">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Confirmar Contraseña</label>
+                    <label class="form-label">Confirmar Contraseña <span class="required">*</span></label>
                     <input type="password" id="reg-pass-confirm" class="form-input" placeholder="Repite tu contraseña"
                         required>
                 </div>
@@ -3882,22 +3886,22 @@
                     Sesión</span></p>
         </div>
 
-        <!-- RECOVER VIEW (HU-26) -->
+        <!-- RECOVER VIEW (HU-26 / SMS) -->
         <div id="recover-view" class="auth-card" style="display: none;">
             <div class="auth-header">
-                <div class="auth-logo"><span class="material-icons-round">lock_reset</span></div>
-                <h2 class="auth-title">Recuperar Acceso</h2>
-                <p class="auth-subtitle">Ingresa tu correo y te enviaremos un enlace de recuperación</p>
+                <div class="auth-logo"><span class="material-icons-round">sms</span></div>
+                <h2 class="auth-title">Recuperar por SMS</h2>
+                <p class="auth-subtitle">Ingresa tu número celular y te enviaremos un código/enlace de recuperación por SMS</p>
             </div>
             <div id="recover-error" class="error-message"></div>
             <div id="recover-success" class="error-message"
                 style="background:#E8F5E9; color:#2E7D32; border-left-color:#4CAF50;"></div>
             <form class="auth-form" onsubmit="handleRecover(event)">
                 <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" id="recover-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                    <label class="form-label">Teléfono Celular <span class="required">*</span></label>
+                    <input type="tel" id="recover-telefono" class="form-input" placeholder="Ej: 3001234567" required pattern="[0-9]+">
                 </div>
-                <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
+                <button type="submit" id="btn-recover" class="auth-btn">Enviar SMS</button>
             </form>
             <p class="auth-switch">¿Recordaste tu contraseña? <span class="auth-link"
                     onclick="toggleAuth('login')">Inicia Sesión</span></p>
@@ -4668,6 +4672,15 @@
                                     <div class="profile-form-error" id="error-profile-apellido">El apellido es
                                         obligatorio</div>
                                 </div>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label class="profile-form-label" for="profile-telefono">
+                                    Teléfono Celular <span class="required">*</span>
+                                </label>
+                                <input class="profile-form-input" type="tel" id="profile-telefono"
+                                    placeholder="Ej: 3001234567" pattern="[0-9]+" minlength="10" maxlength="15" required>
+                                <div class="profile-form-error" id="error-profile-telefono">El teléfono es obligatorio</div>
                             </div>
 
                             <div class="profile-form-group">
@@ -6238,6 +6251,7 @@
 
                 document.getElementById('profile-nombre').value = u.nombre || '';
                 document.getElementById('profile-apellido').value = u.apellido || '';
+                document.getElementById('profile-telefono').value = u.telefono || '';
                 document.getElementById('profile-carrera').value = u.carrera || '';
                 document.getElementById('profile-semestre').value = u.semestre || '';
 
@@ -6382,6 +6396,7 @@
             const fields = [
                 { id: 'profile-nombre', errId: 'error-profile-nombre' },
                 { id: 'profile-apellido', errId: 'error-profile-apellido' },
+                { id: 'profile-telefono', errId: 'error-profile-telefono' },
                 { id: 'profile-carrera', errId: 'error-profile-carrera' },
                 { id: 'profile-semestre', errId: 'error-profile-semestre' },
             ];
@@ -6401,7 +6416,7 @@
         }
 
         // Limpiar error al escribir
-        ['profile-nombre', 'profile-apellido', 'profile-carrera', 'profile-semestre'].forEach(id => {
+        ['profile-nombre', 'profile-apellido', 'profile-telefono', 'profile-carrera', 'profile-semestre'].forEach(id => {
             const el = document.getElementById(id);
             el.addEventListener('input', () => {
                 el.classList.remove('error');
@@ -6456,7 +6471,13 @@
                 }
 
                 // 2. Actualizar datos personales
-                const payload = { nombre, apellido, carrera, semestre: parseInt(semestre) };
+                const payload = { 
+                    nombre, 
+                    apellido, 
+                    telefono: document.getElementById('profile-telefono').value.trim(),
+                    carrera, 
+                    semestre: parseInt(semestre) 
+                };
                 if (fotoUrl) payload.fotoPerfil = fotoUrl;
 
                 const res = await fetch(`${API_BASE}/${userId}/perfil`, {
@@ -8051,7 +8072,7 @@
 
         async function handleRecover(e) {
             e.preventDefault();
-            const correo = document.getElementById('recover-email').value.trim();
+            const telefono = document.getElementById('recover-telefono').value.trim();
             const btn = document.getElementById('btn-recover');
             const errorDiv = document.getElementById('recover-error');
             const successDiv = document.getElementById('recover-success');
@@ -8062,18 +8083,18 @@
             successDiv.style.display = 'none';
 
             try {
-                // Endpoint POST /api/usuarios/recuperar?correo=...
-                const response = await fetch(`${API_BASE}/recuperar?correo=${encodeURIComponent(correo)}`, {
+                // Endpoint POST /api/usuarios/recuperar?telefono=...
+                const response = await fetch(`${API_BASE}/recuperar?telefono=${encodeURIComponent(telefono)}`, {
                     method: 'POST'
                 });
                 const result = await response.json();
 
                 if (response.ok) {
-                    successDiv.textContent = "¡Enlace enviado! Revisa tu bandeja de entrada y sigue las instrucciones.";
+                    successDiv.textContent = "¡Código y enlace enviados por SMS! Revisa los mensajes en tu teléfono celular.";
                     successDiv.style.display = 'block';
-                    document.getElementById('recover-email').value = '';
+                    document.getElementById('recover-telefono').value = '';
                 } else {
-                    errorDiv.textContent = result.mensaje || "El correo no está registrado en el sistema";
+                    errorDiv.textContent = result.mensaje || "El teléfono no está registrado en el sistema";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
@@ -8170,6 +8191,7 @@
             const nombre = document.getElementById('reg-nombre').value.trim();
             const apellido = document.getElementById('reg-apellido').value.trim();
             const correo = document.getElementById('reg-email').value.trim();
+            const telefono = document.getElementById('reg-telefono').value.trim();
             const password = document.getElementById('reg-pass').value.trim();
             const confirm = document.getElementById('reg-pass-confirm').value.trim();
             const errorDiv = document.getElementById('register-error');
@@ -8184,7 +8206,7 @@
                 const response = await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                    body: JSON.stringify({ nombre, apellido, correo, telefono, password, rol: "ESTUDIANTE" })
                 });
 
                 const result = await response.json();
