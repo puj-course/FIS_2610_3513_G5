@@ -4,9 +4,11 @@ import com.studyhub.model.SesionInvalidada;
 import com.studyhub.repository.SesionInvalidadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 public class AuthService {
 
     @Autowired
@@ -30,6 +32,7 @@ public class AuthService {
      * Retorna true si la sesión con ese loginAt sigue vigente.
      * Es inválida si existe un logout registrado DESPUÉS de ese loginAt.
      */
+    @Transactional(readOnly = true)
     public boolean esSesionValida(Long usuarioId, LocalDateTime loginAt) {
         if (loginAt == null) return false;
         return !sesionInvalidadaRepository

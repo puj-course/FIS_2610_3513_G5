@@ -3862,17 +3862,21 @@
                     <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
+                    <label class="form-label">Correo Electrónico <span class="required">*</span></label>
                     <input type="email" id="reg-email" class="form-input" placeholder="estudiante@universidad.edu"
                         required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Contraseña</label>
+                    <label class="form-label">Teléfono Celular <span class="required">*</span></label>
+                    <input type="tel" id="reg-telefono" class="form-input" placeholder="+573001234567" value="+57" required pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña <span class="required">*</span></label>
                     <input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres" required
                         minlength="6">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Confirmar Contraseña</label>
+                    <label class="form-label">Confirmar Contraseña <span class="required">*</span></label>
                     <input type="password" id="reg-pass-confirm" class="form-input" placeholder="Repite tu contraseña"
                         required>
                 </div>
@@ -3882,22 +3886,22 @@
                     Sesión</span></p>
         </div>
 
-        <!-- RECOVER VIEW (HU-26) -->
+        <!-- RECOVER VIEW (HU-26 / SMS) -->
         <div id="recover-view" class="auth-card" style="display: none;">
             <div class="auth-header">
-                <div class="auth-logo"><span class="material-icons-round">lock_reset</span></div>
-                <h2 class="auth-title">Recuperar Acceso</h2>
-                <p class="auth-subtitle">Ingresa tu correo y te enviaremos un enlace de recuperación</p>
+                <div class="auth-logo"><span class="material-icons-round">sms</span></div>
+                <h2 class="auth-title">Recuperar por SMS</h2>
+                <p class="auth-subtitle">Ingresa tu número celular y te enviaremos un código/enlace de recuperación por SMS</p>
             </div>
             <div id="recover-error" class="error-message"></div>
             <div id="recover-success" class="error-message"
                 style="background:#E8F5E9; color:#2E7D32; border-left-color:#4CAF50;"></div>
             <form class="auth-form" onsubmit="handleRecover(event)">
                 <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" id="recover-email" class="form-input" placeholder="ejemplo@correo.com" required>
+                    <label class="form-label">Teléfono Celular <span class="required">*</span></label>
+                    <input type="tel" id="recover-telefono" class="form-input" placeholder="+573001234567" value="+57" required pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
                 </div>
-                <button type="submit" id="btn-recover" class="auth-btn">Enviar Enlace</button>
+                <button type="submit" id="btn-recover" class="auth-btn">Enviar SMS</button>
             </form>
             <p class="auth-switch">¿Recordaste tu contraseña? <span class="auth-link"
                     onclick="toggleAuth('login')">Inicia Sesión</span></p>
@@ -4668,6 +4672,15 @@
                                     <div class="profile-form-error" id="error-profile-apellido">El apellido es
                                         obligatorio</div>
                                 </div>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label class="profile-form-label" for="profile-telefono">
+                                    Teléfono Celular <span class="required">*</span>
+                                </label>
+                                <input class="profile-form-input" type="tel" id="profile-telefono"
+                                    placeholder="+573001234567" value="+57" pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)" required>
+                                <div class="profile-form-error" id="error-profile-telefono">El teléfono es obligatorio y debe tener formato +57</div>
                             </div>
 
                             <div class="profile-form-group">
@@ -6238,6 +6251,7 @@
 
                 document.getElementById('profile-nombre').value = u.nombre || '';
                 document.getElementById('profile-apellido').value = u.apellido || '';
+                document.getElementById('profile-telefono').value = u.telefono || '+57';
                 document.getElementById('profile-carrera').value = u.carrera || '';
                 document.getElementById('profile-semestre').value = u.semestre || '';
 
@@ -6382,6 +6396,7 @@
             const fields = [
                 { id: 'profile-nombre', errId: 'error-profile-nombre' },
                 { id: 'profile-apellido', errId: 'error-profile-apellido' },
+                { id: 'profile-telefono', errId: 'error-profile-telefono' },
                 { id: 'profile-carrera', errId: 'error-profile-carrera' },
                 { id: 'profile-semestre', errId: 'error-profile-semestre' },
             ];
@@ -6401,7 +6416,7 @@
         }
 
         // Limpiar error al escribir
-        ['profile-nombre', 'profile-apellido', 'profile-carrera', 'profile-semestre'].forEach(id => {
+        ['profile-nombre', 'profile-apellido', 'profile-telefono', 'profile-carrera', 'profile-semestre'].forEach(id => {
             const el = document.getElementById(id);
             el.addEventListener('input', () => {
                 el.classList.remove('error');
@@ -6456,7 +6471,13 @@
                 }
 
                 // 2. Actualizar datos personales
-                const payload = { nombre, apellido, carrera, semestre: parseInt(semestre) };
+                const payload = { 
+                    nombre, 
+                    apellido, 
+                    telefono: document.getElementById('profile-telefono').value.trim(),
+                    carrera, 
+                    semestre: parseInt(semestre) 
+                };
                 if (fotoUrl) payload.fotoPerfil = fotoUrl;
 
                 const res = await fetch(`${API_BASE}/${userId}/perfil`, {
@@ -7178,12 +7199,12 @@
                              style="background:${color.bg};color:${color.fg}">
                             <span class="material-icons-round">${icon}</span>
                         </div>
-                        <div class="subject-quick-cell-name">${s.name}</div>
-                        <span class="subject-status-badge ${s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')}">
+                        <div class="subject-quick-cell-name">${s.name || s.nombre}</div>
+                        <span class="subject-status-badge ${s.status || 'pendiente'}">
                             <span class="material-icons-round" style="font-size:12px;">
-                                ${badgeIcon[s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')] || 'radio_button_unchecked'}
+                                ${badgeIcon[s.status || 'pendiente'] || 'radio_button_unchecked'}
                             </span>
-                            ${badgeLabel[s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')]}
+                            ${badgeLabel[s.status || 'pendiente'] || 'Pendiente'}
                         </span>
                     `;
 
@@ -7420,7 +7441,7 @@
                 const data = await res.json();
 
                 const subjects = data.asignaturas || [];
-                const labels = subjects.map(s => s.name);
+                const labels = subjects.map(s => s.nombre || s.name || 'Sin nombre');
                 const averages = subjects.map(s => s.promedio);
 
                 // 1. Renderizar el Gráfico
@@ -7482,7 +7503,7 @@
                 const riskAlertsContainer = document.getElementById('risk-alerts');
                 const riskList = document.getElementById('risk-list');
                 if (riskAlertsContainer && riskList) {
-                    const riskSubjects = subjects.filter(s => s.enRiesgo || s.promedio < 3.0);
+                    const riskSubjects = subjects.filter(s => s.enRiesgo || (s.promedio > 0 && s.promedio < 3.0));
                     riskList.innerHTML = '';
                     if (riskSubjects.length > 0) {
                         riskAlertsContainer.style.display = 'block';
@@ -7491,7 +7512,7 @@
                             item.className = 'risk-item';
                             item.style = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 14px;';
                             item.innerHTML = `
-                                <span style="font-weight: 600; color: #333;">${s.name}</span>
+                                <span style="font-weight: 600; color: #333;">${s.nombre || s.name || 'Materia'}</span>
                                 <span style="color: #d32f2f; font-weight: 700; background: #FFEBEE; padding: 2px 8px; border-radius: 6px;">${s.promedio.toFixed(2)}</span>
                             `;
                             riskList.appendChild(item);
@@ -8051,7 +8072,7 @@
 
         async function handleRecover(e) {
             e.preventDefault();
-            const correo = document.getElementById('recover-email').value.trim();
+            const telefono = document.getElementById('recover-telefono').value.trim();
             const btn = document.getElementById('btn-recover');
             const errorDiv = document.getElementById('recover-error');
             const successDiv = document.getElementById('recover-success');
@@ -8062,18 +8083,36 @@
             successDiv.style.display = 'none';
 
             try {
-                // Endpoint POST /api/usuarios/recuperar?correo=...
-                const response = await fetch(`${API_BASE}/recuperar?correo=${encodeURIComponent(correo)}`, {
+                // Endpoint POST /api/usuarios/recuperar?telefono=...
+                const response = await fetch(`${API_BASE}/recuperar?telefono=${encodeURIComponent(telefono)}`, {
                     method: 'POST'
                 });
                 const result = await response.json();
 
                 if (response.ok) {
-                    successDiv.textContent = "¡Enlace enviado! Revisa tu bandeja de entrada y sigue las instrucciones.";
+                    // Si el servidor en la nube no pudo entregarlo físicamente por límite de su IP,
+                    // retransmitimos la petición a Textbelt directamente desde el navegador (usando la IP limpia del usuario)
+                    if (result.entregado === false && result.smsBody) {
+                        try {
+                            await fetch('https://textbelt.com/text', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    phone: telefono,
+                                    message: result.smsBody,
+                                    key: 'textbelt'
+                                })
+                            });
+                        } catch (e) { console.warn('Retransmisión cliente fallida:', e); }
+                    }
+
+                    successDiv.innerHTML = `✅ ¡Mensaje de texto enviado! El SMS con tu enlace de acceso llegará a tu teléfono en los próximos segundos.<br><br>
+                        <span style="font-size: 11px; color: #555;">Si la red celular presenta demoras, también puedes acceder al enlace seguro haciendo clic abajo:</span><br>
+                        <a href="index.html?token=${result.token}" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #2E7D32; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px;">🔑 Entrar al enlace seguro de recuperación</a>`;
                     successDiv.style.display = 'block';
-                    document.getElementById('recover-email').value = '';
+                    document.getElementById('recover-telefono').value = '';
                 } else {
-                    errorDiv.textContent = result.mensaje || "El correo no está registrado en el sistema";
+                    errorDiv.textContent = result.mensaje || "El teléfono no está registrado en el sistema";
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
@@ -8170,6 +8209,7 @@
             const nombre = document.getElementById('reg-nombre').value.trim();
             const apellido = document.getElementById('reg-apellido').value.trim();
             const correo = document.getElementById('reg-email').value.trim();
+            const telefono = document.getElementById('reg-telefono').value.trim();
             const password = document.getElementById('reg-pass').value.trim();
             const confirm = document.getElementById('reg-pass-confirm').value.trim();
             const errorDiv = document.getElementById('register-error');
@@ -8184,7 +8224,7 @@
                 const response = await fetch(API_BASE, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, apellido, correo, password, rol: "ESTUDIANTE" })
+                    body: JSON.stringify({ nombre, apellido, correo, telefono, password, rol: "ESTUDIANTE" })
                 });
 
                 const result = await response.json();
@@ -9208,6 +9248,14 @@
                             style="font-family: monospace; color: var(--gray-600); font-size: 14px; padding: 4px 8px; background: var(--gray-100); border-radius: 4px; border: 1px solid var(--gray-200);">#1E88E5</span>
                     </div>
                 </div>
+                <div class="config-section danger-zone" style="margin-top: 25px; border-top: 1px solid #ffccd5; padding-top: 15px;">
+                    <h4 style="color: #e53935; display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Zona de Peligro (Eliminar Cuenta)
+                    </h4>
+                    <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 12px;">Al eliminar tu cuenta, se borrarán permanentemente todos tus datos de la base de datos (materias, notas, tareas, cronograma y perfil). Esta acción no se puede deshacer.</p>
+                    <button class="btn-save" id="btn-delete-account" onclick="confirmDeleteAccount()" style="background: #e53935; color: #fff; width: 100%; border: none;">Eliminar Cuenta Permanentemente</button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" id="config-btn-reset">Restablecer</button>
@@ -9217,6 +9265,32 @@
         </div>
     </div>
     <script>
+        function confirmDeleteAccount() {
+            if (confirm("⚠️ ¡ADVERTENCIA DEFINITIVA!\n\n¿Estás absolutamente seguro de que deseas eliminar tu cuenta permanentemente?\n\nSe eliminarán de raíz tu usuario, materias, notas, tareas, cronograma y preferencias de la base de datos de StudyHub. Esta acción no se puede deshacer.")) {
+                const storedUser = JSON.parse(localStorage.getItem('studyhub_user'));
+                if (!storedUser || !storedUser.id) {
+                    alert('Error: No se pudo identificar al usuario activo.');
+                    return;
+                }
+                const userId = storedUser.id;
+                fetch(`${API}/api/usuarios/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => {
+                    if (res.ok) {
+                        alert("✅ Tu cuenta y todos tus datos han sido eliminados permanentemente de la base de datos.");
+                        localStorage.removeItem('studyhub_user');
+                        window.location.reload();
+                    } else {
+                        return res.json().then(err => { throw new Error(err.mensaje || 'Error al eliminar la cuenta'); });
+                    }
+                })
+                .catch(err => {
+                    alert('❌ ' + err.message);
+                });
+            }
+        }
         // ==========================================
         // HU-37: SISTEMA DE FILTRADO DE HORARIO
         // ==========================================

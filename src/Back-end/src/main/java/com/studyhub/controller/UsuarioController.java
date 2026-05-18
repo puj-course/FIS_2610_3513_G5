@@ -30,6 +30,9 @@ public class UsuarioController {
     private EmailService emailService;
 
     @Autowired
+    private com.studyhub.service.SmsService smsService;
+
+    @Autowired
     private AsignaturaService asignaturaService;
 
     @Autowired
@@ -58,6 +61,9 @@ public class UsuarioController {
             // no invalide inmediatamente la sesión recién iniciada.
             authService.limpiarSesionesAnteriores(usuario.getId());
             String loginAt = java.time.LocalDateTime.now().toString();
+            if (usuario.getTelefono() != null && !usuario.getTelefono().trim().isEmpty()) {
+                smsService.enviarAlertaLogin(usuario.getTelefono().trim(), usuario.getNombre(), loginAt);
+            }
             return ResponseEntity.ok(Map.of(
                 "id",       usuario.getId(),
                 "nombre",   usuario.getNombre(),
@@ -157,13 +163,18 @@ public class UsuarioController {
 
 
     @PostMapping("/recuperar")
-    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String correo) {
+    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String telefono) {
         try {
-            String token = usuarioService.generarTokenRecuperacion(correo);
+            String token = usuarioService.generarTokenRecuperacionPorTelefono(telefono);
             String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             String enlace = baseUri + "/index.html?token=" + token;
-            emailService.enviarCorreoRecuperacion(correo, enlace);
-            return ResponseEntity.ok(Map.of("mensaje", "Enlace enviado exitosamente"));
+            boolean entregado = smsService.enviarSmsRecuperacion(telefono, enlace);
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Enlace seguro enviado por SMS exitosamente al " + telefono,
+                "token", token,
+                "entregado", entregado,
+                "smsBody", "🔑 [StudyHub] Accede aqui para recuperar tu contrasena: " + enlace
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
@@ -262,6 +273,17 @@ public class UsuarioController {
 
             return ResponseEntity.ok(subjects);
 
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        try {
+            usuarioService.eliminarUsuario(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Cuenta y todos sus datos asociados eliminados exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("mensaje", e.getMessage()));
