@@ -81,7 +81,7 @@ public class UsuarioService {
             usuario.setTelefono(telNorm);
         }
         usuario.setPassword(encryptionStrategy.encrypt(usuario.getPassword()));
-        return usuarioRepository.save(usuario);
+        return usuarioRepository.saveAndFlush(usuario);
     }
 
     @Transactional(readOnly = true)
@@ -188,7 +188,7 @@ public class UsuarioService {
             usuario.setTelefono(telNorm);
         }
 
-        return usuarioRepository.save(usuario);
+        return usuarioRepository.saveAndFlush(usuario);
     }
 
     @Transactional(readOnly = true)
@@ -262,7 +262,7 @@ public class UsuarioService {
         String token = UUID.randomUUID().toString();
         usuario.setTokenRecuperacion(token);
         usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
-        usuarioRepository.save(usuario);
+        usuarioRepository.saveAndFlush(usuario);
         return token;
     }
 
@@ -274,7 +274,7 @@ public class UsuarioService {
         String token = UUID.randomUUID().toString();
         usuario.setTokenRecuperacion(token);
         usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
-        usuarioRepository.save(usuario);
+        usuarioRepository.saveAndFlush(usuario);
         return token;
     }
 
@@ -289,7 +289,7 @@ public class UsuarioService {
         usuario.setPassword(encryptionStrategy.encrypt(nuevaPassword));
         usuario.setTokenRecuperacion(null);
         usuario.setTokenExpiracion(null);
-        usuarioRepository.save(usuario);
+        usuarioRepository.saveAndFlush(usuario);
     }
 
     @Transactional(readOnly = true)
@@ -350,7 +350,7 @@ public class UsuarioService {
         try {
             String prefsJson = objectMapper.writeValueAsString(preferencias);
             usuario.setPreferencias(prefsJson);
-            usuarioRepository.save(usuario);
+            usuarioRepository.saveAndFlush(usuario);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error al serializar preferencias JSON", e);
         }

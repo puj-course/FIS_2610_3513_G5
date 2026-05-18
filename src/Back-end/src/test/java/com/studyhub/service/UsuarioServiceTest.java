@@ -82,20 +82,20 @@ class UsuarioServiceTest {
         when(usuarioRepository.existsByCorreo("fede@studyhub.com")).thenReturn(true);
         RuntimeException ex = assertThrows(RuntimeException.class, () -> usuarioService.crearUsuario(usuario));
         assertEquals("El correo ya está registrado", ex.getMessage());
-        verify(usuarioRepository, never()).save(any());
+        verify(usuarioRepository, never()).saveAndFlush(any());
     }
 
     @Test
     void crearUsuario_encriptaPasswordYGuarda_cuandoDatosValidos() {
         when(usuarioRepository.existsByCorreo("fede@studyhub.com")).thenReturn(false);
         when(encryptionStrategy.encrypt("plainPassword123")).thenReturn("encryptedHash");
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+        when(usuarioRepository.saveAndFlush(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
 
         Usuario resultado = usuarioService.crearUsuario(usuario);
 
         assertNotNull(resultado);
         assertEquals("encryptedHash", resultado.getPassword());
-        verify(usuarioRepository, times(1)).save(usuario);
+        verify(usuarioRepository, times(1)).saveAndFlush(usuario);
     }
 
     @Test
@@ -169,7 +169,7 @@ class UsuarioServiceTest {
     @Test
     void actualizarPerfil_actualizaCamposOpcionales_cuandoSonValidos() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+        when(usuarioRepository.saveAndFlush(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
 
         Map<String, Object> campos = new HashMap<>();
         campos.put("nombre", "Federico");
@@ -189,7 +189,7 @@ class UsuarioServiceTest {
     @Test
     void actualizarPerfil_limpiaCamposOpcionales_cuandoVienenVacios() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+        when(usuarioRepository.saveAndFlush(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
 
         Map<String, Object> campos = new HashMap<>();
         campos.put("nombre", "Federico");
@@ -297,7 +297,7 @@ class UsuarioServiceTest {
 
         assertNotNull(token);
         assertNotNull(usuario.getTokenRecuperacion());
-        verify(usuarioRepository).save(usuario);
+        verify(usuarioRepository).saveAndFlush(usuario);
     }
 
     @Test
@@ -308,7 +308,7 @@ class UsuarioServiceTest {
 
         assertNotNull(token);
         assertNotNull(usuario.getTokenRecuperacion());
-        verify(usuarioRepository).save(usuario);
+        verify(usuarioRepository).saveAndFlush(usuario);
     }
 
     @Test
@@ -336,7 +336,7 @@ class UsuarioServiceTest {
         assertEquals("hashNuevaClave", usuario.getPassword());
         assertNull(usuario.getTokenRecuperacion());
         assertNull(usuario.getTokenExpiracion());
-        verify(usuarioRepository).save(usuario);
+        verify(usuarioRepository).saveAndFlush(usuario);
     }
 
     @Test
@@ -424,7 +424,7 @@ class UsuarioServiceTest {
 
         usuarioService.guardarPreferencias(1L, Map.of("theme", "light"));
         assertEquals("{\"theme\":\"light\"}", usuario.getPreferencias());
-        verify(usuarioRepository).save(usuario);
+        verify(usuarioRepository).saveAndFlush(usuario);
     }
 
     @Test
