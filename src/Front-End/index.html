@@ -4412,6 +4412,7 @@
                             Agregar Tarea
                         </button>
                     </div>
+                    <div class="tasks-grid" id="tasks-grid"></div>
 
                 </div><!-- /.tasks-view -->
 
@@ -5229,10 +5230,11 @@
     </div>
 
     <script>
-        const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8080'
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '')
+            ? 'https://studyhub-c2ft.onrender.com'
             : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
+        window.API = API;
 
         /**
          * Retorna el ID del usuario actualmente autenticado,
@@ -5959,201 +5961,6 @@
             barEl.style.width = Math.min((notaMinRounded / 5) * 100, 100) + '%';
 
             // Actualizar badge en cada fila pendiente de la tabla
-            const badgeCls = notaMinRounded >= 4 ? 'warn' : 'ok';
-            const icon = notaMinRounded >= 4 ? 'warning' : 'check_circle';
-
-            document.querySelectorAll('.calc-min-badge-cell').forEach(cell => {
-                cell.innerHTML = `
-                    <span class="badge-min ${badgeCls}">
-                        <span class="material-icons-round" style="font-size:12px;">${icon}</span>
-                        ÔëÑ ${notaMinRounded.toFixed(2)}
-                    </span>
-                `;
-            });
-        }
-
-        calcBtn.addEventListener('click', calcularNotaMinima);
-
-        calcEditLink.addEventListener('click', async () => {
-            if (!activeCardForView) return;
-            const card = activeCardForView;
-            // Cerrar calculadora directamente sin abrir el selector
-            calcView.classList.remove('active');
-            document.getElementById('calc-min-value').textContent = '—';
-            document.getElementById('calc-min-bar').style.width = '0%';
-            document.querySelector('.sidebar-right').style.display = '';
-            document.querySelector('.app-container').style.gridTemplateColumns = '';
-            activeCardForView = null;
-            // Abrir vista de calificaciones y luego el modal con origen 'calc'
-            await openGradesView(card);
-            openGradeModal(card, 'calc');
-        });
-
-        // ÔöÇÔöÇ Edición inline de la columna Nota en la tabla de la calculadora ÔöÇÔöÇ
-
-        let calcEditingMode = false; // Estado: si la tabla está en modo edición
-
-        /**
-         * Activa el modo edición inline en las columnas "Nota" y "Porcentaje"
-         * de TODAS las filas de la tabla, permitiendo ingresar o modificar
-         * tanto la nota como el porcentaje de cualquier corte.
-         */
-        calcInlineEditBtn.addEventListener('click', () => {
-            if (calcEditingMode) return;
-            calcEditingMode = true;
-
-            calcInlineEditBtn.style.display = 'none';
-            calcSaveBtn.style.display = 'flex';
-
-            calcTableBody.querySelectorAll('tr').forEach(tr => {
-                if (tr.querySelector('td[colspan]')) return;
-
-                // ÔöÇÔöÇ Columna Nota ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-                const notaCell = tr.querySelector('td:nth-child(2)');
-                if (notaCell) {
-                    const badge = notaCell.querySelector('.grade-score-badge');
-                    const rawVal = badge ? badge.textContent.trim() : '';
-                    const numVal = rawVal === '—' ? '' : rawVal;
-                    notaCell.innerHTML = `
-                        <input class="grade-inline-input number-input calc-nota-input"
-                               type="number" min="0" max="5" step="0.1"
-                               value="${numVal}" placeholder="0.0 ÔÇô 5.0"
-                               style="max-width:80px;margin:0 auto;display:block;">
-                    `;
-                }
-
-                // ÔöÇÔöÇ Columna Porcentaje ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-                const pctCell = tr.querySelector('td:nth-child(3)');
-                if (pctCell) {
-                    const pill = pctCell.querySelector('.grade-percent-pill');
-                    const rawPct = pill ? pill.textContent.replace('%', '').trim() : '';
-                    pctCell.innerHTML = `
-                        <input class="grade-inline-input number-input calc-pct-input"
-                               type="number" min="1" max="100" step="1"
-                               value="${rawPct}" placeholder="1-100"
-                               style="max-width:70px;margin:0 auto;display:block;">
-                    `;
-                }
-            });
-        });
-
-        /**
-         * Guarda los cambios de nota Y porcentaje hechos inline.
-         * Valida que:
-         *  - Las notas estén entre 0.0 y 5.0 (o vacías).
-         *  - Los porcentajes sean entre 1 y 100.
-         *  - La suma total de porcentajes no supere el 100%.
-         * Envía PUT /notas/{id} por cada ítem modificado.
-         */
-        calcSaveBtn.addEventListener('click', async () => {
-            const key = activeCardForView?.dataset.id;
-            const grades = gradesStore[key] || [];
-            let valid = true;
-
-            // Filas editables en orden (registradas primero, luego pendientes)
-            const editableRows = [];
-            calcTableBody.querySelectorAll('tr').forEach(tr => {
-                if (tr.querySelector('td[colspan]')) return;
-                const notaInput = tr.querySelector('.calc-nota-input');
-                const pctInput = tr.querySelector('.calc-pct-input');
-                if (notaInput || pctInput) editableRows.push({ tr, notaInput, pctInput });
-            });
-
-            const registradas = grades.filter(g => g.nota != null);
-            const pendientes = grades.filter(g => g.nota == null);
-            const allGrades = [...registradas, ...pendientes];
-
-            // ÔöÇÔöÇ Validar notas ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-            editableRows.forEach(({ notaInput }) => {
-                if (!notaInput) return;
-                const val = notaInput.value.trim();
-                if (val === '') return; // vacío = null, válido
-                const num = parseFloat(val);
-                if (isNaN(num) || num < 0 || num > 5) {
-                    notaInput.classList.add('error');
-                    valid = false;
-                } else {
-                    notaInput.classList.remove('error');
-                }
-            });
-
-            // ÔöÇÔöÇ Validar porcentajes individualmente ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-            editableRows.forEach(({ pctInput }) => {
-                if (!pctInput) return;
-                const val = pctInput.value.trim();
-                const num = parseInt(val, 10);
-                if (!val || isNaN(num) || num < 1 || num > 100) {
-                    pctInput.classList.add('error');
-                    valid = false;
-                } else {
-                    pctInput.classList.remove('error');
-                }
-            });
-
-            if (!valid) {
-                showToast('Corrige los valores inválidos antes de guardar.');
-                return;
-            }
-
-            // ÔöÇÔöÇ Validar suma total de porcentajes Ôëñ 100 ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-            const totalPct = editableRows.reduce((sum, { pctInput }) => {
-                if (!pctInput) return sum;
-                return sum + parseInt(pctInput.value.trim(), 10);
-            }, 0);
-
-            if (totalPct > 100) {
-                // Marcar todos los inputs de porcentaje como error
-                editableRows.forEach(({ pctInput }) => {
-                    if (pctInput) pctInput.classList.add('error');
-                });
-                showToast(`La suma de porcentajes es ${totalPct}% — no puede superar el 100%.`);
-                return;
-            }
-
-            // ÔöÇÔöÇ Enviar cambios al backend ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-            for (let i = 0; i < editableRows.length; i++) {
-                const { notaInput, pctInput } = editableRows[i];
-                const gradeObj = allGrades[i];
-                if (!gradeObj) continue;
-
-                const notaVal = notaInput?.value.trim();
-                const newNota = !notaVal ? null : parseFloat(notaVal);
-                const newPct = pctInput ? parseInt(pctInput.value.trim(), 10) : gradeObj.porcentaje;
-
-                // Sin cambios en este ítem → saltar
-                if (newNota === gradeObj.nota && newPct === gradeObj.porcentaje) continue;
-
-                try {
-                    const res = await fetch(`${API}/notas/${gradeObj.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            nombre: gradeObj.nombre,
-                            calificacion: newNota,
-                            porcentaje: newPct,
-                            asignatura: { id: parseInt(key) }
-                        })
-                    });
-                    if (!res.ok) {
-                        const errBody = await res.json().catch(() => ({}));
-                        throw new Error(errBody.mensaje || `Error ${res.status} al actualizar la nota`);
-                    }
-                    // Actualizar store local
-                    gradeObj.nota = newNota;
-                    gradeObj.porcentaje = newPct;
-                } catch (err) {
-                    console.error(err);
-                    showToast('Error al guardar cambios en el servidor.');
-                    return;
-                }
-            }
-
-            // ÔöÇÔöÇ Salir del modo edición y re-renderizar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-            calcEditingMode = false;
-            calcInlineEditBtn.style.display = 'flex';
-            calcSaveBtn.style.display = 'none';
-            renderCalcTable(activeCardForView);
-            updateCardInProgress(key);
             const badgeCls = notaMinRounded >= 4 ? 'warn' : 'ok';
             const icon = notaMinRounded >= 4 ? 'warning' : 'check_circle';
 
@@ -8057,6 +7864,8 @@
                 this.states = {
                     login: new LoginState(this),
                     register: new RegisterState(this),
+                    recover: new RecoverState(this),
+                    reset: new ResetState(this),
                     dashboard: new DashboardState(this),
                     resenas: new ResenasState(this)
                 };
@@ -8078,6 +7887,8 @@
                 document.querySelector('.app-container').style.display = 'none';
                 document.getElementById('login-view').style.display = 'block';
                 document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'none';
                 document.getElementById('login-error').style.display = 'none';
             }
         }
@@ -8089,7 +7900,36 @@
                 document.querySelector('.app-container').style.display = 'none';
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('register-view').style.display = 'block';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'none';
                 document.getElementById('register-error').style.display = 'none';
+            }
+        }
+
+        class RecoverState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'block';
+                document.getElementById('reset-view').style.display = 'none';
+                document.getElementById('recover-error').style.display = 'none';
+                document.getElementById('recover-success').style.display = 'none';
+            }
+        }
+
+        class ResetState {
+            constructor(system) { this.system = system; }
+            render() {
+                document.getElementById('auth-container').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('register-view').style.display = 'none';
+                document.getElementById('recover-view').style.display = 'none';
+                document.getElementById('reset-view').style.display = 'block';
+                document.getElementById('reset-error').style.display = 'none';
             }
         }
 
@@ -9517,6 +9357,41 @@
             scheduleResultsList.style.display = 'flex';
         }
     </script>
+    <!-- Modal: Detalle de Evento -->
+    <div id="modal-evento-detalle" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:12px; padding:28px; width:420px; max-width:95vw; position:relative;">
+        <button id="modal-evento-cerrar" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+        <h3 id="modal-evento-titulo" style="margin:0 0 12px; font-size:18px;"></h3>
+        <p><strong>Horario:</strong> <span id="modal-evento-horas"></span></p>
+        <p><strong>Profesor:</strong> <span id="modal-evento-profesor"></span></p>
+        <div id="modal-salon-bloque">
+          <hr style="margin:12px 0;">
+          <p style="font-weight:600; margin-bottom:6px;">📍 Salón</p>
+          <p><strong>Nombre:</strong> <span id="modal-salon-nombre"></span></p>
+          <p><strong>Ubicación:</strong> <span id="modal-salon-ubicacion"></span></p>
+          <p><strong>Capacidad:</strong> <span id="modal-salon-capacidad"></span></p>
+          <button id="btn-ver-salon" style="margin-top:8px; padding:6px 14px; background:#1E88E5; color:#fff; border:none; border-radius:6px; cursor:pointer;">Ver detalle del salón</button>
+        </div>
+        <div id="modal-sin-salon" style="display:none;">
+          <hr style="margin:12px 0;">
+          <p style="color:#888;">Sin salón asignado</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal: Detalle de Salón -->
+    <div id="modal-salon-detalle" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1001; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:12px; padding:28px; width:380px; max-width:95vw; position:relative;">
+        <button id="modal-salon-cerrar" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+        <button id="modal-salon-volver" style="background:none; border:none; color:#1E88E5; cursor:pointer; font-size:13px; margin-bottom:10px;">← Volver al evento</button>
+        <h3 style="margin:0 0 14px; font-size:18px;">🏫 Detalle del Salón</h3>
+        <p><strong>Nombre:</strong> <span id="modal-sd-nombre"></span></p>
+        <p><strong>Ubicación:</strong> <span id="modal-sd-ubicacion"></span></p>
+        <p><strong>Capacidad:</strong> <span id="modal-sd-capacidad"></span></p>
+        <p><strong>Equipamiento:</strong> <span id="modal-sd-equipamiento">No especificado</span></p>
+      </div>
+    </div>
+    
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
