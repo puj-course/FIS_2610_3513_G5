@@ -8,8 +8,7 @@ import com.studyhub.dto.EstadisticasDTO;
 import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
 import com.studyhub.model.Usuario;
-import com.studyhub.repository.TareaRepository;
-import com.studyhub.repository.UsuarioRepository;
+import com.studyhub.repository.*;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,30 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private ResenaRepository resenaRepository;
+
+    @Autowired
+    private AsignacionRepository asignacionRepository;
+
+    @Autowired
+    private ApunteRepository apunteRepository;
+
+    @Autowired
+    private NotaRepository notaRepository;
+
+    @Autowired
+    private AsignaturaRepository asignaturaRepository;
+
+    @Autowired
+    private SesionInvalidadaRepository sesionInvalidadaRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     private final AsignaturaService asignaturaService;
     private final NotaService notaService;
@@ -354,5 +377,38 @@ public class UsuarioService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error al serializar preferencias JSON", e);
         }
+    }
+
+    public void eliminarUsuario(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+
+        // 1. Sesiones invalidadas
+        sesionInvalidadaRepository.deleteByUsuarioId(id);
+
+        // 2. Tokens de reseteo de contraseña
+        passwordResetTokenRepository.deleteByUsuario(usuario);
+
+        // 3. Notificaciones del usuario
+        notificationRepository.deleteAll(notificationRepository.findByUserIdOrderByCreatedAtDesc(id));
+
+        // 4. Reseñas del usuario
+        resenaRepository.deleteAll(resenaRepository.findByUsuarioId(id));
+
+        // 5. Asignaciones de turnos del usuario
+        asignacionRepository.deleteAll(asignacionRepository.findByUsuarioId(id));
+
+        // 6. Tareas, notas, apuntes y asignaturas
+        List<Asignatura> asignaturas = asignaturaRepository.findByUsuarioId(id);
+        for (Asignatura asig : asignaturas) {
+            tareaRepository.deleteAll(tareaRepository.findByAsignatura_Usuario_Id(id));
+            notaRepository.deleteAll(notaRepository.findByAsignatura_Usuario_Id(id));
+            apunteRepository.deleteAll(apunteRepository.findByAsignatura_Usuario_Id(id));
+            asignaturaRepository.delete(asig);
+        }
+
+        // 7. Borrar usuario
+        usuarioRepository.delete(usuario);
+        usuarioRepository.flush();
     }
 }

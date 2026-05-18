@@ -273,4 +273,15 @@ public class UsuarioController {
                     .body(Map.of("mensaje", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        try {
+            usuarioService.eliminarUsuario(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Cuenta y todos sus datos asociados eliminados exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("mensaje", e.getMessage()));
+        }
+    }
 }

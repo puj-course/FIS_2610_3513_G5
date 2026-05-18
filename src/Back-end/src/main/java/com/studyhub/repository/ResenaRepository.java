@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
     List<Resena> findAllByOrderByFechaCreacionDesc();
+    List<Resena> findByUsuarioId(Long usuarioId);
 }
