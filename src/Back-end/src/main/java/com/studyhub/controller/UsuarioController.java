@@ -169,7 +169,10 @@ public class UsuarioController {
             String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             String enlace = baseUri + "/index.html?token=" + token;
             smsService.enviarSmsRecuperacion(telefono, enlace);
-            return ResponseEntity.ok(Map.of("mensaje", "Enlace seguro enviado por SMS exitosamente al " + telefono));
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Enlace seguro enviado por SMS exitosamente al " + telefono,
+                "token", token
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
