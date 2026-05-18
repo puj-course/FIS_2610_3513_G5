@@ -32,6 +32,7 @@ public class AuthService {
      * Retorna true si la sesión con ese loginAt sigue vigente.
      * Es inválida si existe un logout registrado DESPUÉS de ese loginAt.
      */
+    @Transactional(readOnly = true)
     public boolean esSesionValida(Long usuarioId, LocalDateTime loginAt) {
         if (loginAt == null) return false;
         return !sesionInvalidadaRepository

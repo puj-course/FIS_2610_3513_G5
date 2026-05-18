@@ -66,12 +66,14 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    @Transactional(readOnly = true)
     public Usuario login(String correo, String password) {
         return usuarioRepository.findByCorreo(correo)
                 .filter(u -> encryptionStrategy.matches(password, u.getPassword()))
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
     }
 
+    @Transactional(readOnly = true)
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
     }
@@ -84,6 +86,7 @@ public class UsuarioService {
      * @return El usuario encontrado
      * @throws RuntimeException si no existe un usuario con ese ID (→ 404)
      */
+    @Transactional(readOnly = true)
     public Usuario obtenerPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
@@ -169,6 +172,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    @Transactional(readOnly = true)
     public UsuarioResumenDTO obtenerResumenUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
@@ -196,6 +200,7 @@ public class UsuarioService {
                 promedioGlobal);
     }
 
+    @Transactional(readOnly = true)
     public ResumenAcademicoDTO obtenerResumenAcademico(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -267,6 +272,7 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    @Transactional(readOnly = true)
     public EstadisticasDTO obtenerEstadisticas(Long usuarioId) {
         List<Asignatura> asignaturas = asignaturaService.findByUserId(usuarioId);
 
@@ -298,6 +304,7 @@ public class UsuarioService {
                 promediosPorMateria);
     }
 
+    @Transactional(readOnly = true)
     public Map<String, Object> obtenerPreferencias(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
