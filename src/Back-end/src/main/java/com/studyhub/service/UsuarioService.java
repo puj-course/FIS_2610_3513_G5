@@ -41,8 +41,6 @@ public class UsuarioService {
     @Autowired
     private AsignacionRepository asignacionRepository;
 
-    @Autowired
-    private ApunteRepository apunteRepository;
 
     @Autowired
     private NotaRepository notaRepository;
@@ -403,7 +401,6 @@ public class UsuarioService {
         for (Asignatura asig : asignaturas) {
             tareaRepository.deleteAll(tareaRepository.findByAsignatura_Usuario_Id(id));
             notaRepository.deleteAll(notaRepository.findByAsignatura_Usuario_Id(id));
-            apunteRepository.deleteAll(apunteRepository.findByAsignatura_Usuario_Id(id));
             asignaturaRepository.delete(asig);
         }
 

@@ -11,8 +11,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "asignaturas", indexes = {
-    @Index(name = "idx_dia", columnList = "dias"),
-    @Index(name = "idx_hora_inicio", columnList = "horaInicio")
+    @Index(name = "idx_dia", columnList = "dias_clase"),
+    @Index(name = "idx_hora_inicio", columnList = "hora_inicio")
 })
 public class Asignatura {
 
