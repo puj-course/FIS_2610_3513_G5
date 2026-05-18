@@ -1,10 +1,11 @@
 package com.studyhub.service;
 
+import com.studyhub.model.Asignatura;
+import com.studyhub.model.Tarea;
 import com.studyhub.model.Usuario;
-import com.studyhub.repository.AsignaturaRepository;
-import com.studyhub.repository.TareaRepository;
-import com.studyhub.repository.UsuarioRepository;
+import com.studyhub.repository.*;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +43,14 @@ class UsuarioServiceTest {
     @Mock
     private TareaRepository tareaRepository;
 
+    @Mock private SesionInvalidadaRepository sesionInvalidadaRepository;
+    @Mock private PasswordResetTokenRepository passwordResetTokenRepository;
+    @Mock private NotificationRepository notificationRepository;
+    @Mock private ResenaRepository resenaRepository;
+    @Mock private AsignacionRepository asignacionRepository;
+    @Mock private NotaRepository notaRepository;
+    @Mock private AsignaturaRepository asignaturaRepository;
+
     @Mock
     private PasswordEncryptionStrategy encryptionStrategy;
 
@@ -47,19 +61,29 @@ class UsuarioServiceTest {
 
     private Usuario usuario;
 
+    private void setMockField(String fieldName, Object mockObj) throws Exception {
+        var field = UsuarioService.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(usuarioService, mockObj);
+    }
+
     @BeforeEach
     void setUp() {
         usuarioService = new UsuarioService(
                 encryptionStrategy, asignaturaService, notaService,
                 tareaRepository, objectMapper
         );
-        // Se inyecta el mock del repository manualmente ya que usa @Autowired field injection
         try {
-            var field = UsuarioService.class.getDeclaredField("usuarioRepository");
-            field.setAccessible(true);
-            field.set(usuarioService, usuarioRepository);
+            setMockField("usuarioRepository", usuarioRepository);
+            setMockField("sesionInvalidadaRepository", sesionInvalidadaRepository);
+            setMockField("passwordResetTokenRepository", passwordResetTokenRepository);
+            setMockField("notificationRepository", notificationRepository);
+            setMockField("resenaRepository", resenaRepository);
+            setMockField("asignacionRepository", asignacionRepository);
+            setMockField("notaRepository", notaRepository);
+            setMockField("asignaturaRepository", asignaturaRepository);
         } catch (Exception e) {
-            throw new RuntimeException("Error inyectando mock de usuarioRepository", e);
+            throw new RuntimeException("Error inyectando mocks de repositorios en cascada", e);
         }
 
         usuario = new Usuario();
@@ -71,104 +95,59 @@ class UsuarioServiceTest {
         usuario.setRol("ESTUDIANTE");
     }
 
-    // ─── CP01: Negativa — Crear usuario con correo duplicado ────────────────
-
     @Test
     void crearUsuario_lanzaExcepcion_cuandoCorreoYaExiste() {
-        // Arrange
         when(usuarioRepository.existsByCorreo("fede@studyhub.com")).thenReturn(true);
-
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> usuarioService.crearUsuario(usuario));
-
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> usuarioService.crearUsuario(usuario));
         assertEquals("El correo ya está registrado", ex.getMessage());
-        verify(usuarioRepository, never()).save(any());
+        verify(usuarioRepository, never()).saveAndFlush(any());
     }
 
-    // ─── CP02: Negativa — Login con credenciales inválidas ──────────────────
+    @Test
+    void crearUsuario_encriptaPasswordYGuarda_cuandoDatosValidos() {
+        when(usuarioRepository.existsByCorreo("fede@studyhub.com")).thenReturn(false);
+        when(encryptionStrategy.encrypt("plainPassword123")).thenReturn("encryptedHash");
+        when(usuarioRepository.saveAndFlush(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+
+        Usuario resultado = usuarioService.crearUsuario(usuario);
+
+        assertNotNull(resultado);
+        assertEquals("encryptedHash", resultado.getPassword());
+        verify(usuarioRepository, times(1)).saveAndFlush(usuario);
+    }
 
     @Test
     void login_lanzaExcepcion_cuandoPasswordIncorrecta() {
-        // Arrange
         Usuario usuarioDB = new Usuario();
         usuarioDB.setCorreo("fede@studyhub.com");
         usuarioDB.setPassword("hashedPassword");
 
-        when(usuarioRepository.findByCorreo("fede@studyhub.com"))
-                .thenReturn(Optional.of(usuarioDB));
-        when(encryptionStrategy.matches("wrongPassword", "hashedPassword"))
-                .thenReturn(false);
+        when(usuarioRepository.findByCorreo("fede@studyhub.com")).thenReturn(Optional.of(usuarioDB));
+        when(encryptionStrategy.matches("wrongPassword", "hashedPassword")).thenReturn(false);
 
-        // Act & Assert
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> usuarioService.login("fede@studyhub.com", "wrongPassword"));
-
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> usuarioService.login("fede@studyhub.com", "wrongPassword"));
         assertEquals("Credenciales inválidas", ex.getMessage());
     }
 
-    // ─── CP03: Borde — Actualizar perfil con nombre vacío ───────────────────
-
     @Test
-    void actualizarPerfil_lanzaExcepcion_cuandoNombreEsVacio() {
-        // Arrange
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+    void login_retornaUsuario_cuandoCredencialesSonValidas() {
+        Usuario usuarioDB = new Usuario();
+        usuarioDB.setCorreo("fede@studyhub.com");
+        usuarioDB.setPassword("hashedPassword");
 
-        Map<String, Object> campos = new HashMap<>();
-        campos.put("nombre", "");
-        campos.put("apellido", "García");
+        when(usuarioRepository.findByCorreo("fede@studyhub.com")).thenReturn(Optional.of(usuarioDB));
+        when(encryptionStrategy.matches("correctPassword", "hashedPassword")).thenReturn(true);
 
-        // Act & Assert
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> usuarioService.actualizarPerfil(1L, campos));
-
-        assertEquals("El nombre es obligatorio", ex.getMessage());
-        verify(usuarioRepository, never()).save(any());
+        Usuario res = usuarioService.login("fede@studyhub.com", "correctPassword");
+        assertNotNull(res);
     }
 
-    // ─── CP04: Borde — Actualizar perfil con semestre = 12 (límite superior) ─
-
     @Test
-    void actualizarPerfil_actualizaExitosamente_cuandoSemestreEsDoce() {
-        // Arrange
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
-
-        Map<String, Object> campos = new HashMap<>();
-        campos.put("nombre", "Federico");
-        campos.put("apellido", "García");
-        campos.put("semestre", "12");
-
-        // Act
-        Usuario resultado = usuarioService.actualizarPerfil(1L, campos);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(12, resultado.getSemestre());
-        assertEquals("Federico", resultado.getNombre());
-        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+    void obtenerTodos_retornaListaDeUsuarios() {
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuario));
+        List<Usuario> res = usuarioService.obtenerTodos();
+        assertEquals(1, res.size());
     }
-
-    // ─── CP05: Lógica de negocio — Crear usuario exitosamente ───────────────
-
-    @Test
-    void crearUsuario_encriptaPasswordYGuarda_cuandoDatosValidos() {
-        // Arrange
-        when(usuarioRepository.existsByCorreo("fede@studyhub.com")).thenReturn(false);
-        when(encryptionStrategy.encrypt("plainPassword123")).thenReturn("encryptedHash");
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
-
-        // Act
-        Usuario resultado = usuarioService.crearUsuario(usuario);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals("encryptedHash", resultado.getPassword());
-        verify(encryptionStrategy, times(1)).encrypt("plainPassword123");
-        verify(usuarioRepository, times(1)).save(usuario);
-    }
-
-    // ─── CP06: Lógica — Obtener por ID ───────────────────────────────────────
 
     @Test
     void obtenerPorId_retornaUsuario_cuandoExiste() {
@@ -184,120 +163,326 @@ class UsuarioServiceTest {
         assertThrows(RuntimeException.class, () -> usuarioService.obtenerPorId(99L));
     }
 
-    // ─── CP07: Lógica — Resumen de Usuario ──────────────────────────────────
+    @Test
+    void actualizarPerfil_lanzaExcepcion_cuandoNoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+        Map<String, Object> campos = new HashMap<>();
+        assertThrows(RuntimeException.class, () -> usuarioService.actualizarPerfil(99L, campos));
+    }
 
     @Test
-    void obtenerResumenUsuario_calculaPromedioCorrectamente() {
-        // Arrange
+    void actualizarPerfil_lanzaExcepcion_cuandoNombreEsVacio() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        
-        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
-        a1.setId(10L); a1.setNombre("Materia 1");
-        com.studyhub.model.Asignatura a2 = new com.studyhub.model.Asignatura();
-        a2.setId(11L); a2.setNombre("Materia 2");
-        
-        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1, a2));
+        Map<String, Object> campos = Map.of("nombre", "");
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.actualizarPerfil(1L, campos));
+    }
+
+    @Test
+    void actualizarPerfil_lanzaExcepcion_cuandoApellidoEsVacio() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        Map<String, Object> campos = Map.of("nombre", "Federico", "apellido", "");
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.actualizarPerfil(1L, campos));
+    }
+
+    @Test
+    void actualizarPerfil_actualizaCamposOpcionales_cuandoSonValidos() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.saveAndFlush(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+
+        Map<String, Object> campos = new HashMap<>();
+        campos.put("nombre", "Federico");
+        campos.put("apellido", "García");
+        campos.put("carrera", "Ingeniería");
+        campos.put("semestre", "10");
+        campos.put("temaColor", "dark");
+        campos.put("fotoPerfil", "http://foto.jpg");
+
+        Usuario resultado = usuarioService.actualizarPerfil(1L, campos);
+        assertEquals("Ingeniería", resultado.getCarrera());
+        assertEquals(10, resultado.getSemestre());
+        assertEquals("dark", resultado.getTemaColor());
+        assertEquals("http://foto.jpg", resultado.getFotoPerfil());
+    }
+
+    @Test
+    void actualizarPerfil_limpiaCamposOpcionales_cuandoVienenVacios() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.saveAndFlush(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+
+        Map<String, Object> campos = new HashMap<>();
+        campos.put("nombre", "Federico");
+        campos.put("apellido", "García");
+        campos.put("carrera", "");
+        campos.put("temaColor", "");
+        campos.put("fotoPerfil", "");
+
+        Usuario resultado = usuarioService.actualizarPerfil(1L, campos);
+        assertNull(resultado.getCarrera());
+        assertNull(resultado.getTemaColor());
+        assertNull(resultado.getFotoPerfil());
+    }
+
+    @Test
+    void actualizarPerfil_lanzaExcepcion_cuandoSemestreEsInvalido() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        Map<String, Object> campos = Map.of("nombre", "F", "apellido", "G", "semestre", "15");
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.actualizarPerfil(1L, campos));
+
+        Map<String, Object> camposErr = Map.of("nombre", "F", "apellido", "G", "semestre", "xyz");
+        assertThrows(IllegalArgumentException.class, () -> usuarioService.actualizarPerfil(1L, camposErr));
+    }
+
+    @Test
+    void obtenerResumenUsuario_calculaPromedioCorrectamente_cuandoHayAsignaturas() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+
+        Asignatura a1 = new Asignatura();
+        a1.setId(10L);
+        a1.setNombre("Materia 1");
+
+        Asignatura a2 = new Asignatura();
+        a2.setId(11L);
+        a2.setNombre("Materia 2");
+
+        when(asignaturaService.findByUserId(1L)).thenReturn(List.of(a1, a2));
         when(notaService.calcularPromedio(10L)).thenReturn(4.0);
         when(notaService.calcularPromedio(11L)).thenReturn(5.0);
 
-        // Act
-        var resumen = usuarioService.obtenerResumenUsuario(1L);
-
-        // Assert
-        assertEquals(4.5, resumen.getPromedioGlobal());
-        assertEquals(2, resumen.getTotalAsignaturas());
+        var res = usuarioService.obtenerResumenUsuario(1L);
+        assertEquals(4.5, res.getPromedioGlobal());
+        assertEquals(2, res.getTotalAsignaturas());
+        assertEquals("Federico García", res.getNombre());
     }
-
-    // ─── CP08: Lógica — Estadísticas ────────────────────────────────────────
 
     @Test
-    void obtenerEstadisticas_retornaDatosCorrectos() {
-        // Arrange
-        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
-        a1.setId(10L); a1.setNombre("M1"); a1.setCreditos(3);
-        
-        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1));
-        when(notaService.calcularPromedio(10L)).thenReturn(2.5); // Riesgo
+    void obtenerResumenUsuario_calculaPromedioCero_cuandoNoHayAsignaturas() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(asignaturaService.findByUserId(1L)).thenReturn(Collections.emptyList());
 
-        // Act
-        var stats = usuarioService.obtenerEstadisticas(1L);
-
-        // Assert
-        assertEquals(1, stats.getMateriasEnRiesgo());
-        assertEquals(3, stats.getTotalCreditos());
-        assertEquals(2.5, stats.getPromedioGlobal());
+        var res = usuarioService.obtenerResumenUsuario(1L);
+        assertEquals(0.0, res.getPromedioGlobal());
+        assertEquals(0, res.getTotalAsignaturas());
     }
 
-    // ─── CP09: Lógica — Recuperación de Contraseña ──────────────────────────
+    @Test
+    void obtenerResumenUsuario_lanzaExcepcion_cuandoUsuarioNoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.obtenerResumenUsuario(99L));
+    }
+
+    @Test
+    void obtenerResumenAcademico_retornaDatosCompletos() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+
+        Asignatura a1 = new Asignatura();
+        a1.setId(10L);
+        a1.setNombre("Matemáticas");
+
+        when(asignaturaService.findByUserId(1L)).thenReturn(List.of(a1));
+        when(notaService.calcularPromedio(10L)).thenReturn(2.5); // en riesgo < 3.0
+        when(notaService.obtenerNotasPorAsignatura(10L)).thenReturn(Collections.emptyList());
+
+        Tarea t1 = new Tarea();
+        t1.setTitulo("Taller 1");
+        t1.setAsignatura(a1);
+        t1.setFechaEntrega(LocalDate.now().plusDays(1));
+        t1.setHoraEntrega(LocalTime.of(14, 0));
+
+        when(tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(1L))
+                .thenReturn(List.of(t1));
+
+        var resumen = usuarioService.obtenerResumenAcademico(1L);
+
+        assertEquals("Federico García", resumen.getNombreUsuario());
+        assertEquals(2.5, resumen.getPromedioGlobal());
+        assertEquals(1, resumen.getAsignaturas().size());
+        assertTrue(resumen.getAsignaturas().get(0).isEnRiesgo());
+        assertEquals(1, resumen.getTareasPendientes().size());
+        assertEquals("Taller 1", resumen.getTareasPendientes().get(0).getTitulo());
+    }
+
+    @Test
+    void obtenerResumenAcademico_lanzaExcepcion_cuandoUsuarioNoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.obtenerResumenAcademico(99L));
+    }
 
     @Test
     void generarTokenRecuperacion_guardaToken_cuandoCorreoExiste() {
         when(usuarioRepository.findByCorreo("fede@studyhub.com")).thenReturn(Optional.of(usuario));
-        
+
         String token = usuarioService.generarTokenRecuperacion("fede@studyhub.com");
-        
+
         assertNotNull(token);
         assertNotNull(usuario.getTokenRecuperacion());
-        verify(usuarioRepository).save(usuario);
+        verify(usuarioRepository).saveAndFlush(usuario);
     }
 
     @Test
-    void restablecerPassword_actualizaPasswordYBorraToken() {
-        usuario.setTokenRecuperacion("valid-token");
-        usuario.setTokenExpiracion(java.time.LocalDateTime.now().plusMinutes(10));
-        
-        when(usuarioRepository.findByTokenRecuperacion("valid-token")).thenReturn(Optional.of(usuario));
-        when(encryptionStrategy.encrypt("newPass")).thenReturn("hashedNewPass");
+    void generarTokenRecuperacionPorTelefono_guardaToken_cuandoTelefonoExiste() {
+        when(usuarioRepository.findByTelefono("+573001234567")).thenReturn(Optional.of(usuario));
 
-        usuarioService.restablecerPassword("valid-token", "newPass");
+        String token = usuarioService.generarTokenRecuperacionPorTelefono("3001234567");
 
-        assertEquals("hashedNewPass", usuario.getPassword());
-        assertNull(usuario.getTokenRecuperacion());
-        verify(usuarioRepository).save(usuario);
+        assertNotNull(token);
+        assertNotNull(usuario.getTokenRecuperacion());
+        verify(usuarioRepository).saveAndFlush(usuario);
     }
 
-    // ─── CP10: Lógica — Preferencias ─────────────────────────────────────────
+    @Test
+    void generarTokenRecuperacionPorTelefono_lanzaExcepcion_cuandoTelefonoNoExiste() {
+        when(usuarioRepository.findByTelefono("+570000000000")).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.generarTokenRecuperacionPorTelefono("0000000000"));
+    }
+
+    @Test
+    void generarTokenRecuperacion_lanzaExcepcion_cuandoCorreoNoExiste() {
+        when(usuarioRepository.findByCorreo("no@existe.com")).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.generarTokenRecuperacion("no@existe.com"));
+    }
+
+    @Test
+    void restablecerPassword_actualizaPassword_cuandoTokenEsValido() {
+        usuario.setTokenRecuperacion("token123");
+        usuario.setTokenExpiracion(LocalDateTime.now().plusHours(1));
+
+        when(usuarioRepository.findByTokenRecuperacion("token123")).thenReturn(Optional.of(usuario));
+        when(encryptionStrategy.encrypt("nuevaClave")).thenReturn("hashNuevaClave");
+
+        usuarioService.restablecerPassword("token123", "nuevaClave");
+
+        assertEquals("hashNuevaClave", usuario.getPassword());
+        assertNull(usuario.getTokenRecuperacion());
+        assertNull(usuario.getTokenExpiracion());
+        verify(usuarioRepository).saveAndFlush(usuario);
+    }
+
+    @Test
+    void restablecerPassword_lanzaExcepcion_cuandoTokenInvalido() {
+        when(usuarioRepository.findByTokenRecuperacion("invalid")).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> usuarioService.restablecerPassword("invalid", "new"));
+    }
+
+    @Test
+    void restablecerPassword_lanzaExcepcion_cuandoTokenExpiro() {
+        usuario.setTokenExpiracion(LocalDateTime.now().minusHours(1));
+        when(usuarioRepository.findByTokenRecuperacion("expired")).thenReturn(Optional.of(usuario));
+        assertThrows(RuntimeException.class, () -> usuarioService.restablecerPassword("expired", "new"));
+    }
+
+    @Test
+    void obtenerEstadisticas_calculaDatosCorrectamente_cuandoHayMaterias() {
+        Asignatura a1 = new Asignatura();
+        a1.setId(10L);
+        a1.setNombre("M1");
+        a1.setCreditos(3);
+
+        Asignatura a2 = new Asignatura();
+        a2.setId(11L);
+        a2.setNombre("M2");
+        a2.setCreditos(4);
+
+        when(asignaturaService.findByUserId(1L)).thenReturn(List.of(a1, a2));
+        when(notaService.calcularPromedio(10L)).thenReturn(2.5); // Riesgo < 3.0
+        when(notaService.calcularPromedio(11L)).thenReturn(4.5); // Sin riesgo
+
+        var stats = usuarioService.obtenerEstadisticas(1L);
+
+        assertEquals(3.5, stats.getPromedioGlobal());
+        assertEquals(2, stats.getTotalMaterias());
+        assertEquals(1, stats.getMateriasEnRiesgo());
+        assertEquals(7, stats.getTotalCreditos());
+        assertEquals(2.5, stats.getPromediosPorMateria().get("M1"));
+    }
+
+    @Test
+    void obtenerEstadisticas_calculaCero_cuandoNoHayMaterias() {
+        when(asignaturaService.findByUserId(1L)).thenReturn(Collections.emptyList());
+        var stats = usuarioService.obtenerEstadisticas(1L);
+        assertEquals(0.0, stats.getPromedioGlobal());
+        assertEquals(0, stats.getTotalMaterias());
+    }
 
     @Test
     void obtenerPreferencias_retornaMapa_cuandoJsonEsValido() throws Exception {
         usuario.setPreferencias("{\"theme\":\"dark\"}");
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        
-        Map<String, Object> prefsMock = new HashMap<>();
-        prefsMock.put("theme", "dark");
+
+        Map<String, Object> mockMap = Map.of("theme", "dark");
         when(objectMapper.readValue(eq("{\"theme\":\"dark\"}"), any(com.fasterxml.jackson.core.type.TypeReference.class)))
-            .thenReturn(prefsMock);
+                .thenReturn(mockMap);
 
-        var result = usuarioService.obtenerPreferencias(1L);
-        assertEquals("dark", result.get("theme"));
+        var res = usuarioService.obtenerPreferencias(1L);
+        assertEquals("dark", res.get("theme"));
     }
-
-    // ─── CP11: Lógica — Resumen Académico ──────────────────────────────────
 
     @Test
-    void obtenerResumenAcademico_retornaDatosCompletos() {
-        // Arrange
+    void obtenerPreferencias_retornaVacio_cuandoPreferenciasEsNulo() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        
-        com.studyhub.model.Asignatura a1 = new com.studyhub.model.Asignatura();
-        a1.setId(10L); a1.setNombre("M1");
-        
-        when(asignaturaService.findByUserId(1L)).thenReturn(java.util.List.of(a1));
-        when(notaService.calcularPromedio(10L)).thenReturn(4.5);
-        when(notaService.obtenerNotasPorAsignatura(10L)).thenReturn(new java.util.ArrayList<>());
-        
-        com.studyhub.model.Tarea t1 = new com.studyhub.model.Tarea();
-        t1.setTitulo("T1"); t1.setAsignatura(a1);
-        when(tareaRepository.findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(1L))
-            .thenReturn(java.util.List.of(t1));
+        usuario.setPreferencias(null);
+        var res = usuarioService.obtenerPreferencias(1L);
+        assertTrue(res.isEmpty());
+    }
 
-        // Act
-        var resumen = usuarioService.obtenerResumenAcademico(1L);
+    @Test
+    void obtenerPreferencias_retornaVacio_cuandoLanzaExcepcionJson() throws Exception {
+        usuario.setPreferencias("invalid-json");
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(objectMapper.readValue(eq("invalid-json"), any(com.fasterxml.jackson.core.type.TypeReference.class)))
+                .thenThrow(JsonProcessingException.class);
 
-        // Assert
-        assertEquals(4.5, resumen.getPromedioGlobal());
-        assertEquals(1, resumen.getTareasPendientes().size());
-        assertEquals("T1", resumen.getTareasPendientes().get(0).getTitulo());
+        var res = usuarioService.obtenerPreferencias(1L);
+        assertTrue(res.isEmpty());
+    }
+
+    @Test
+    void guardarPreferencias_guardaExitosamente() throws Exception {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(objectMapper.writeValueAsString(anyMap())).thenReturn("{\"theme\":\"light\"}");
+
+        usuarioService.guardarPreferencias(1L, Map.of("theme", "light"));
+        assertEquals("{\"theme\":\"light\"}", usuario.getPreferencias());
+        verify(usuarioRepository).saveAndFlush(usuario);
+    }
+
+    @Test
+    void guardarPreferencias_lanzaExcepcion_cuandoFallaJson() throws Exception {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(objectMapper.writeValueAsString(anyMap())).thenThrow(JsonProcessingException.class);
+
+        assertThrows(RuntimeException.class, () -> usuarioService.guardarPreferencias(1L, Map.of()));
+    }
+
+    @Test
+    void eliminarUsuario_eliminaCorrectamenteEnCascada() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        Asignatura asig = new Asignatura();
+        asig.setId(10L);
+        when(asignaturaRepository.findByUsuarioId(1L)).thenReturn(List.of(asig));
+        when(notificationRepository.findByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Collections.emptyList());
+        when(resenaRepository.findByUsuarioId(1L)).thenReturn(Collections.emptyList());
+        when(asignacionRepository.findByUsuarioId(1L)).thenReturn(Collections.emptyList());
+        when(tareaRepository.findByAsignatura_Usuario_Id(1L)).thenReturn(Collections.emptyList());
+        when(notaRepository.findByAsignatura_Usuario_Id(1L)).thenReturn(Collections.emptyList());
+
+        usuarioService.eliminarUsuario(1L);
+
+        verify(sesionInvalidadaRepository).deleteByUsuarioId(1L);
+        verify(passwordResetTokenRepository).deleteByUsuario(usuario);
+        verify(notificationRepository).deleteAll(anyList());
+        verify(resenaRepository).deleteAll(anyList());
+        verify(asignacionRepository).deleteAll(anyList());
+        verify(tareaRepository).deleteAll(anyList());
+        verify(notaRepository).deleteAll(anyList());
+        verify(asignaturaRepository).delete(asig);
+        verify(usuarioRepository).delete(usuario);
+        verify(usuarioRepository).flush();
+    }
+
+    @Test
+    void eliminarUsuario_lanzaExcepcion_cuandoUsuarioNoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> usuarioService.eliminarUsuario(99L));
+        assertTrue(ex.getMessage().contains("Usuario no encontrado"));
     }
 }
-

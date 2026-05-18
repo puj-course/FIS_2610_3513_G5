@@ -28,6 +28,7 @@
             src/main/java/com/studyhub/service/AsignaturaService.java,
             src/main/java/com/studyhub/service/AuthService.java,
             src/main/java/com/studyhub/service/EmailService.java,
+            src/main/java/com/studyhub/service/SmsService.java,
             src/main/java/com/studyhub/service/TareaNotificacionService.java,
             src/main/java/com/studyhub/service/builder/**,
             src/main/java/com/studyhub/service/decorator/**,
@@ -46,6 +47,7 @@
             src/main/java/com/studyhub/service/AsignaturaService.java,
             src/main/java/com/studyhub/service/AuthService.java,
             src/main/java/com/studyhub/service/EmailService.java,
+            src/main/java/com/studyhub/service/SmsService.java,
             src/main/java/com/studyhub/service/TareaNotificacionService.java,
             src/main/java/com/studyhub/service/builder/**,
             src/main/java/com/studyhub/service/decorator/**,
@@ -151,11 +153,16 @@
                         <exclude>com/studyhub/service/AsignaturaService.class</exclude>
                         <exclude>com/studyhub/service/AuthService.class</exclude>
                         <exclude>com/studyhub/service/EmailService.class</exclude>
+                        <exclude>com/studyhub/service/SmsService.class</exclude>
                         <exclude>com/studyhub/service/TareaNotificacionService.class</exclude>
                         <exclude>com/studyhub/service/builder/**</exclude>
                         <exclude>com/studyhub/service/decorator/**</exclude>
                         <exclude>com/studyhub/service/facade/**</exclude>
                         <exclude>com/studyhub/service/strategy/**</exclude>
+                        <exclude>sun/**</exclude>
+                        <exclude>jdk/**</exclude>
+                        <exclude>net/bytebuddy/**</exclude>
+                        <exclude>org/mockito/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

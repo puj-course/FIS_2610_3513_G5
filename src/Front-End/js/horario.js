@@ -242,6 +242,17 @@ function renderBloqueMateria(sesion, conflictoInfo) {
     `;
 
     celdaAncla.style.position = 'relative';
+    // Guardar datos del evento en el bloque para el modal
+    bloque.dataset.nombre    = sesion.nombreAsignatura || '';
+    bloque.dataset.horaInicio = sesion.horaInicio || '';
+    bloque.dataset.horaFin   = sesion.horaFin || '';
+    bloque.dataset.profesor  = sesion.profesor || '';
+    bloque.dataset.salonNombre    = sesion.salonNombre || '';
+    bloque.dataset.salonUbicacion = sesion.salonUbicacion || '';
+    bloque.dataset.salonCapacidad = sesion.salonCapacidad !== null ? sesion.salonCapacidad : '';
+
+    bloque.style.cursor = 'pointer';
+    bloque.addEventListener('click', () => abrirDetalleEvento(sesion));
     celdaAncla.appendChild(bloque);
 }
 
@@ -346,3 +357,61 @@ function initNavHorario() {
 // initNavHorario() queda disponible pero no se auto-registra para evitar
 // un listener duplicado que compita con el de index.html.
 // document.addEventListener('DOMContentLoaded', initNavHorario);
+
+// ── Modal de detalle de evento ──────────────────────────────────────────────
+
+function abrirDetalleEvento(sesion) {
+    document.getElementById('modal-evento-titulo').textContent   = sesion.nombreAsignatura || '';
+    document.getElementById('modal-evento-horas').textContent    = `${sesion.horaInicio} – ${sesion.horaFin}`;
+    document.getElementById('modal-evento-profesor').textContent = sesion.profesor || 'No especificado';
+
+    const tieneSalon = sesion.salonNombre && sesion.salonNombre.trim() !== '';
+
+    document.getElementById('modal-salon-bloque').style.display = tieneSalon ? 'block' : 'none';
+    document.getElementById('modal-sin-salon').style.display    = tieneSalon ? 'none'  : 'block';
+
+    if (tieneSalon) {
+        document.getElementById('modal-salon-nombre').textContent    = sesion.salonNombre;
+        document.getElementById('modal-salon-ubicacion').textContent = sesion.salonUbicacion || 'No especificada';
+        document.getElementById('modal-salon-capacidad').textContent = sesion.salonCapacidad !== null ? sesion.salonCapacidad : 'No especificada';
+
+        document.getElementById('btn-ver-salon').onclick = () => abrirDetalleSalon({
+            nombre:    sesion.salonNombre,
+            ubicacion: sesion.salonUbicacion,
+            capacidad: sesion.salonCapacidad
+        });
+    }
+
+    const modal = document.getElementById('modal-evento-detalle');
+    modal.style.display = 'flex';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('modal-evento-cerrar')?.addEventListener('click', () => {
+        document.getElementById('modal-evento-detalle').style.display = 'none';
+    });
+    document.getElementById('modal-evento-detalle')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget)
+            e.currentTarget.style.display = 'none';
+    });
+});
+
+// ── Modal de detalle del salón ──────────────────────────────────────────────
+
+function abrirDetalleSalon(salon) {
+    document.getElementById('modal-sd-nombre').textContent    = salon.nombre    || 'No especificado';
+    document.getElementById('modal-sd-ubicacion').textContent = salon.ubicacion || 'No especificada';
+    document.getElementById('modal-sd-capacidad').textContent = salon.capacidad !== null ? salon.capacidad : 'No especificada';
+
+    document.getElementById('modal-salon-detalle').style.display = 'flex';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('modal-salon-cerrar')?.addEventListener('click', () => {
+        document.getElementById('modal-salon-detalle').style.display = 'none';
+    });
+    document.getElementById('modal-salon-volver')?.addEventListener('click', () => {
+        document.getElementById('modal-salon-detalle').style.display = 'none';
+        // El modal de evento sigue abierto debajo
+    });
+});

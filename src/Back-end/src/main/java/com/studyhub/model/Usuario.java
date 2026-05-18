@@ -46,6 +46,9 @@ public class Usuario {
     /** Tema o color preferido del usuario para la UI */
     private String temaColor;
 
+    /** Número de teléfono celular para notificaciones SMS y recuperación */
+    private String telefono;
+
     private LocalDateTime fechaRegistro;
 
     @PrePersist
@@ -65,6 +68,7 @@ public class Usuario {
     public Integer getSemestre() { return semestre; }
     public String getFotoPerfil() { return fotoPerfil; }
     public String getTemaColor() { return temaColor; }
+    public String getTelefono() { return telefono; }
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
 
     // ===== SETTERS =====
@@ -79,6 +83,7 @@ public class Usuario {
     public void setSemestre(Integer semestre) { this.semestre = semestre; }
     public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
     public void setTemaColor(String temaColor) { this.temaColor = temaColor; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
 
     // Campos para recuperación de contraseña
