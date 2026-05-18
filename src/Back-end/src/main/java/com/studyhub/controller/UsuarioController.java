@@ -35,6 +35,9 @@ public class UsuarioController {
     @Autowired
     private NotaService notaService;
 
+    @Autowired
+    private com.studyhub.service.AuthService authService;
+
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
         try {
@@ -51,6 +54,9 @@ public class UsuarioController {
             String correo   = credenciales.get("correo");
             String password = credenciales.get("password");
             Usuario usuario = usuarioService.login(correo, password);
+            // Limpiar registros de logout anteriores para que el guard de sesión
+            // no invalide inmediatamente la sesión recién iniciada.
+            authService.limpiarSesionesAnteriores(usuario.getId());
             String loginAt = java.time.LocalDateTime.now().toString();
             return ResponseEntity.ok(Map.of(
                 "id",       usuario.getId(),
