@@ -3,8 +3,7 @@ package com.studyhub.service;
 import com.studyhub.model.Asignatura;
 import com.studyhub.model.Tarea;
 import com.studyhub.model.Usuario;
-import com.studyhub.repository.TareaRepository;
-import com.studyhub.repository.UsuarioRepository;
+import com.studyhub.repository.*;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +43,14 @@ class UsuarioServiceTest {
     @Mock
     private TareaRepository tareaRepository;
 
+    @Mock private SesionInvalidadaRepository sesionInvalidadaRepository;
+    @Mock private PasswordResetTokenRepository passwordResetTokenRepository;
+    @Mock private NotificationRepository notificationRepository;
+    @Mock private ResenaRepository resenaRepository;
+    @Mock private AsignacionRepository asignacionRepository;
+    @Mock private NotaRepository notaRepository;
+    @Mock private AsignaturaRepository asignaturaRepository;
+
     @Mock
     private PasswordEncryptionStrategy encryptionStrategy;
 
@@ -54,6 +61,12 @@ class UsuarioServiceTest {
 
     private Usuario usuario;
 
+    private void setMockField(String fieldName, Object mockObj) throws Exception {
+        var field = UsuarioService.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(usuarioService, mockObj);
+    }
+
     @BeforeEach
     void setUp() {
         usuarioService = new UsuarioService(
@@ -61,11 +74,16 @@ class UsuarioServiceTest {
                 tareaRepository, objectMapper
         );
         try {
-            var field = UsuarioService.class.getDeclaredField("usuarioRepository");
-            field.setAccessible(true);
-            field.set(usuarioService, usuarioRepository);
+            setMockField("usuarioRepository", usuarioRepository);
+            setMockField("sesionInvalidadaRepository", sesionInvalidadaRepository);
+            setMockField("passwordResetTokenRepository", passwordResetTokenRepository);
+            setMockField("notificationRepository", notificationRepository);
+            setMockField("resenaRepository", resenaRepository);
+            setMockField("asignacionRepository", asignacionRepository);
+            setMockField("notaRepository", notaRepository);
+            setMockField("asignaturaRepository", asignaturaRepository);
         } catch (Exception e) {
-            throw new RuntimeException("Error inyectando mock de usuarioRepository", e);
+            throw new RuntimeException("Error inyectando mocks de repositorios en cascada", e);
         }
 
         usuario = new Usuario();
@@ -433,5 +451,38 @@ class UsuarioServiceTest {
         when(objectMapper.writeValueAsString(anyMap())).thenThrow(JsonProcessingException.class);
 
         assertThrows(RuntimeException.class, () -> usuarioService.guardarPreferencias(1L, Map.of()));
+    }
+
+    @Test
+    void eliminarUsuario_eliminaCorrectamenteEnCascada() {
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        Asignatura asig = new Asignatura();
+        asig.setId(10L);
+        when(asignaturaRepository.findByUsuarioId(1L)).thenReturn(List.of(asig));
+        when(notificationRepository.findByUserIdOrderByCreatedAtDesc(1L)).thenReturn(Collections.emptyList());
+        when(resenaRepository.findByUsuarioId(1L)).thenReturn(Collections.emptyList());
+        when(asignacionRepository.findByUsuarioId(1L)).thenReturn(Collections.emptyList());
+        when(tareaRepository.findByAsignatura_Usuario_Id(1L)).thenReturn(Collections.emptyList());
+        when(notaRepository.findByAsignatura_Usuario_Id(1L)).thenReturn(Collections.emptyList());
+
+        usuarioService.eliminarUsuario(1L);
+
+        verify(sesionInvalidadaRepository).deleteByUsuarioId(1L);
+        verify(passwordResetTokenRepository).deleteByUsuario(usuario);
+        verify(notificationRepository).deleteAll(anyList());
+        verify(resenaRepository).deleteAll(anyList());
+        verify(asignacionRepository).deleteAll(anyList());
+        verify(tareaRepository).deleteAll(anyList());
+        verify(notaRepository).deleteAll(anyList());
+        verify(asignaturaRepository).delete(asig);
+        verify(usuarioRepository).delete(usuario);
+        verify(usuarioRepository).flush();
+    }
+
+    @Test
+    void eliminarUsuario_lanzaExcepcion_cuandoUsuarioNoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> usuarioService.eliminarUsuario(99L));
+        assertTrue(ex.getMessage().contains("Usuario no encontrado"));
     }
 }
