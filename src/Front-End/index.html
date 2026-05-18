@@ -7178,12 +7178,12 @@
                              style="background:${color.bg};color:${color.fg}">
                             <span class="material-icons-round">${icon}</span>
                         </div>
-                        <div class="subject-quick-cell-name">${s.name}</div>
-                        <span class="subject-status-badge ${s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')}">
+                        <div class="subject-quick-cell-name">${s.name || s.nombre}</div>
+                        <span class="subject-status-badge ${s.status || 'pendiente'}">
                             <span class="material-icons-round" style="font-size:12px;">
-                                ${badgeIcon[s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')] || 'radio_button_unchecked'}
+                                ${badgeIcon[s.status || 'pendiente'] || 'radio_button_unchecked'}
                             </span>
-                            ${badgeLabel[s.progreso >= 100 ? 'completada' : (s.progreso > 0 ? 'en_progreso' : 'pendiente')]}
+                            ${badgeLabel[s.status || 'pendiente'] || 'Pendiente'}
                         </span>
                     `;
 
@@ -7420,7 +7420,7 @@
                 const data = await res.json();
 
                 const subjects = data.asignaturas || [];
-                const labels = subjects.map(s => s.name);
+                const labels = subjects.map(s => s.nombre || s.name || 'Sin nombre');
                 const averages = subjects.map(s => s.promedio);
 
                 // 1. Renderizar el Gráfico
@@ -7482,7 +7482,7 @@
                 const riskAlertsContainer = document.getElementById('risk-alerts');
                 const riskList = document.getElementById('risk-list');
                 if (riskAlertsContainer && riskList) {
-                    const riskSubjects = subjects.filter(s => s.enRiesgo || s.promedio < 3.0);
+                    const riskSubjects = subjects.filter(s => s.enRiesgo || (s.promedio > 0 && s.promedio < 3.0));
                     riskList.innerHTML = '';
                     if (riskSubjects.length > 0) {
                         riskAlertsContainer.style.display = 'block';
@@ -7491,7 +7491,7 @@
                             item.className = 'risk-item';
                             item.style = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 14px;';
                             item.innerHTML = `
-                                <span style="font-weight: 600; color: #333;">${s.name}</span>
+                                <span style="font-weight: 600; color: #333;">${s.nombre || s.name || 'Materia'}</span>
                                 <span style="color: #d32f2f; font-weight: 700; background: #FFEBEE; padding: 2px 8px; border-radius: 6px;">${s.promedio.toFixed(2)}</span>
                             `;
                             riskList.appendChild(item);
