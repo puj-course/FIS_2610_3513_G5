@@ -16,7 +16,7 @@ public class SmsService {
 
     private final HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 
-    private void enviarSmsFisico(String to, String mensaje) {
+    private boolean enviarSmsFisico(String to, String mensaje) {
         System.out.println("========================================================");
         System.out.println("📲 [SMS EN CURSO] Destinatario: " + to);
         System.out.println("Contenido: " + mensaje);
@@ -38,11 +38,14 @@ public class SmsService {
             
             if (response.body().contains("\"success\":true") || response.body().contains("\"success\": true")) {
                 System.out.println("✅ Mensaje entregado exitosamente a la red celular de " + to);
+                return true;
             } else {
                 System.err.println("⚠️ Nota de pasarela: " + response.body());
+                return false;
             }
         } catch (Exception e) {
             System.err.println("❌ [SMS ERROR DE RED]: " + e.getMessage());
+            return false;
         }
     }
 
@@ -54,11 +57,11 @@ public class SmsService {
         enviarSmsFisico(telefono, mensaje);
     }
 
-    public void enviarSmsRecuperacion(String telefono, String enlace) {
+    public boolean enviarSmsRecuperacion(String telefono, String enlace) {
         if (telefono == null || telefono.trim().isEmpty()) {
-            return;
+            return false;
         }
         String mensaje = "🔑 [StudyHub] Accede aqui para recuperar tu contrasena: " + enlace;
-        enviarSmsFisico(telefono, mensaje);
+        return enviarSmsFisico(telefono, mensaje);
     }
 }

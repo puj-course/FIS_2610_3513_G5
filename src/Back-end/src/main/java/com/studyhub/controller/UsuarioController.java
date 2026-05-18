@@ -168,10 +168,12 @@ public class UsuarioController {
             String token = usuarioService.generarTokenRecuperacionPorTelefono(telefono);
             String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             String enlace = baseUri + "/index.html?token=" + token;
-            smsService.enviarSmsRecuperacion(telefono, enlace);
+            boolean entregado = smsService.enviarSmsRecuperacion(telefono, enlace);
             return ResponseEntity.ok(Map.of(
                 "mensaje", "Enlace seguro enviado por SMS exitosamente al " + telefono,
-                "token", token
+                "token", token,
+                "entregado", entregado,
+                "smsBody", "🔑 [StudyHub] Accede aqui para recuperar tu contrasena: " + enlace
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));

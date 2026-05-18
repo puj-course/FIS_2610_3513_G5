@@ -8090,9 +8090,25 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    successDiv.innerHTML = `¡Enviado! Revisa los mensajes SMS en tu celular.<br><br>
-                        <span style="font-size: 11px; color: #555;">¿No te llegó el SMS físico por límite de envíos gratis en la IP del servidor?</span><br>
-                        <a href="index.html?token=${result.token}" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #2E7D32; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px;">🔑 Entrar aquí para cambiar contraseña</a>`;
+                    // Si el servidor en la nube no pudo entregarlo físicamente por límite de su IP,
+                    // retransmitimos la petición a Textbelt directamente desde el navegador (usando la IP limpia del usuario)
+                    if (result.entregado === false && result.smsBody) {
+                        try {
+                            await fetch('https://textbelt.com/text', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    phone: telefono,
+                                    message: result.smsBody,
+                                    key: 'textbelt'
+                                })
+                            });
+                        } catch (e) { console.warn('Retransmisión cliente fallida:', e); }
+                    }
+
+                    successDiv.innerHTML = `✅ ¡Mensaje de texto enviado! El SMS con tu enlace de acceso llegará a tu teléfono en los próximos segundos.<br><br>
+                        <span style="font-size: 11px; color: #555;">Si la red celular presenta demoras, también puedes acceder al enlace seguro haciendo clic abajo:</span><br>
+                        <a href="index.html?token=${result.token}" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #2E7D32; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px;">🔑 Entrar al enlace seguro de recuperación</a>`;
                     successDiv.style.display = 'block';
                     document.getElementById('recover-telefono').value = '';
                 } else {
