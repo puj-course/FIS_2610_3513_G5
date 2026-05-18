@@ -52,15 +52,33 @@ public class UsuarioService {
         this.objectMapper = objectMapper;
     }
 
+    public String normalizarTelefono(String telefono) {
+        if (telefono == null || telefono.trim().isEmpty()) {
+            return null;
+        }
+        String limpio = telefono.trim().replaceAll("[^0-9+]", "");
+        if (!limpio.startsWith("+57")) {
+            if (limpio.startsWith("57") && limpio.length() == 12) {
+                limpio = "+" + limpio;
+            } else if (limpio.startsWith("3") && limpio.length() == 10) {
+                limpio = "+57" + limpio;
+            } else {
+                limpio = "+57" + limpio;
+            }
+        }
+        return limpio;
+    }
+
     public Usuario crearUsuario(Usuario usuario) {
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new RuntimeException("El correo ya está registrado");
         }
         if (usuario.getTelefono() != null && !usuario.getTelefono().trim().isEmpty()) {
-            if (usuarioRepository.existsByTelefono(usuario.getTelefono().trim())) {
+            String telNorm = normalizarTelefono(usuario.getTelefono());
+            if (usuarioRepository.existsByTelefono(telNorm)) {
                 throw new RuntimeException("El teléfono ya está registrado");
             }
-            usuario.setTelefono(usuario.getTelefono().trim());
+            usuario.setTelefono(telNorm);
         }
         usuario.setPassword(encryptionStrategy.encrypt(usuario.getPassword()));
         return usuarioRepository.save(usuario);
@@ -160,13 +178,14 @@ public class UsuarioService {
         }
 
         if (campos.containsKey("telefono")) {
-            String tel = campos.get("telefono") != null ? campos.get("telefono").toString().trim() : null;
-            if (tel != null && !tel.isEmpty() && !tel.equals(usuario.getTelefono())) {
-                if (usuarioRepository.existsByTelefono(tel)) {
+            String telRaw = campos.get("telefono") != null ? campos.get("telefono").toString().trim() : null;
+            String telNorm = normalizarTelefono(telRaw);
+            if (telNorm != null && !telNorm.equals(usuario.getTelefono())) {
+                if (usuarioRepository.existsByTelefono(telNorm)) {
                     throw new RuntimeException("El teléfono ya está registrado en otra cuenta");
                 }
             }
-            usuario.setTelefono(tel == null || tel.isEmpty() ? null : tel);
+            usuario.setTelefono(telNorm);
         }
 
         return usuarioRepository.save(usuario);
@@ -247,7 +266,8 @@ public class UsuarioService {
         return token;
     }
 
-    public String generarTokenRecuperacionPorTelefono(String telefono) {
+    public String generarTokenRecuperacionPorTelefono(String telefonoRaw) {
+        String telefono = normalizarTelefono(telefonoRaw);
         Usuario usuario = usuarioRepository.findByTelefono(telefono)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese número celular"));
 

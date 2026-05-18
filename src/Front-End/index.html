@@ -3868,7 +3868,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <input type="tel" id="reg-telefono" class="form-input" placeholder="Ej: 3001234567" required pattern="[0-9]+" minlength="10" maxlength="15">
+                    <input type="tel" id="reg-telefono" class="form-input" placeholder="+573001234567" value="+57" required pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Contraseña <span class="required">*</span></label>
@@ -3899,7 +3899,7 @@
             <form class="auth-form" onsubmit="handleRecover(event)">
                 <div class="form-group">
                     <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <input type="tel" id="recover-telefono" class="form-input" placeholder="Ej: 3001234567" required pattern="[0-9]+">
+                    <input type="tel" id="recover-telefono" class="form-input" placeholder="+573001234567" value="+57" required pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
                 </div>
                 <button type="submit" id="btn-recover" class="auth-btn">Enviar SMS</button>
             </form>
@@ -4679,8 +4679,8 @@
                                     Teléfono Celular <span class="required">*</span>
                                 </label>
                                 <input class="profile-form-input" type="tel" id="profile-telefono"
-                                    placeholder="Ej: 3001234567" pattern="[0-9]+" minlength="10" maxlength="15" required>
-                                <div class="profile-form-error" id="error-profile-telefono">El teléfono es obligatorio</div>
+                                    placeholder="+573001234567" value="+57" pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)" required>
+                                <div class="profile-form-error" id="error-profile-telefono">El teléfono es obligatorio y debe tener formato +57</div>
                             </div>
 
                             <div class="profile-form-group">
@@ -6251,7 +6251,7 @@
 
                 document.getElementById('profile-nombre').value = u.nombre || '';
                 document.getElementById('profile-apellido').value = u.apellido || '';
-                document.getElementById('profile-telefono').value = u.telefono || '';
+                document.getElementById('profile-telefono').value = u.telefono || '+57';
                 document.getElementById('profile-carrera').value = u.carrera || '';
                 document.getElementById('profile-semestre').value = u.semestre || '';
 
