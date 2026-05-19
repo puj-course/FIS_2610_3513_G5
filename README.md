@@ -440,6 +440,7 @@ Estudiante de Ingeniería de Sistemas, Pontificia Universidad Javeriana
 
 **Manuel Morales**  
 Estudiante de Ingeniería de Sistemas, Pontificia Universidad Javeriana
+📧 [jm-movilla@javeriana.edu.co](mailto:jm-movilla@javeriana.edu.co)
 
 ---
 
