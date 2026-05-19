@@ -32,6 +32,10 @@ jobs:
         run: docker compose config
 
       - name: Start services with Docker Compose
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_VERIFY_SID: ${{ secrets.TWILIO_VERIFY_SID }}
         run: docker compose up -d
 
       - name: Show running containers and network
