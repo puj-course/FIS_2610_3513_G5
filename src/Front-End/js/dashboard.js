@@ -31,8 +31,10 @@
                 if (avgElem) avgElem.textContent = data.promedioGlobal.toFixed(1);
                 if (countElem) countElem.textContent = data.totalMaterias;
                 
-                // 3. Render Risk Alerts (HU-377)
-                renderRiskAlerts(data.promediosPorMateria);
+                // 3. Render Risk Alerts (HU-377):
+                //    Combina los promedios calculados desde BD con las materias
+                //    detectadas en tiempo real por EstadisticasObserver.
+                await renderRiskAlerts(data.promediosPorMateria, user.id);
                 
                 // 4. Render Performance Chart (HU-374)
                 renderAverageChart(data.promediosPorMateria);
@@ -42,26 +44,56 @@
         }
     };
 
-    function renderRiskAlerts(promedios) {
+    /**
+     * Renderiza la sección "Materias que requieren atención".
+     * Combina dos fuentes:
+     *  - promediosPorMateria: mapa completo calculado desde BD (puede incluir materias >= 3)
+     *  - /notas/materias-en-riesgo: materias que cruzaron el umbral en esta sesión (Observer)
+     */
+    async function renderRiskAlerts(promediosPorMateria, userId) {
         const riskContainer = document.getElementById('risk-alerts');
         const riskList = document.getElementById('risk-list');
         if (!riskContainer || !riskList) return;
 
-        riskList.innerHTML = '';
-        const subjectsAtRisk = Object.entries(promedios)
+        // Materias con promedio < 3 según BD
+        const subjectsAtRisk = Object.entries(promediosPorMateria)
             .filter(([_, avg]) => avg < 3.0 && avg > 0);
-            
-        if (subjectsAtRisk.length > 0) {
+
+        // Materias detectadas en tiempo real por EstadisticasObserver
+        let observerRisk = new Set();
+        try {
+            const res = await fetch(`${API}/notas/materias-en-riesgo/${userId}`);
+            if (res.ok) {
+                const json = await res.json();
+                observerRisk = new Set(json.materiasEnRiesgo || []);
+            }
+        } catch (e) {
+            console.warn("No se pudo consultar materias-en-riesgo del observer:", e);
+        }
+
+        // Unir ambas fuentes: BD + observer (evitar duplicados por nombre)
+        const combinado = new Map(subjectsAtRisk);
+        for (const nombre of observerRisk) {
+            if (!combinado.has(nombre)) {
+                // Materia detectada por observer pero aún sin promedio en BD
+                // (puede ocurrir si la nota recién guardada aún no llegó a estadísticas)
+                combinado.set(nombre, promediosPorMateria[nombre] ?? null);
+            }
+        }
+
+        riskList.innerHTML = '';
+
+        if (combinado.size > 0) {
             riskContainer.style.display = 'block';
-            subjectsAtRisk.forEach(([name, avg]) => {
+            for (const [name, avg] of combinado.entries()) {
                 const item = document.createElement('div');
                 item.style = "display: flex; justify-content: space-between; background: #fff; padding: 10px 16px; border-radius: 8px; border-left: 4px solid #E65100; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
                 item.innerHTML = `
-                    <span style="font-weight: 500; color: #37474F;">${name}</span> 
-                    <strong style="color: #d32f2f;">${avg.toFixed(1)}</strong>
+                    <span style="font-weight: 500; color: #37474F;">${name}</span>
+                    <strong style="color: #d32f2f;">${avg != null ? avg.toFixed(1) : '—'}</strong>
                 `;
                 riskList.appendChild(item);
-            });
+            }
         } else {
             riskContainer.style.display = 'none';
         }
