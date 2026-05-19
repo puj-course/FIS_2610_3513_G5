@@ -1,5 +1,6 @@
 package com.studyhub.service;
 
+import com.studyhub.service.builder.ResumenAcademicoBuilder;
 import com.studyhub.dto.AsignaturaResumenDTO;
 import com.studyhub.dto.ResumenAcademicoDTO;
 import com.studyhub.dto.TareaResumenDTO;
@@ -11,6 +12,7 @@ import com.studyhub.model.Usuario;
 import com.studyhub.repository.*;
 import com.studyhub.service.strategy.PasswordEncryptionStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@Service
+@Service("usuarioService")
 @Transactional
-public class UsuarioService {
+public class UsuarioService implements IUsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -40,7 +42,6 @@ public class UsuarioService {
 
     @Autowired
     private AsignacionRepository asignacionRepository;
-
 
     @Autowired
     private NotaRepository notaRepository;
@@ -73,6 +74,7 @@ public class UsuarioService {
         this.objectMapper = objectMapper;
     }
 
+    @Override
     public String normalizarTelefono(String telefono) {
         if (telefono == null || telefono.trim().isEmpty()) {
             return null;
@@ -90,6 +92,7 @@ public class UsuarioService {
         return limpio;
     }
 
+    @Override
     public Usuario crearUsuario(Usuario usuario) {
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new RuntimeException("El correo ya está registrado");
@@ -105,6 +108,7 @@ public class UsuarioService {
         return usuarioRepository.saveAndFlush(usuario);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Usuario login(String correo, String password) {
         return usuarioRepository.findByCorreo(correo)
@@ -112,6 +116,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
@@ -125,13 +130,12 @@ public class UsuarioService {
      * @return El usuario encontrado
      * @throws RuntimeException si no existe un usuario con ese ID (→ 404)
      */
+    @Override
     @Transactional(readOnly = true)
     public Usuario obtenerPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
     }
-
-
 
     /**
      * Actualiza los campos de perfil editables de un usuario:
@@ -147,6 +151,7 @@ public class UsuarioService {
      * @return El usuario actualizado y persistido
      * @throws RuntimeException con mensaje descriptivo si falla la validación
      */
+    @Override
     public Usuario actualizarPerfil(Long id, Map<String, Object> campos) {
         // Buscar usuario — lanza excepción si no existe (se convierte en 404)
         Usuario usuario = usuarioRepository.findById(id)
@@ -212,6 +217,7 @@ public class UsuarioService {
         return usuarioRepository.saveAndFlush(usuario);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public UsuarioResumenDTO obtenerResumenUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
@@ -240,11 +246,13 @@ public class UsuarioService {
                 promedioGlobal);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public ResumenAcademicoDTO obtenerResumenAcademico(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // ── Asignaturas ──────────────────────────────────────────────────────
         List<Asignatura> asignaturasRaw = asignaturaService.findByUserId(usuarioId);
         List<AsignaturaResumenDTO> asignaturasResumen = new ArrayList<>();
         double sumaPromedios = 0;
@@ -260,22 +268,29 @@ public class UsuarioService {
         }
 
         double promedioGlobal = asignaturasRaw.isEmpty() ? 0 : sumaPromedios / asignaturasRaw.size();
-        promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
+        // ── Tareas ───────────────────────────────────────────────────────────
         List<Tarea> tareasRaw = tareaRepository
                 .findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
         List<TareaResumenDTO> tareasResumen = tareasRaw.stream()
-                .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega(),
+                .map(t -> new TareaResumenDTO(
+                        t.getTitulo(),
+                        t.getAsignatura().getNombre(),
+                        t.getFechaEntrega(),
                         t.getHoraEntrega()))
                 .collect(Collectors.toList());
 
-        return new ResumenAcademicoDTO(
-                usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
-                promedioGlobal,
-                asignaturasResumen,
-                tareasResumen);
+        // ── Builder ──────────────────────────────────────────────────────────
+        return new ResumenAcademicoBuilder()
+                .conNombreUsuario(usuario.getNombre() + " " +
+                        (usuario.getApellido() != null ? usuario.getApellido() : ""))
+                .conPromedioGlobal(promedioGlobal)
+                .conAsignaturas(asignaturasResumen)
+                .conTareasPendientes(tareasResumen)
+                .build();
     }
 
+    @Override
     public String generarTokenRecuperacion(String correo) {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new RuntimeException("No existe un usuario registrado con ese correo"));
@@ -287,6 +302,7 @@ public class UsuarioService {
         return token;
     }
 
+    @Override
     public String generarTokenRecuperacionPorTelefono(String telefonoRaw) {
         String telefono = normalizarTelefono(telefonoRaw);
         Usuario usuario = usuarioRepository.findByTelefono(telefono)
@@ -299,6 +315,7 @@ public class UsuarioService {
         return token;
     }
 
+    @Override
     public void restablecerPassword(String token, String nuevaPassword) {
         Usuario usuario = usuarioRepository.findByTokenRecuperacion(token)
                 .orElseThrow(() -> new RuntimeException("Token de recuperación inválido"));
@@ -313,6 +330,7 @@ public class UsuarioService {
         usuarioRepository.saveAndFlush(usuario);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public EstadisticasDTO obtenerEstadisticas(Long usuarioId) {
         List<Asignatura> asignaturas = asignaturaService.findByUserId(usuarioId);
@@ -345,6 +363,7 @@ public class UsuarioService {
                 promediosPorMateria);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerPreferencias(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -352,7 +371,7 @@ public class UsuarioService {
 
         String prefs = usuario.getPreferencias();
         if (prefs == null || prefs.trim().isEmpty()) {
-            return new HashMap<>(); // Preferencias por defecto
+            return new HashMap<>();
         }
 
         try {
@@ -364,6 +383,7 @@ public class UsuarioService {
         }
     }
 
+    @Override
     public void guardarPreferencias(Long usuarioId, Map<String, Object> preferencias) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
@@ -377,6 +397,7 @@ public class UsuarioService {
         }
     }
 
+    @Override
     public void eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));

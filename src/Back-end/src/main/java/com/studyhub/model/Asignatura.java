@@ -29,7 +29,10 @@ public class Asignatura {
     private String horarioTexto;
     private String diasClase;      
     private String horaInicio;     
-    private String horaFin;        
+    private String horaFin;     
+    private String salonNombre;
+    private String salonUbicacion;
+    private Integer salonCapacidad;
     
     @jakarta.persistence.Transient
     @com.fasterxml.jackson.annotation.JsonProperty("progreso")
@@ -91,6 +94,15 @@ public class Asignatura {
 
     public String getHoraFin() { return horaFin; }
     public void setHoraFin(String horaFin) { this.horaFin = horaFin; }
+    
+    public String getSalonNombre() { return salonNombre; }
+    public void setSalonNombre(String salonNombre) { this.salonNombre = salonNombre; }
+
+    public String getSalonUbicacion() { return salonUbicacion; }
+    public void setSalonUbicacion(String salonUbicacion) { this.salonUbicacion = salonUbicacion; }
+
+    public Integer getSalonCapacidad() { return salonCapacidad; }
+    public void setSalonCapacidad(Integer salonCapacidad) { this.salonCapacidad = salonCapacidad; }
 
     @Override
     public String toString() {

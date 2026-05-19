@@ -17,8 +17,8 @@
     <!-- PDF + Imagen: Exportación de Horario (HU exportación) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
-    
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 
@@ -2427,8 +2427,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Contenedor con scroll horizontal para pantallas pequeñas */
@@ -3868,7 +3873,9 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <input type="tel" id="reg-telefono" class="form-input" placeholder="+573001234567" value="+57" required pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
+                    <input type="tel" id="reg-telefono" class="form-input" placeholder="+573001234567" value="+57"
+                        required pattern="^\+57[0-9]{10}$"
+                        title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Contraseña <span class="required">*</span></label>
@@ -3891,7 +3898,8 @@
             <div class="auth-header">
                 <div class="auth-logo"><span class="material-icons-round">sms</span></div>
                 <h2 class="auth-title">Recuperar por SMS</h2>
-                <p class="auth-subtitle">Ingresa tu número celular y te enviaremos un código/enlace de recuperación por SMS</p>
+                <p class="auth-subtitle">Ingresa tu número celular y te enviaremos un código/enlace de recuperación por
+                    SMS</p>
             </div>
             <div id="recover-error" class="error-message"></div>
             <div id="recover-success" class="error-message"
@@ -3899,7 +3907,9 @@
             <form class="auth-form" onsubmit="handleRecover(event)">
                 <div class="form-group">
                     <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <input type="tel" id="recover-telefono" class="form-input" placeholder="+573001234567" value="+57" required pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
+                    <input type="tel" id="recover-telefono" class="form-input" placeholder="+573001234567" value="+57"
+                        required pattern="^\+57[0-9]{10}$"
+                        title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
                 </div>
                 <button type="submit" id="btn-recover" class="auth-btn">Enviar SMS</button>
             </form>
@@ -3977,7 +3987,7 @@
                         <span class="material-icons-round">calendar_view_week</span>
                         Horario Semanal
                     </div>
-                    
+
                     <div class="nav-item" id="nav-tasks">
                         <span class="material-icons-round">assignment</span>
                         Mis Tareas
@@ -4420,9 +4430,9 @@
 
                 </div><!-- /.tasks-view -->
 
-            
 
-            <!-- Vista: Configuración (falso - solo header) - CERRADO -->
+
+                <!-- Vista: Configuración (falso - solo header) - CERRADO -->
 
                 <!-- Vista: Foro de Reseñas -->
                 <div class="resenas-view" id="resenas-view">
@@ -4469,11 +4479,13 @@
                             <p class="grades-view-subtitle">Visualiza tus materias distribuidas por día y hora</p>
                         </div>
                         <div class="horario-export-actions">
-                            <button class="btn-export-horario" id="export-horario-pdf-btn" onclick="exportarHorarioPDF()">
+                            <button class="btn-export-horario" id="export-horario-pdf-btn"
+                                onclick="exportarHorarioPDF()">
                                 <span class="material-icons-round">picture_as_pdf</span>
                                 Exportar PDF
                             </button>
-                            <button class="btn-export-horario" id="export-horario-img-btn" onclick="exportarHorarioImagen()">
+                            <button class="btn-export-horario" id="export-horario-img-btn"
+                                onclick="exportarHorarioImagen()">
                                 <span class="material-icons-round">image</span>
                                 Exportar Imagen
                             </button>
@@ -4679,8 +4691,10 @@
                                     Teléfono Celular <span class="required">*</span>
                                 </label>
                                 <input class="profile-form-input" type="tel" id="profile-telefono"
-                                    placeholder="+573001234567" value="+57" pattern="^\+57[0-9]{10}$" title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)" required>
-                                <div class="profile-form-error" id="error-profile-telefono">El teléfono es obligatorio y debe tener formato +57</div>
+                                    placeholder="+573001234567" value="+57" pattern="^\+57[0-9]{10}$"
+                                    title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)" required>
+                                <div class="profile-form-error" id="error-profile-telefono">El teléfono es obligatorio y
+                                    debe tener formato +57</div>
                             </div>
 
                             <div class="profile-form-group">
@@ -5243,8 +5257,8 @@
     </div>
 
     <script>
-        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '')
-            ? 'https://studyhub-c2ft.onrender.com'
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:8080'
             : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
         window.API = API;
@@ -6454,29 +6468,35 @@
             try {
                 let fotoUrl = _profileSnapshot?.fotoPerfil || '';
 
-                // 1. Subir foto si se seleccionó una nueva
-                // Si falla (ej: backend apagado), se muestra advertencia pero
-                // el guardado de datos personales continúa igual.
+                // 1. Subir foto a imgBB y obtener URL pública
                 if (_profilePhotoFile) {
                     try {
-                        fotoUrl = await new Promise((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.onerror = reject;
-                            reader.readAsDataURL(_profilePhotoFile);
-                        });
-                    } catch {
-                        showProfileError('No se pudo procesar la foto.');
+                        const imgbbForm = new FormData();
+                        imgbbForm.append('image', _profilePhotoFile);
+
+                        const imgbbRes = await fetch(
+                            'https://api.imgbb.com/1/upload?key=48e0788260ad41b2f565bc1bd5a31b7d',
+                            { method: 'POST', body: imgbbForm }
+                        );
+
+                        const imgbbBody = await imgbbRes.json();
+                        if (!imgbbRes.ok || !imgbbBody.success) {
+                            throw new Error(imgbbBody.error?.message || 'Error al subir la foto a imgBB');
+                        }
+                        fotoUrl = imgbbBody.data.url; // URL pública permanente, cabe en VARCHAR(255)
+                    } catch (avatarErr) {
+                        showProfileError('No se pudo subir la foto: ' + avatarErr.message);
+                        return;
                     }
                 }
 
-                // 2. Actualizar datos personales
-                const payload = { 
-                    nombre, 
-                    apellido, 
+                // 2. Actualizar datos personales incluyendo la URL de la foto si se subió
+                const payload = {
+                    nombre,
+                    apellido,
                     telefono: document.getElementById('profile-telefono').value.trim(),
-                    carrera, 
-                    semestre: parseInt(semestre) 
+                    carrera,
+                    semestre: parseInt(semestre)
                 };
                 if (fotoUrl) payload.fotoPerfil = fotoUrl;
 
@@ -6494,25 +6514,22 @@
                 // El PUT /perfil retorna { mensaje, usuario }
                 const updated = body.usuario || body;
 
-                // Inyectar fotoUrl en updated: actualizarPerfil() no toca fotoPerfil.
+                // Inyectar fotoUrl en updated para reflejar la foto subida en sidebar
                 if (fotoUrl) updated.fotoPerfil = fotoUrl;
 
-                // 3. Persistir en localStorage PRIMERO, fusionando con la sesión actual
-                // para no perder loginAt ni campos que el PUT /perfil no devuelve.
-                // Es importante hacerlo antes de updateSidebarProfile para que cualquier
-                // fetch posterior que lea el localStorage ya tenga la foto.
+                // 3. Persistir en localStorage fusionando con la sesión actual
                 const currentSession = SessionManager.getInstance().getUser() || {};
                 const mergedSession = { ...currentSession, ...updated };
                 SessionManager.getInstance().setUser(mergedSession);
 
-                // 4. Reflejar en el sidebar con el objeto fusionado completo
+                // 4. Reflejar en el sidebar
                 updateSidebarProfile(mergedSession);
 
                 // Actualizar snapshot y limpiar foto pendiente
                 _profileSnapshot = { nombre, apellido, carrera, semestre, fotoPerfil: fotoUrl };
                 _profilePhotoFile = null;
 
-                showProfileSuccess('¡Perfil actualizado exitosamente! Recarga la página para ver los cambios en la barra lateral.');
+                showProfileSuccess('¡Perfil actualizado exitosamente!');
             } catch (err) {
                 console.error(err);
                 showProfileError(err.message || 'Error inesperado al guardar los cambios.');
@@ -6594,10 +6611,10 @@
 
         function hideAllViews() {
             const settingsView = document.getElementById('settings-view');
-            const profileView  = document.getElementById('profile-view');
-            const metricsView  = document.getElementById('metrics-view');
+            const profileView = document.getElementById('profile-view');
+            const metricsView = document.getElementById('metrics-view');
             const views = [dashboardView, calcView, calcSelectorView, gradesView, tasksView, subjectsView, resenasView, apuntesView, settingsView, profileView, metricsView, horarioView];
-            views.forEach(v => { 
+            views.forEach(v => {
                 if (v) {
                     v.classList.remove('active');
                     if (v.id === 'metrics-view') v.style.display = 'none';
@@ -7176,9 +7193,16 @@
             };
 
             try {
-                const res = await fetch(`${API}/api/usuarios/${userId}/subjects`);
+                const res = await fetch(`${API}/asignaturas?usuarioId=${userId}`);
                 if (!res.ok) throw new Error('Error al cargar materias');
-                const subjects = await res.json();
+                const rawSubjects = await res.json();
+                // Normalizar al formato que espera el resto de la función
+                const subjects = rawSubjects.map(s => ({
+                    id: s.id,
+                    name: s.nombre,
+                    nombre: s.nombre,
+                    status: 'en_progreso'
+                }));
 
                 grid.innerHTML = '';
 
@@ -7234,33 +7258,34 @@
             const userId = getUserId();
             if (!userId) return;
 
-            fetch(`${API}/api/usuarios/${userId}/resumen`)
-                .then(res => {
-                    if (!res.ok) throw new Error('Resumen no encontrado');
-                    return res.json();
-                })
-                .then(data => {
+            fetch(`${API}/asignaturas?usuarioId=${userId}`)
+                .then(res => res.ok ? res.json() : [])
+                .then(asignaturas => {
                     const totalMateriasEl = document.getElementById('sidebar-total-materias');
                     const promedioEl = document.getElementById('sidebar-promedio');
 
                     if (totalMateriasEl) {
                         totalMateriasEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                         totalMateriasEl.style.opacity = 0;
-                        totalMateriasEl.style.transform = 'translateY(-5px)';
                         setTimeout(() => {
-                            totalMateriasEl.textContent = data.totalAsignaturas;
+                            totalMateriasEl.textContent = asignaturas.length;
                             totalMateriasEl.style.opacity = 1;
-                            totalMateriasEl.style.transform = 'translateY(0)';
                         }, 300);
                     }
+
                     if (promedioEl) {
+                        // Calcular promedio global desde gradesStore
+                        let suma = 0, count = 0;
+                        asignaturas.forEach(a => {
+                            const notas = gradesStore[a.id] || [];
+                            const avg = notas.reduce((s, g) => s + (g.nota != null ? g.nota * (g.porcentaje / 100) : 0), 0);
+                            if (notas.some(g => g.nota != null)) { suma += avg; count++; }
+                        });
                         promedioEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                         promedioEl.style.opacity = 0;
-                        promedioEl.style.transform = 'translateY(-5px)';
                         setTimeout(() => {
-                            promedioEl.textContent = (data.totalAsignaturas === 0) ? "-" : data.promedioGlobal;
+                            promedioEl.textContent = count > 0 ? (suma / count).toFixed(2) : '-';
                             promedioEl.style.opacity = 1;
-                            promedioEl.style.transform = 'translateY(0)';
                         }, 300);
                     }
                 })
@@ -7436,29 +7461,38 @@
             if (!userId) return;
 
             try {
-                const res = await fetch(`${API}/api/usuarios/${userId}/informe-academico`);
-                if (!res.ok) throw new Error('Error al obtener informe académico');
-                const data = await res.json();
+                const res = await fetch(`${API}/asignaturas?usuarioId=${userId}`);
+                if (!res.ok) throw new Error('Error al obtener materias');
+                const asignaturas = await res.json();
 
-                const subjects = data.asignaturas || [];
-                const labels = subjects.map(s => s.nombre || s.name || 'Sin nombre');
-                const averages = subjects.map(s => s.promedio);
+                // Construir datos desde gradesStore (ya cargado al abrir calificaciones)
+                const labels = [];
+                const averages = [];
+                const riskSubjects = [];
 
-                // 1. Renderizar el Gráfico
+                asignaturas.forEach(a => {
+                    const notas = gradesStore[a.id] || [];
+                    const notasConValor = notas.filter(g => g.nota != null);
+                    if (notasConValor.length === 0) return;
+                    const avg = notasConValor.reduce((s, g) => s + g.nota * (g.porcentaje / 100), 0);
+                    labels.push(a.nombre);
+                    averages.push(parseFloat(avg.toFixed(2)));
+                    if (avg > 0 && avg < 3.0) riskSubjects.push({ nombre: a.nombre, promedio: avg });
+                });
+
+                // Gráfico
                 const ctx = document.getElementById('averageChart')?.getContext('2d');
                 if (ctx) {
-                    if (myChart) {
-                        myChart.destroy();
-                    }
+                    if (myChart) myChart.destroy();
                     myChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: labels,
+                            labels,
                             datasets: [{
                                 label: 'Promedio',
                                 data: averages,
-                                backgroundColor: 'rgba(30, 136, 229, 0.6)',
-                                borderColor: 'rgba(30, 136, 229, 1)',
+                                backgroundColor: averages.map(v => v < 3.0 ? 'rgba(229,57,53,0.6)' : 'rgba(30,136,229,0.6)'),
+                                borderColor: averages.map(v => v < 3.0 ? 'rgba(229,57,53,1)' : 'rgba(30,136,229,1)'),
                                 borderWidth: 1,
                                 borderRadius: 6
                             }]
@@ -7467,58 +7501,29 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             scales: {
-                                y: {
-                                    min: 0,
-                                    max: 5,
-                                    ticks: {
-                                        stepSize: 1
-                                    },
-                                    grid: {
-                                        color: 'rgba(0,0,0,0.05)'
-                                    }
-                                },
-                                x: {
-                                    grid: {
-                                        display: false
-                                    }
-                                }
+                                y: { beginAtZero: true, max: 5, grid: { color: 'rgba(0,0,0,0.05)' } },
+                                x: { grid: { display: false } }
                             },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            return `Promedio: ${context.parsed.y.toFixed(2)}`;
-                                        }
-                                    }
-                                }
-                            }
+                            plugins: { legend: { display: false } }
                         }
                     });
                 }
 
-                // 2. Renderizar Alertas de Riesgo
-                const riskAlertsContainer = document.getElementById('risk-alerts');
+                // Alertas de riesgo
+                const riskContainer = document.getElementById('risk-alerts');
                 const riskList = document.getElementById('risk-list');
-                if (riskAlertsContainer && riskList) {
-                    const riskSubjects = subjects.filter(s => s.enRiesgo || (s.promedio > 0 && s.promedio < 3.0));
+                if (riskContainer && riskList) {
                     riskList.innerHTML = '';
                     if (riskSubjects.length > 0) {
-                        riskAlertsContainer.style.display = 'block';
+                        riskContainer.style.display = 'block';
                         riskSubjects.forEach(s => {
                             const item = document.createElement('div');
-                            item.className = 'risk-item';
-                            item.style = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 14px;';
-                            item.innerHTML = `
-                                <span style="font-weight: 600; color: #333;">${s.nombre || s.name || 'Materia'}</span>
-                                <span style="color: #d32f2f; font-weight: 700; background: #FFEBEE; padding: 2px 8px; border-radius: 6px;">${s.promedio.toFixed(2)}</span>
-                            `;
+                            item.style = 'display:flex;justify-content:space-between;background:#fff;padding:10px 16px;border-radius:8px;border-left:4px solid #E65100;box-shadow:0 1px 2px rgba(0,0,0,0.05);';
+                            item.innerHTML = `<span style="font-weight:500;color:#37474F;">${s.nombre}</span><strong style="color:#d32f2f;">${s.promedio.toFixed(2)}</strong>`;
                             riskList.appendChild(item);
                         });
                     } else {
-                        riskAlertsContainer.style.display = 'none';
+                        riskContainer.style.display = 'none';
                     }
                 }
 
@@ -7704,8 +7709,8 @@
                 closeTaskModal();
                 showToast(`"${json.tarea.titulo}" guardada exitosamente`);
                 // Refrescar vista activa después de guardar
-                 if (tasksView.classList.contains('active')) fetchTareasBackend();
-                 if (dashboardView.classList.contains('active')) renderDashboardSummary();
+                if (tasksView.classList.contains('active')) fetchTareasBackend();
+                if (dashboardView.classList.contains('active')) renderDashboardSummary();
             } catch (err) {
                 console.error('Error completo:', err);
                 showToast('Error al conectar con el servidor');
@@ -9248,13 +9253,25 @@
                             style="font-family: monospace; color: var(--gray-600); font-size: 14px; padding: 4px 8px; background: var(--gray-100); border-radius: 4px; border: 1px solid var(--gray-200);">#1E88E5</span>
                     </div>
                 </div>
-                <div class="config-section danger-zone" style="margin-top: 25px; border-top: 1px solid #ffccd5; padding-top: 15px;">
+                <div class="config-section danger-zone"
+                    style="margin-top: 25px; border-top: 1px solid #ffccd5; padding-top: 15px;">
                     <h4 style="color: #e53935; display: flex; align-items: center; gap: 8px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
                         Zona de Peligro (Eliminar Cuenta)
                     </h4>
-                    <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 12px;">Al eliminar tu cuenta, se borrarán permanentemente todos tus datos de la base de datos (materias, notas, tareas, cronograma y perfil). Esta acción no se puede deshacer.</p>
-                    <button class="btn-save" id="btn-delete-account" onclick="confirmDeleteAccount()" style="background: #e53935; color: #fff; width: 100%; border: none;">Eliminar Cuenta Permanentemente</button>
+                    <p style="font-size: 13px; color: var(--gray-600); margin-bottom: 12px;">Al eliminar tu cuenta, se
+                        borrarán permanentemente todos tus datos de la base de datos (materias, notas, tareas,
+                        cronograma y perfil). Esta acción no se puede deshacer.</p>
+                    <button class="btn-save" id="btn-delete-account" onclick="confirmDeleteAccount()"
+                        style="background: #e53935; color: #fff; width: 100%; border: none;">Eliminar Cuenta
+                        Permanentemente</button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -9277,18 +9294,18 @@
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' }
                 })
-                .then(res => {
-                    if (res.ok) {
-                        alert("✅ Tu cuenta y todos tus datos han sido eliminados permanentemente de la base de datos.");
-                        localStorage.removeItem('studyhub_user');
-                        window.location.reload();
-                    } else {
-                        return res.json().then(err => { throw new Error(err.mensaje || 'Error al eliminar la cuenta'); });
-                    }
-                })
-                .catch(err => {
-                    alert('❌ ' + err.message);
-                });
+                    .then(res => {
+                        if (res.ok) {
+                            alert("✅ Tu cuenta y todos tus datos han sido eliminados permanentemente de la base de datos.");
+                            localStorage.removeItem('studyhub_user');
+                            window.location.reload();
+                        } else {
+                            return res.json().then(err => { throw new Error(err.mensaje || 'Error al eliminar la cuenta'); });
+                        }
+                    })
+                    .catch(err => {
+                        alert('❌ ' + err.message);
+                    });
             }
         }
         // ==========================================
@@ -9431,11 +9448,54 @@
             scheduleResultsList.style.display = 'flex';
         }
     </script>
+    <!-- Modal: Detalle de Evento -->
+    <div id="modal-evento-detalle"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:12px; padding:28px; width:420px; max-width:95vw; position:relative;">
+            <button id="modal-evento-cerrar"
+                style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+            <h3 id="modal-evento-titulo" style="margin:0 0 12px; font-size:18px;"></h3>
+            <p><strong>Horario:</strong> <span id="modal-evento-horas"></span></p>
+            <p><strong>Profesor:</strong> <span id="modal-evento-profesor"></span></p>
+            <div id="modal-salon-bloque">
+                <hr style="margin:12px 0;">
+                <p style="font-weight:600; margin-bottom:6px;">📍 Salón</p>
+                <p><strong>Nombre:</strong> <span id="modal-salon-nombre"></span></p>
+                <p><strong>Ubicación:</strong> <span id="modal-salon-ubicacion"></span></p>
+                <p><strong>Capacidad:</strong> <span id="modal-salon-capacidad"></span></p>
+                <button id="btn-ver-salon"
+                    style="margin-top:8px; padding:6px 14px; background:#1E88E5; color:#fff; border:none; border-radius:6px; cursor:pointer;">Ver
+                    detalle del salón</button>
+            </div>
+            <div id="modal-sin-salon" style="display:none;">
+                <hr style="margin:12px 0;">
+                <p style="color:#888;">Sin salón asignado</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detalle de Salón -->
+    <div id="modal-salon-detalle"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1001; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:12px; padding:28px; width:380px; max-width:95vw; position:relative;">
+            <button id="modal-salon-cerrar"
+                style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:20px; cursor:pointer;">✕</button>
+            <button id="modal-salon-volver"
+                style="background:none; border:none; color:#1E88E5; cursor:pointer; font-size:13px; margin-bottom:10px;">←
+                Volver al evento</button>
+            <h3 style="margin:0 0 14px; font-size:18px;">🏫 Detalle del Salón</h3>
+            <p><strong>Nombre:</strong> <span id="modal-sd-nombre"></span></p>
+            <p><strong>Ubicación:</strong> <span id="modal-sd-ubicacion"></span></p>
+            <p><strong>Capacidad:</strong> <span id="modal-sd-capacidad"></span></p>
+            <p><strong>Equipamiento:</strong> <span id="modal-sd-equipamiento">No especificado</span></p>
+        </div>
+    </div>
+
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
     <script src="js/horario.js"></script>
     <script src="js/notification.js"></script>
-    
+
     <script src="js/exportHorario.js"></script>
 </body>
 
