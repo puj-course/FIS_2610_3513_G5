@@ -2,6 +2,7 @@ package com.studyhub.controller;
 
 import com.studyhub.model.Nota;
 import com.studyhub.service.NotaService;
+import com.studyhub.service.observer.SistemaAlertasObserver;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/notas")
@@ -17,9 +19,12 @@ import java.util.Map;
 public class NotaController {
 
     private final NotaService notaService;
+    private final SistemaAlertasObserver sistemaAlertasObserver;
 
-    public NotaController(NotaService notaService) {
+    public NotaController(NotaService notaService,
+                          SistemaAlertasObserver sistemaAlertasObserver) {
         this.notaService = notaService;
+        this.sistemaAlertasObserver = sistemaAlertasObserver;
     }
 
     @PostMapping
@@ -98,15 +103,29 @@ public class NotaController {
             return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
         }
     }
-    
+
     @GetMapping("/promedio/{asignaturaId}")
     public ResponseEntity<Map<String, Object>> obtenerPromedio(@PathVariable Long asignaturaId) {
-
         double promedio = notaService.calcularPromedio(asignaturaId);
-
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("promedio", promedio);
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
 
+    /**
+     * Endpoint consultado por el dashboard para mostrar en tiempo real
+     * las materias que cruzaron el umbral de riesgo (promedio < 3.0)
+     * durante la sesión activa del servidor.
+     *
+     * GET /notas/materias-en-riesgo/{usuarioId}
+     * Response: { "materiasEnRiesgo": ["Cálculo", "Física"] }
+     */
+    @GetMapping("/materias-en-riesgo/{usuarioId}")
+    public ResponseEntity<Map<String, Object>> obtenerMateriasEnRiesgo(
+            @PathVariable Long usuarioId) {
+        Set<String> materias = sistemaAlertasObserver.obtenerMateriasEnRiesgo(usuarioId);
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("materiasEnRiesgo", materias);
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 }
