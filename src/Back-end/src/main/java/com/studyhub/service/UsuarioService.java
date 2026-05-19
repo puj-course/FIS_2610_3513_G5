@@ -1,5 +1,6 @@
 package com.studyhub.service;
 
+import com.studyhub.service.builder.ResumenAcademicoBuilder;
 import com.studyhub.dto.AsignaturaResumenDTO;
 import com.studyhub.dto.ResumenAcademicoDTO;
 import com.studyhub.dto.TareaResumenDTO;
@@ -40,7 +41,6 @@ public class UsuarioService {
 
     @Autowired
     private AsignacionRepository asignacionRepository;
-
 
     @Autowired
     private NotaRepository notaRepository;
@@ -130,8 +130,6 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
     }
-
-
 
     /**
      * Actualiza los campos de perfil editables de un usuario:
@@ -245,6 +243,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // ── Asignaturas ──────────────────────────────────────────────────────
         List<Asignatura> asignaturasRaw = asignaturaService.findByUserId(usuarioId);
         List<AsignaturaResumenDTO> asignaturasResumen = new ArrayList<>();
         double sumaPromedios = 0;
@@ -260,20 +259,26 @@ public class UsuarioService {
         }
 
         double promedioGlobal = asignaturasRaw.isEmpty() ? 0 : sumaPromedios / asignaturasRaw.size();
-        promedioGlobal = Math.round(promedioGlobal * 100.0) / 100.0;
 
+        // ── Tareas ───────────────────────────────────────────────────────────
         List<Tarea> tareasRaw = tareaRepository
                 .findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(usuarioId);
         List<TareaResumenDTO> tareasResumen = tareasRaw.stream()
-                .map(t -> new TareaResumenDTO(t.getTitulo(), t.getAsignatura().getNombre(), t.getFechaEntrega(),
+                .map(t -> new TareaResumenDTO(
+                        t.getTitulo(),
+                        t.getAsignatura().getNombre(),
+                        t.getFechaEntrega(),
                         t.getHoraEntrega()))
                 .collect(Collectors.toList());
 
-        return new ResumenAcademicoDTO(
-                usuario.getNombre() + " " + (usuario.getApellido() != null ? usuario.getApellido() : ""),
-                promedioGlobal,
-                asignaturasResumen,
-                tareasResumen);
+        // ── Builder ──────────────────────────────────────────────────────────
+        return new ResumenAcademicoBuilder()
+                .conNombreUsuario(usuario.getNombre() + " " +
+                        (usuario.getApellido() != null ? usuario.getApellido() : ""))
+                .conPromedioGlobal(promedioGlobal)
+                .conAsignaturas(asignaturasResumen)
+                .conTareasPendientes(tareasResumen)
+                .build();
     }
 
     public String generarTokenRecuperacion(String correo) {

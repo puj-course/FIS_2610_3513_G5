@@ -17,7 +17,6 @@ public class NotificationController {
     private final NotificationRepository notificationRepo;
     private final NotificationService    notificationService;
 
-
     public NotificationController(NotificationRepository notificationRepo,
                                   NotificationService notificationService) {
         this.notificationRepo    = notificationRepo;

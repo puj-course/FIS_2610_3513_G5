@@ -25,11 +25,10 @@ public class NotificationService {
     // ── SSE: suscribir un cliente ────────────────────────────────────────────
 
     public SseEmitter suscribir(Long userId) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // sin timeout
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         emitters.computeIfAbsent(userId, k -> new CopyOnWriteArrayList<>()).add(emitter);
 
-        // Limpiar cuando la conexión se cierre o falle
         emitter.onCompletion(() -> removeEmitter(userId, emitter));
         emitter.onTimeout(()    -> removeEmitter(userId, emitter));
         emitter.onError(e       -> removeEmitter(userId, emitter));
@@ -42,20 +41,10 @@ public class NotificationService {
         if (lista != null) lista.remove(emitter);
     }
 
-    // ── Publicar notificación (llamado por otros módulos) ────────────────────
+    // ── Publicar notificación (parámetros sueltos — método original) ─────────
 
-    /**
-     * Persiste la notificación en BD y la envía por SSE si el usuario está conectado.
-     *
-     * @param userId    ID del usuario destinatario
-     * @param type      Tipo: "TAREA", "CALIFICACION", "SISTEMA", etc.
-     * @param message   Texto visible
-     * @param priority  "NORMAL" o "CRITICA"
-     * @param actionUrl URL del recurso asociado (puede ser null)
-     */
     public Notification publicar(Long userId, String type, String message,
                                   String priority, String actionUrl) {
-        // 1. Persistir en BD
         Notification n = new Notification();
         n.setUserId(userId);
         n.setType(type);
@@ -65,9 +54,18 @@ public class NotificationService {
         Notification guardada = notificationRepo.save(n);
 
         enviarSSE(userId, guardada);
-
         return guardada;
     }
+
+    // ── Publicar notificación (objeto ya construido por una Factory) ─────────
+
+    public Notification publicar(Notification n) {
+        Notification guardada = notificationRepo.save(n);
+        enviarSSE(n.getUserId(), guardada);
+        return guardada;
+    }
+
+    // ── Envío SSE ────────────────────────────────────────────────────────────
 
     private void enviarSSE(Long userId, Notification notif) {
         List<SseEmitter> lista = emitters.getOrDefault(userId, new CopyOnWriteArrayList<>());
@@ -79,7 +77,6 @@ public class NotificationService {
                     .name("notification")
                     .data(notif));
             } catch (IOException e) {
-                // Emitter muerto — lo marcamos para remover
                 muertos.add(emitter);
             }
         }
