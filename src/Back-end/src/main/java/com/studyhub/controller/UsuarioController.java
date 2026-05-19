@@ -13,11 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -43,15 +40,77 @@ public class UsuarioController {
     @Autowired
     private com.studyhub.service.AuthService authService;
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // REGISTRO
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * POST /api/usuarios
+     * Registra un nuevo usuario. Si tiene teléfono, envía un código OTP
+     * vía Twilio Verify para verificar su número celular.
+     */
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
         try {
             Usuario creado = usuarioService.crearUsuario(usuario);
+
+            // Si el usuario registró número de teléfono, enviar OTP de verificación
+            if (creado.getTelefono() != null && !creado.getTelefono().trim().isEmpty()) {
+                boolean enviado = smsService.enviarCodigoVerificacion(creado.getTelefono());
+                System.out.println("📲 [REGISTRO] OTP enviado a " + creado.getTelefono() + ": " + enviado);
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                    "usuario", creado,
+                    "otpEnviado", enviado,
+                    "mensaje", enviado
+                        ? "Usuario creado. Se envió un código de verificación por SMS al " + creado.getTelefono()
+                        : "Usuario creado. No se pudo enviar el SMS de verificación."
+                ));
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).body(creado);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // VERIFICACIÓN DE NÚMERO (OTP al registrarse)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * POST /api/usuarios/verificar-telefono
+     * Verifica el código OTP enviado al registrarse.
+     *
+     * Body: { "telefono": "+573142733826", "codigo": "123456" }
+     */
+    @PostMapping("/verificar-telefono")
+    public ResponseEntity<?> verificarTelefono(@RequestBody Map<String, String> body) {
+        String telefono = body.get("telefono");
+        String codigo   = body.get("codigo");
+
+        if (telefono == null || codigo == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("mensaje", "Se requieren los campos 'telefono' y 'codigo'"));
+        }
+
+        boolean valido = smsService.verificarCodigo(telefono, codigo);
+
+        if (valido) {
+            return ResponseEntity.ok(Map.of(
+                "verificado", true,
+                "mensaje", "Número de teléfono verificado exitosamente"
+            ));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                "verificado", false,
+                "mensaje", "Código incorrecto o expirado"
+            ));
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // LOGIN
+    // ─────────────────────────────────────────────────────────────────────────
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
@@ -59,13 +118,14 @@ public class UsuarioController {
             String correo   = credenciales.get("correo");
             String password = credenciales.get("password");
             Usuario usuario = usuarioService.login(correo, password);
-            // Limpiar registros de logout anteriores para que el guard de sesión
-            // no invalide inmediatamente la sesión recién iniciada.
+
             authService.limpiarSesionesAnteriores(usuario.getId());
             String loginAt = java.time.LocalDateTime.now().toString();
+
             if (usuario.getTelefono() != null && !usuario.getTelefono().trim().isEmpty()) {
                 smsService.enviarAlertaLogin(usuario.getTelefono().trim(), usuario.getNombre(), loginAt);
             }
+
             return ResponseEntity.ok(Map.of(
                 "id",       usuario.getId(),
                 "nombre",   usuario.getNombre(),
@@ -80,21 +140,105 @@ public class UsuarioController {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // RECUPERACIÓN DE CONTRASEÑA VÍA SMS (OTP)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * POST /api/usuarios/recuperar?telefono=+573142733826
+     * Envía un código OTP de 6 dígitos al número registrado para
+     * recuperar la contraseña. El código es generado por Twilio Verify.
+     */
+    @PostMapping("/recuperar")
+    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String telefono) {
+        try {
+            // Verifica que el teléfono esté registrado en el sistema
+            String telefonoNormalizado = usuarioService.normalizarTelefono(telefono);
+            usuarioService.generarTokenRecuperacionPorTelefono(telefonoNormalizado);
+
+            // Envía el OTP vía Twilio Verify
+            boolean enviado = smsService.enviarSmsRecuperacion(telefonoNormalizado);
+
+            if (enviado) {
+                return ResponseEntity.ok(Map.of(
+                    "mensaje",   "Se envió un código de verificación por SMS al " + telefonoNormalizado,
+                    "telefono",  telefonoNormalizado,
+                    "entregado", true
+                ));
+            } else {
+                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of(
+                    "mensaje",   "El número está registrado pero no se pudo enviar el SMS. Intente de nuevo.",
+                    "entregado", false
+                ));
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    /**
+     * POST /api/usuarios/verificar-recuperacion
+     * Verifica el código OTP ingresado por el usuario para recuperar contraseña.
+     *
+     * Body: { "telefono": "+573142733826", "codigo": "123456" }
+     */
+    @PostMapping("/verificar-recuperacion")
+    public ResponseEntity<?> verificarRecuperacion(@RequestBody Map<String, String> body) {
+        String telefono = body.get("telefono");
+        String codigo   = body.get("codigo");
+
+        if (telefono == null || codigo == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("mensaje", "Se requieren los campos 'telefono' y 'codigo'"));
+        }
+
+        boolean valido = smsService.verificarCodigo(telefono, codigo);
+
+        if (valido) {
+            // Recupera el token interno para que el frontend pueda llamar /restablecer
+            try {
+                String token = usuarioService.generarTokenRecuperacionPorTelefono(telefono);
+                return ResponseEntity.ok(Map.of(
+                    "verificado", true,
+                    "token",      token,
+                    "mensaje",    "Código verificado. Puede restablecer su contraseña."
+                ));
+            } catch (RuntimeException e) {
+                return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                "verificado", false,
+                "mensaje",    "Código incorrecto o expirado"
+            ));
+        }
+    }
+
+    /**
+     * POST /api/usuarios/restablecer
+     * Restablece la contraseña usando el token obtenido tras verificar el OTP.
+     *
+     * Body: { "token": "...", "nuevaPassword": "..." }
+     */
+    @PostMapping("/restablecer")
+    public ResponseEntity<?> restablecerPassword(@RequestBody RestablecerRequest request) {
+        try {
+            usuarioService.restablecerPassword(request.getToken(), request.getNuevaPassword());
+            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // RESTO DE ENDPOINTS (sin cambios)
+    // ─────────────────────────────────────────────────────────────────────────
+
     @GetMapping
     public List<Usuario> obtenerUsuarios() {
         return usuarioService.obtenerTodos();
     }
 
-    /**
-     * Retorna los datos públicos de perfil de un usuario por su ID.
-     * Se usa desde el frontend para precargar el formulario "Mi Perfil".
-     *
-     * Respuestas:
-     *  - 200 OK       → datos del usuario
-     *  - 404 Not Found → no existe un usuario con ese ID
-     *
-     * @param id ID del usuario
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
         try {
@@ -131,24 +275,6 @@ public class UsuarioController {
         }
     }
 
-    /**
-     * Actualiza los campos de perfil editables de un usuario.
-     *
-     * Campos aceptados en el body:
-     *  - nombre    (String, obligatorio)
-     *  - apellido  (String, obligatorio)
-     *  - carrera   (String, opcional)
-     *  - semestre  (Integer 1-12, opcional)
-     *
-     * Respuestas:
-     *  - 200 OK           → usuario actualizado correctamente
-     *  - 400 Bad Request  → campos obligatorios vacíos, semestre inválido, o ID inválido
-     *  - 404 Not Found    → no existe un usuario con ese ID
-     *
-     * @param id     ID del usuario a actualizar
-     * @param campos Mapa con los campos del perfil
-     * @return El usuario actualizado o un mensaje de error
-     */
     @PutMapping("/{id}/perfil")
     public ResponseEntity<?> actualizarPerfil(@PathVariable Long id,
                                               @RequestBody Map<String, Object> campos) {
@@ -164,34 +290,6 @@ public class UsuarioController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("mensaje", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/recuperar")
-    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String telefono) {
-        try {
-            String token = usuarioService.generarTokenRecuperacionPorTelefono(telefono);
-            String baseUri = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-            String enlace = baseUri + "/index.html?token=" + token;
-            boolean entregado = smsService.enviarSmsRecuperacion(telefono, enlace);
-            return ResponseEntity.ok(Map.of(
-                "mensaje", "Enlace seguro enviado por SMS exitosamente al " + telefono,
-                "token", token,
-                "entregado", entregado,
-                "smsBody", "🔑 [StudyHub] Accede aqui para recuperar tu contrasena: " + enlace
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/restablecer")
-    public ResponseEntity<?> restablecerPassword(@RequestBody RestablecerRequest request) {
-        try {
-            usuarioService.restablecerPassword(request.getToken(), request.getNuevaPassword());
-            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada exitosamente"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
     }
 
@@ -228,20 +326,13 @@ public class UsuarioController {
         }
     }
 
-    /**
-     * Retorna la lista de materias del usuario con los campos requeridos por la HU:
-     * id, name, description, status, redirectUrl e iconUrl.
-     */
     @GetMapping("/{id}/subjects")
     public ResponseEntity<?> obtenerMateriasPorUsuario(@PathVariable Long id) {
         try {
             usuarioService.obtenerPorId(id);
-
             List<Asignatura> asignaturas = asignaturaService.findByUserId(id);
-
             List<SubjectSummaryDTO> subjects = asignaturas.stream().map(a -> {
                 double progreso = notaService.calcularProgreso(a.getId());
-
                 String status;
                 if (progreso <= 0.0) {
                     status = "pendiente";
@@ -250,29 +341,16 @@ public class UsuarioController {
                 } else {
                     status = "en_progreso";
                 }
-
                 String description = String.format("%s · %s · %d créditos",
                         a.getProfesor(), a.getPeriodo(), a.getCreditos());
-
                 String redirectUrl = "/materias/" + a.getId() + "/calificaciones";
-
-                return new SubjectSummaryDTO(
-                        a.getId(),
-                        a.getNombre(),
-                        description,
-                        status,
-                        redirectUrl,
-                        null
-                );
+                return new SubjectSummaryDTO(a.getId(), a.getNombre(), description, status, redirectUrl, null);
             }).collect(java.util.stream.Collectors.toList());
-
             return ResponseEntity.ok(subjects);
-
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("mensaje", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
         }
     }
 
@@ -284,8 +362,7 @@ public class UsuarioController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("mensaje", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", e.getMessage()));
         }
     }
 }
