@@ -2,7 +2,10 @@ package com.studyhub.service;
 
 import com.studyhub.model.Asignatura;
 import com.studyhub.model.Nota;
+import com.studyhub.model.Usuario;
+import com.studyhub.repository.AsignaturaRepository;
 import com.studyhub.repository.NotaRepository;
+import com.studyhub.service.observer.NotaEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +27,12 @@ class NotaServiceTest {
     @Mock
     private NotaRepository notaRepository;
 
+    @Mock
+    private AsignaturaRepository asignaturaRepository;
+
+    @Mock
+    private NotaEventPublisher notaEventPublisher;
+
     @InjectMocks
     private NotaService notaService;
 
@@ -32,8 +41,13 @@ class NotaServiceTest {
 
     @BeforeEach
     void setUp() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+
         asignatura = new Asignatura();
         asignatura.setId(1L);
+        asignatura.setNombre("Materia Test");
+        asignatura.setUsuario(usuario);
 
         nota = new Nota();
         nota.setNombre("Parcial 1");
@@ -44,11 +58,12 @@ class NotaServiceTest {
 
     // - agregarNota -
 
-    // CP01 - Normal: datos vlidos
+    // CP01 - Normal: datos válidos
     @Test
     void agregarNota_guardaYRetornaNota_cuandoDatosValidos() {
         // Arrange
         when(notaRepository.findByAsignaturaId(1L)).thenReturn(Collections.emptyList());
+        when(asignaturaRepository.findById(1L)).thenReturn(Optional.of(asignatura));
         when(notaRepository.save(nota)).thenReturn(nota);
 
         // Act
@@ -102,6 +117,7 @@ class NotaServiceTest {
         // Arrange
         nota.setPorcentaje(100.0);
         when(notaRepository.findByAsignaturaId(1L)).thenReturn(Collections.emptyList());
+        when(asignaturaRepository.findById(1L)).thenReturn(Optional.of(asignatura));
         when(notaRepository.save(nota)).thenReturn(nota);
 
         // Act
@@ -113,7 +129,7 @@ class NotaServiceTest {
         verify(notaRepository, times(1)).save(nota);
     }
 
-    // CP05 - Borde: porcentaje un punto sobre el lmite superior
+    // CP05 - Borde: porcentaje un punto sobre el límite superior
     @Test
     void agregarNota_lanzaExcepcion_cuandoPorcentajeEsCientoUno() {
         // Arrange
@@ -137,6 +153,7 @@ class NotaServiceTest {
         notaExistente.setAsignatura(asignatura);
 
         when(notaRepository.findByAsignaturaId(1L)).thenReturn(List.of(notaExistente));
+        when(asignaturaRepository.findById(1L)).thenReturn(Optional.of(asignatura));
         when(notaRepository.save(nota)).thenReturn(nota);
         nota.setPorcentaje(30.0);
 
@@ -219,6 +236,8 @@ class NotaServiceTest {
         datosActualizados.setPorcentaje(40.0);
 
         when(notaRepository.findById(1L)).thenReturn(Optional.of(nota));
+        when(asignaturaRepository.findById(1L)).thenReturn(Optional.of(asignatura));
+        when(notaRepository.findByAsignaturaId(1L)).thenReturn(List.of(nota));
         when(notaRepository.save(any(Nota.class))).thenAnswer(i -> i.getArgument(0));
 
         // Act
@@ -269,7 +288,7 @@ class NotaServiceTest {
 
     // - calcularPromedio -
 
-    // CP07 - Borde: lista vaca
+    // CP07 - Borde: lista vacía
     @Test
     void calcularPromedio_retornaCero_cuandoNoHayNotas() {
         // Arrange
@@ -317,7 +336,7 @@ class NotaServiceTest {
         assertEquals(3.65, resultado, 0.001);
     }
 
-    // Borde: calificacin mxima con porcentaje completo
+    // Borde: calificación máxima con porcentaje completo
     @Test
     void calcularPromedio_retornaCinco_cuandoCalificacionMaximaYPorcentajeCompleto() {
         // Arrange
@@ -334,7 +353,7 @@ class NotaServiceTest {
         assertEquals(5.0, resultado, 0.001);
     }
 
-    // Negativa: nota sin calificacin asignada debe omitirse
+    // Negativa: nota sin calificación asignada debe omitirse
     @Test
     void calcularPromedio_ignoraNotas_cuandoCalificacionEsNula() {
         // Arrange
