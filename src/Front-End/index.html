@@ -3894,25 +3894,51 @@
         </div>
 
         <!-- RECOVER VIEW (HU-26 / SMS) -->
+        <!-- RECOVER VIEW (HU-26 / SMS) -->
         <div id="recover-view" class="auth-card" style="display: none;">
             <div class="auth-header">
                 <div class="auth-logo"><span class="material-icons-round">sms</span></div>
                 <h2 class="auth-title">Recuperar por SMS</h2>
-                <p class="auth-subtitle">Ingresa tu número celular y te enviaremos un código/enlace de recuperación por
-                    SMS</p>
+                <p class="auth-subtitle" id="recover-subtitle">Ingresa tu número celular y te enviaremos un código de
+                    verificación</p>
             </div>
             <div id="recover-error" class="error-message"></div>
             <div id="recover-success" class="error-message"
                 style="background:#E8F5E9; color:#2E7D32; border-left-color:#4CAF50;"></div>
-            <form class="auth-form" onsubmit="handleRecover(event)">
-                <div class="form-group">
-                    <label class="form-label">Teléfono Celular <span class="required">*</span></label>
-                    <input type="tel" id="recover-telefono" class="form-input" placeholder="+573001234567" value="+57"
-                        required pattern="^\+57[0-9]{10}$"
-                        title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
-                </div>
-                <button type="submit" id="btn-recover" class="auth-btn">Enviar SMS</button>
-            </form>
+
+            <!-- PASO 1: Ingresar teléfono -->
+            <div id="recover-step1">
+                <form class="auth-form" onsubmit="handleRecover(event)">
+                    <div class="form-group">
+                        <label class="form-label">Teléfono Celular <span class="required">*</span></label>
+                        <input type="tel" id="recover-telefono" class="form-input" placeholder="+573001234567"
+                            value="+57" required pattern="^\+57[0-9]{10}$"
+                            title="Debe iniciar con +57 seguido de 10 dígitos (Ej: +573001234567)">
+                    </div>
+                    <button type="submit" id="btn-recover" class="auth-btn">Enviar Código SMS</button>
+                </form>
+            </div>
+
+            <!-- PASO 2: Ingresar código OTP (oculto inicialmente) -->
+            <div id="recover-step2" style="display:none;">
+                <form class="auth-form" onsubmit="handleVerificarOTP(event)">
+                    <div class="form-group">
+                        <label class="form-label">Código de verificación <span class="required">*</span></label>
+                        <input type="text" id="recover-otp" class="form-input" placeholder="123456" maxlength="6"
+                            pattern="[0-9]{6}" required style="font-size:24px; letter-spacing:8px; text-align:center;"
+                            title="Ingresa el código de 6 dígitos que recibiste por SMS">
+                        <small style="color:var(--gray-500); font-size:12px; margin-top:6px; display:block;">
+                            Ingresa el código de 6 dígitos que llegó a tu celular
+                        </small>
+                    </div>
+                    <button type="submit" id="btn-verificar-otp" class="auth-btn">Verificar Código</button>
+                </form>
+                <p style="text-align:center; margin-top:12px; font-size:13px; color:var(--gray-500);">
+                    ¿No recibiste el código?
+                    <span class="auth-link" onclick="reenviarCodigo()" style="font-size:13px;">Reenviar</span>
+                </p>
+            </div>
+
             <p class="auth-switch">¿Recordaste tu contraseña? <span class="auth-link"
                     onclick="toggleAuth('login')">Inicia Sesión</span></p>
         </div>
@@ -8088,44 +8114,89 @@
             successDiv.style.display = 'none';
 
             try {
-                // Endpoint POST /api/usuarios/recuperar?telefono=...
                 const response = await fetch(`${API_BASE}/recuperar?telefono=${encodeURIComponent(telefono)}`, {
                     method: 'POST'
                 });
                 const result = await response.json();
 
-                if (response.ok) {
-                    // Si el servidor en la nube no pudo entregarlo físicamente por límite de su IP,
-                    // retransmitimos la petición a Textbelt directamente desde el navegador (usando la IP limpia del usuario)
-                    if (result.entregado === false && result.smsBody) {
-                        try {
-                            await fetch('https://textbelt.com/text', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    phone: telefono,
-                                    message: result.smsBody,
-                                    key: 'textbelt'
-                                })
-                            });
-                        } catch (e) { console.warn('Retransmisión cliente fallida:', e); }
-                    }
-
-                    successDiv.innerHTML = `✅ ¡Mensaje de texto enviado! El SMS con tu enlace de acceso llegará a tu teléfono en los próximos segundos.<br><br>
-                        <span style="font-size: 11px; color: #555;">Si la red celular presenta demoras, también puedes acceder al enlace seguro haciendo clic abajo:</span><br>
-                        <a href="index.html?token=${result.token}" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #2E7D32; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px;">🔑 Entrar al enlace seguro de recuperación</a>`;
+                if (response.ok && result.entregado) {
+                    // Guardar teléfono para usarlo en la verificación
+                    window._recoverTelefono = telefono;
+                    // Mostrar paso 2
+                    document.getElementById('recover-step1').style.display = 'none';
+                    document.getElementById('recover-step2').style.display = 'block';
+                    document.getElementById('recover-subtitle').textContent = 'Ingresa el código de 6 dígitos que enviamos a ' + telefono;
+                    successDiv.textContent = '✅ Código enviado. Revisa tu celular.';
                     successDiv.style.display = 'block';
-                    document.getElementById('recover-telefono').value = '';
+                    setTimeout(() => document.getElementById('recover-otp').focus(), 300);
                 } else {
-                    errorDiv.textContent = result.mensaje || "El teléfono no está registrado en el sistema";
+                    errorDiv.textContent = result.mensaje || 'El teléfono no está registrado en el sistema';
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = "Error de red al intentar recuperar la cuenta";
+                errorDiv.textContent = 'Error de red al intentar recuperar la cuenta';
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Enviar Enlace';
+                btn.textContent = 'Enviar Código SMS';
+            }
+        }
+
+        async function handleVerificarOTP(e) {
+            e.preventDefault();
+            const telefono = window._recoverTelefono;
+            const codigo = document.getElementById('recover-otp').value.trim();
+            const btn = document.getElementById('btn-verificar-otp');
+            const errorDiv = document.getElementById('recover-error');
+            const successDiv = document.getElementById('recover-success');
+
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/verificar-recuperacion`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telefono, codigo })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.verificado) {
+                    // Código correcto: ir a la vista de nueva contraseña
+                    window._recoverToken = result.token;
+                    // Inyectar token en la URL para que handleReset lo lea
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('token', result.token);
+                    window.history.replaceState({}, '', url.toString());
+                    toggleAuth('reset');
+                    showToast('✅ Código verificado. Crea tu nueva contraseña.');
+                } else {
+                    errorDiv.textContent = result.mensaje || 'Código incorrecto o expirado';
+                    errorDiv.style.display = 'block';
+                    document.getElementById('recover-otp').value = '';
+                    document.getElementById('recover-otp').focus();
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Error de red al verificar el código';
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Verificar Código';
+            }
+        }
+
+        async function reenviarCodigo() {
+            const telefono = window._recoverTelefono;
+            if (!telefono) return;
+            try {
+                await fetch(`${API_BASE}/recuperar?telefono=${encodeURIComponent(telefono)}`, { method: 'POST' });
+                showToast('Código reenviado. Revisa tu celular.');
+                document.getElementById('recover-otp').value = '';
+                document.getElementById('recover-otp').focus();
+            } catch (err) {
+                showToast('Error al reenviar el código');
             }
         }
 

@@ -118,9 +118,10 @@ public class SmsService {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("🚀 [TWILIO VERIFY] Respuesta verificación HTTP " + response.statusCode() + ": " + response.body());
+            String responseBody = response.body();
+            System.out.println("🚀 [TWILIO VERIFY] Respuesta verificación HTTP " + response.statusCode() + ": " + responseBody);
 
-            if (response.statusCode() == 200 && response.body().contains("\"status\":\"approved\"")) {
+            if (response.statusCode() == 200 && (responseBody.contains("\"status\":\"approved\"") || responseBody.contains("\"status\": \"approved\"") || responseBody.contains("\"valid\":true") || responseBody.contains("\"valid\": true"))) {
                 System.out.println("✅ [TWILIO VERIFY] Código correcto para " + telefono);
                 return true;
             } else {
