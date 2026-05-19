@@ -33,6 +33,9 @@ services:
       - JDBC_DATABASE_PASSWORD=Lalisam@1722!
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - PORT=8080
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_VERIFY_SID=${TWILIO_VERIFY_SID}
     volumes:
       - ./uploads:/app/uploads
     depends_on:
