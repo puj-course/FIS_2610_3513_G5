@@ -5257,8 +5257,8 @@
     </div>
 
     <script>
-        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || window.location.hostname === '')
-            ? 'https://studyhub-c2ft.onrender.com'
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:8080'
             : window.location.origin;
         const API_BASE = `${API}/api/usuarios`;   // Endpoints de usuarios
         window.API = API;
@@ -6491,11 +6491,11 @@
                 }
 
                 // 2. Actualizar datos personales incluyendo la URL de la foto si se subió
-                const payload = { 
-                    nombre, 
-                    apellido, 
+                const payload = {
+                    nombre,
+                    apellido,
                     telefono: document.getElementById('profile-telefono').value.trim(),
-                    carrera, 
+                    carrera,
                     semestre: parseInt(semestre)
                 };
                 if (fotoUrl) payload.fotoPerfil = fotoUrl;
@@ -7193,9 +7193,16 @@
             };
 
             try {
-                const res = await fetch(`${API}/api/usuarios/${userId}/subjects`);
+                const res = await fetch(`${API}/asignaturas?usuarioId=${userId}`);
                 if (!res.ok) throw new Error('Error al cargar materias');
-                const subjects = await res.json();
+                const rawSubjects = await res.json();
+                // Normalizar al formato que espera el resto de la función
+                const subjects = rawSubjects.map(s => ({
+                    id: s.id,
+                    name: s.nombre,
+                    nombre: s.nombre,
+                    status: 'en_progreso'
+                }));
 
                 grid.innerHTML = '';
 
@@ -7251,33 +7258,34 @@
             const userId = getUserId();
             if (!userId) return;
 
-            fetch(`${API}/api/usuarios/${userId}/resumen`)
-                .then(res => {
-                    if (!res.ok) throw new Error('Resumen no encontrado');
-                    return res.json();
-                })
-                .then(data => {
+            fetch(`${API}/asignaturas?usuarioId=${userId}`)
+                .then(res => res.ok ? res.json() : [])
+                .then(asignaturas => {
                     const totalMateriasEl = document.getElementById('sidebar-total-materias');
                     const promedioEl = document.getElementById('sidebar-promedio');
 
                     if (totalMateriasEl) {
                         totalMateriasEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                         totalMateriasEl.style.opacity = 0;
-                        totalMateriasEl.style.transform = 'translateY(-5px)';
                         setTimeout(() => {
-                            totalMateriasEl.textContent = data.totalAsignaturas;
+                            totalMateriasEl.textContent = asignaturas.length;
                             totalMateriasEl.style.opacity = 1;
-                            totalMateriasEl.style.transform = 'translateY(0)';
                         }, 300);
                     }
+
                     if (promedioEl) {
+                        // Calcular promedio global desde gradesStore
+                        let suma = 0, count = 0;
+                        asignaturas.forEach(a => {
+                            const notas = gradesStore[a.id] || [];
+                            const avg = notas.reduce((s, g) => s + (g.nota != null ? g.nota * (g.porcentaje / 100) : 0), 0);
+                            if (notas.some(g => g.nota != null)) { suma += avg; count++; }
+                        });
                         promedioEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                         promedioEl.style.opacity = 0;
-                        promedioEl.style.transform = 'translateY(-5px)';
                         setTimeout(() => {
-                            promedioEl.textContent = (data.totalAsignaturas === 0) ? "-" : data.promedioGlobal;
+                            promedioEl.textContent = count > 0 ? (suma / count).toFixed(2) : '-';
                             promedioEl.style.opacity = 1;
-                            promedioEl.style.transform = 'translateY(0)';
                         }, 300);
                     }
                 })
@@ -7453,29 +7461,38 @@
             if (!userId) return;
 
             try {
-                const res = await fetch(`${API}/api/usuarios/${userId}/informe-academico`);
-                if (!res.ok) throw new Error('Error al obtener informe académico');
-                const data = await res.json();
+                const res = await fetch(`${API}/asignaturas?usuarioId=${userId}`);
+                if (!res.ok) throw new Error('Error al obtener materias');
+                const asignaturas = await res.json();
 
-                const subjects = data.asignaturas || [];
-                const labels = subjects.map(s => s.nombre || s.name || 'Sin nombre');
-                const averages = subjects.map(s => s.promedio);
+                // Construir datos desde gradesStore (ya cargado al abrir calificaciones)
+                const labels = [];
+                const averages = [];
+                const riskSubjects = [];
 
-                // 1. Renderizar el Gráfico
+                asignaturas.forEach(a => {
+                    const notas = gradesStore[a.id] || [];
+                    const notasConValor = notas.filter(g => g.nota != null);
+                    if (notasConValor.length === 0) return;
+                    const avg = notasConValor.reduce((s, g) => s + g.nota * (g.porcentaje / 100), 0);
+                    labels.push(a.nombre);
+                    averages.push(parseFloat(avg.toFixed(2)));
+                    if (avg > 0 && avg < 3.0) riskSubjects.push({ nombre: a.nombre, promedio: avg });
+                });
+
+                // Gráfico
                 const ctx = document.getElementById('averageChart')?.getContext('2d');
                 if (ctx) {
-                    if (myChart) {
-                        myChart.destroy();
-                    }
+                    if (myChart) myChart.destroy();
                     myChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: labels,
+                            labels,
                             datasets: [{
                                 label: 'Promedio',
                                 data: averages,
-                                backgroundColor: 'rgba(30, 136, 229, 0.6)',
-                                borderColor: 'rgba(30, 136, 229, 1)',
+                                backgroundColor: averages.map(v => v < 3.0 ? 'rgba(229,57,53,0.6)' : 'rgba(30,136,229,0.6)'),
+                                borderColor: averages.map(v => v < 3.0 ? 'rgba(229,57,53,1)' : 'rgba(30,136,229,1)'),
                                 borderWidth: 1,
                                 borderRadius: 6
                             }]
@@ -7484,58 +7501,29 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             scales: {
-                                y: {
-                                    min: 0,
-                                    max: 5,
-                                    ticks: {
-                                        stepSize: 1
-                                    },
-                                    grid: {
-                                        color: 'rgba(0,0,0,0.05)'
-                                    }
-                                },
-                                x: {
-                                    grid: {
-                                        display: false
-                                    }
-                                }
+                                y: { beginAtZero: true, max: 5, grid: { color: 'rgba(0,0,0,0.05)' } },
+                                x: { grid: { display: false } }
                             },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            return `Promedio: ${context.parsed.y.toFixed(2)}`;
-                                        }
-                                    }
-                                }
-                            }
+                            plugins: { legend: { display: false } }
                         }
                     });
                 }
 
-                // 2. Renderizar Alertas de Riesgo
-                const riskAlertsContainer = document.getElementById('risk-alerts');
+                // Alertas de riesgo
+                const riskContainer = document.getElementById('risk-alerts');
                 const riskList = document.getElementById('risk-list');
-                if (riskAlertsContainer && riskList) {
-                    const riskSubjects = subjects.filter(s => s.enRiesgo || (s.promedio > 0 && s.promedio < 3.0));
+                if (riskContainer && riskList) {
                     riskList.innerHTML = '';
                     if (riskSubjects.length > 0) {
-                        riskAlertsContainer.style.display = 'block';
+                        riskContainer.style.display = 'block';
                         riskSubjects.forEach(s => {
                             const item = document.createElement('div');
-                            item.className = 'risk-item';
-                            item.style = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 14px;';
-                            item.innerHTML = `
-                                <span style="font-weight: 600; color: #333;">${s.nombre || s.name || 'Materia'}</span>
-                                <span style="color: #d32f2f; font-weight: 700; background: #FFEBEE; padding: 2px 8px; border-radius: 6px;">${s.promedio.toFixed(2)}</span>
-                            `;
+                            item.style = 'display:flex;justify-content:space-between;background:#fff;padding:10px 16px;border-radius:8px;border-left:4px solid #E65100;box-shadow:0 1px 2px rgba(0,0,0,0.05);';
+                            item.innerHTML = `<span style="font-weight:500;color:#37474F;">${s.nombre}</span><strong style="color:#d32f2f;">${s.promedio.toFixed(2)}</strong>`;
                             riskList.appendChild(item);
                         });
                     } else {
-                        riskAlertsContainer.style.display = 'none';
+                        riskContainer.style.display = 'none';
                     }
                 }
 
