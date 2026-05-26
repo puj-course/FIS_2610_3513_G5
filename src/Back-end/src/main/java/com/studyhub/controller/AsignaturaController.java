@@ -176,7 +176,7 @@ public class AsignaturaController {
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
 
-        asignaturaRepository.deleteById(id);
+        asignaturaService.eliminarAsignatura(id);
 
         Map<String, String> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Asignatura eliminada exitosamente");

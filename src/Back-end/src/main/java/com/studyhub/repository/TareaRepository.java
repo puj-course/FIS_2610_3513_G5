@@ -12,5 +12,6 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
 	List<Tarea> findByAsignatura_Usuario_Id(Long usuarioId);
 	List<Tarea> findByAsignatura_Usuario_IdAndEstadoTrueOrderByFechaEntregaAsc(Long usuarioId);
 	List<Tarea> findByAsignatura_Usuario_IdAndFechaEntregaBetween(Long usuarioId, java.time.LocalDate startDate, java.time.LocalDate endDate);
+	List<Tarea> findByAsignaturaId(Long asignaturaId);
 	
 }
