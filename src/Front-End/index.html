@@ -5975,12 +5975,12 @@
                 return;
             }
 
-            // ÔöÇÔöÇ Casos 3 y 4: calcular nota mínima requerida ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            // ————————————————————————————————————————
             // Nota mínima uniforme que debe sacarse en cada corte pendiente
             const notaMin = (META_APROBACION - promedioActual) / (pctPending / 100);
             const notaMinRounded = Math.max(0, notaMin);
 
-            // ÔöÇÔöÇ Caso 3: matemáticamente imposible ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+            // ————————————————————————————————————————
             if (notaMinRounded > 5) {
                 minEl.textContent = 'Imposible';
                 minEl.style.color = '#C62828';
@@ -6009,8 +6009,8 @@
                 barEl.style.background = 'linear-gradient(90deg,var(--blue-400),var(--blue-600))';
             }
 
-            minEl.textContent = notaMinRounded.toFixed(2);
-            subEl.textContent = `En el ${pctPending}% restante para aprobar con ${META_APROBACION.toFixed(1)}`;
+            minEl.textContent = notaMinRounded.toFixed(1);
+            subEl.textContent = `Tienes que sacar ${notaMinRounded.toFixed(1)} en el ${pctPending}% faltante para pasar.`;
             barEl.style.width = Math.min((notaMinRounded / 5) * 100, 100) + '%';
 
             // Actualizar badge en cada fila pendiente de la tabla
@@ -6021,7 +6021,7 @@
                 cell.innerHTML = `
                     <span class="badge-min ${badgeCls}">
                         <span class="material-icons-round" style="font-size:12px;">${icon}</span>
-                        ÔëÑ ${notaMinRounded.toFixed(2)}
+                        ÔëÑ ${notaMinRounded.toFixed(1)}
                     </span>
                 `;
             });

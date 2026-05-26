@@ -147,12 +147,15 @@ public class NotaService {
         if (notas.isEmpty())
             return 0.0;
 
-        double suma = 0.0;
+        double sumaNotas = 0.0;
+        double sumaPorcentajes = 0.0;
         for (Nota nota : notas) {
             if (nota.getCalificacion() == null)
                 continue;
-            suma += nota.getCalificacion() * (nota.getPorcentaje() / 100.0);
+            sumaNotas += nota.getCalificacion() * (nota.getPorcentaje() / 100.0);
+            sumaPorcentajes += nota.getPorcentaje() / 100.0;
         }
-        return suma;
+        if (sumaPorcentajes == 0) return 0.0;
+        return sumaNotas / sumaPorcentajes;
     }
 }

@@ -15,12 +15,12 @@
         }
         
         // 2. Fetch enhanced statistics
-        const user = typeof session !== 'undefined' ? session.getUser() : null;
-        if (!user || !user.id) return;
+        const userId = typeof getUserId === 'function' ? getUserId() : null;
+        if (!userId) return;
 
         try {
             // API constant is global from index.html
-            const response = await fetch(`${API}/api/usuarios/${user.id}/estadisticas`);
+            const response = await fetch(`${API}/api/usuarios/${userId}/estadisticas`);
             if (response.ok) {
                 const data = await response.json();
                 
@@ -34,7 +34,7 @@
                 // 3. Render Risk Alerts (HU-377):
                 //    Combina los promedios calculados desde BD con las materias
                 //    detectadas en tiempo real por EstadisticasObserver.
-                await renderRiskAlerts(data.promediosPorMateria, user.id);
+                await renderRiskAlerts(data.promediosPorMateria, userId);
                 
                 // 4. Render Performance Chart (HU-374)
                 renderAverageChart(data.promediosPorMateria);

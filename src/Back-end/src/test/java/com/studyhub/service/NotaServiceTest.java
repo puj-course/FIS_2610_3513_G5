@@ -305,7 +305,7 @@ class NotaServiceTest {
     // CP06 - Normal: promedio ponderado con una nota
     @Test
     void calcularPromedio_calculaCorrectamente_conUnaNota() {
-        // Arrange - 4.0 * (30 / 100) = 1.2
+        // Arrange - 4.0 * (30 / 100) = 1.2 / 0.3 = 4.0
         when(notaRepository.findByAsignaturaId(1L)).thenReturn(List.of(nota));
 
         // Act
@@ -313,7 +313,7 @@ class NotaServiceTest {
 
         // Assert
         System.out.println("Resultado real: " + resultado);
-        assertEquals(1.2, resultado, 0.001);
+        assertEquals(4.0, resultado, 0.001);
     }
 
     // CP06 - Normal: promedio ponderado con varias notas
